@@ -1,30 +1,20 @@
-# React + TypeScript + Vite
+# DashBoard - El Buen Sabor - VERSION "DEFINITIVA"
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este dashboard nos permitirá adminsitrar la informacion de nuestro E-Commerce llamado "El Buen Sabor".
+Desarrollado en React con TypeScript
 
-Currently, two official plugins are available:
+# Dependencias que utilizamos en el proyecto
+  - React Router Dom: npm install react-router-dom
+  - React-Bootstrap: npm install react-bootstrap bootstrap
+  - CoreUI: npm install @coreui/react @coreui/coreui
+  - Icons CoreUI: npm install @coreui/icons @coreui/icons-react
+  - Chart JS (Graficos): npm install --save chart.js react-chartjs-2
+  - Redux: npm install react-redux
+  - Redux - Toolkit: npm install @reduxjs/toolkit
+  - Ejecuta json-server en otra terminal para simular una API: json-server --watch db.json
+    -----> https://www.npmjs.com/package/json-server
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
-
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+## Correr el proyecto
+  - En consola colocar: npm install
+  - Ejecucion del proyecto: npm run dev
