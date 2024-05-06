@@ -13,6 +13,7 @@ Desarrollado en React con TypeScript
   - Redux - Toolkit: npm install @reduxjs/toolkit
   - Ejecuta json-server en otra terminal para simular una API: json-server --watch db.json
     -----> https://www.npmjs.com/package/json-server
+  - SweetAlert: npm install --save sweetalert
 
 
 ## Correr el proyecto
