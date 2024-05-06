@@ -13,8 +13,10 @@ Desarrollado en React con TypeScript
   - Redux - Toolkit: npm install @reduxjs/toolkit
   - Ejecuta json-server en otra terminal para simular una API: json-server --watch db.json
     -----> https://www.npmjs.com/package/json-server
-  - SweetAlert: npm install --save sweetalert
-
+  - SweetAlert 2: npm install --save sweetalert2
+  - Mui Material: npm install @mui/material @emotion/react @emotion/styled
+  - Yup: npm install yup
+  - Formik: npm install formik
 
 ## Correr el proyecto
   - En consola colocar: npm install
