@@ -1,6 +1,8 @@
 import { Route, Routes } from "react-router-dom";
-import { ScreenPersona } from "../components/pages/ScreenPersona"; // Importamos el componente ScreenPersona
 import { NavBar } from "../components/ui/NavBar/NavBar"; // Importamos el componente NavBar
+import { SideBar } from "../components/ui/SideBar/SideBar";
+import "./AppRouter.css"
+import { ScreenEmpresa } from "../components/pages/ScreenEmpresa";// Importamos el componente ScreenEmpresa
 
 // Componente AppRouter que define las rutas de la aplicación
 export const AppRouter = () => {
@@ -8,11 +10,16 @@ export const AppRouter = () => {
     <>
       {/* Barra de navegación */}
       <NavBar />
-      {/* Definición de las rutas */}
-      <Routes>
-        {/* Ruta para la pantalla de personas */}
-        <Route path="/" element={<ScreenPersona />} />
-      </Routes>
+      <div className="AppContainer">
+        <SideBar />
+        <div className="Content">
+        {/* Definición de las rutas */} 
+        <Routes>
+          {/* Ruta para la pantalla de personas */}
+          <Route path="/" element={<ScreenEmpresa />} />
+        </Routes>
+        </div>
+      </div>
     </>
   );
 };

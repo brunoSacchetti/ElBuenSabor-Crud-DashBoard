@@ -2,41 +2,38 @@
 import { Button, Modal } from "react-bootstrap";
 import * as Yup from "yup";
 
-import { IPersona } from "../../../../types/IPersona";
 import TextFieldValue from "../../TextFildValue/TextFildValue";
 import { Form, Formik } from "formik";
-import { PersonaService } from "../../../../services/PersonaService";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/redux";
 import { removeElementActive } from "../../../../redux/slices/TablaReducer";
+import IEmpresa from "../../../../types/Empresa";
+import { EmpresaService } from "../../../../services/EmpresaService";
 const API_URL = import.meta.env.VITE_API_URL;
 
 // Interfaz para los props del componente ModalPersona
-interface IModalPersona {
-  getPersonas: Function; // Función para obtener las personas
+interface IModalEmpresa {
+  getEmpresa: Function; // Función para obtener las personas
   openModal: boolean;
   setOpenModal: (state: boolean) => void;
 }
 
 // Definición del componente ModalPersona
-export const ModalPersona = ({
-  getPersonas,
+export const ModalEmpresa = ({
+  getEmpresa,
   openModal,
   setOpenModal,
-}: IModalPersona) => {
+}: IModalEmpresa) => {
   // Valores iniciales para el formulario
-  const initialValues: IPersona = {
+  const initialValues: IEmpresa = {
     id: 0,
-    phoneNumber: "",
-    adress: "",
-    birthdate: "" as any,
-    email: "",
-    firstName: "",
-    lastName: "",
+    nombre: "",
+    razonSocial: "",
+    cuil: "" as any,
+    sucursales: []
   };
 
   // URL de la API obtenida desde las variables de entorno
-  const actualDate: string = new Date().toISOString().split("T")[0];
-  const apiPersona = new PersonaService(API_URL + "/personas");
+  const apiEmpresa = new EmpresaService(API_URL + "/empresas");
 
   const elementActive = useAppSelector(
     (state) => state.tablaReducer.elementActive
@@ -63,40 +60,30 @@ export const ModalPersona = ({
         <Modal.Header closeButton>
           {/* Título del modal dependiendo de si se está editando o añadiendo una persona */}
           {elementActive ? (
-            <Modal.Title>Editar una persona:</Modal.Title>
+            <Modal.Title>Editar una empresa:</Modal.Title>
           ) : (
-            <Modal.Title>Añadir una persona:</Modal.Title>
+            <Modal.Title>Añadir una empresa:</Modal.Title>
           )}
         </Modal.Header>
         <Modal.Body>
           {/* Componente Formik para el formulario */}
           <Formik
             validationSchema={Yup.object({
-              phoneNumber: Yup.string().required("Campo requerido"),
-              adress: Yup.string().required("Campo requerido"),
-              birthdate: Yup.date()
-                .required("Campo requerido")
-                .max(
-                  actualDate,
-                  "La fecha no puede ser mayor a la fecha actual"
-                ),
-              email: Yup.string()
-                .email("Tiene que ser un correo electrónico válido")
-                .required("Campo requerido"),
-              firstName: Yup.string().required("Campo requerido"),
-              lastName: Yup.string().required("Campo requerido"),
+              cuil: Yup.string().required("Campo requerido"),
+              nombre: Yup.string().required("Campo requerido"),
+              razonSocial: Yup.string().required("Campo requerido"),
             })}
             initialValues={elementActive ? elementActive : initialValues}
             enableReinitialize={true}
-            onSubmit={async (values: IPersona) => {
+            onSubmit={async (values: IEmpresa) => {
               // Enviar los datos al servidor al enviar el formulario
               if (elementActive) {
-                //await apiPersona.put(elementActive?.id, values);
+                await apiEmpresa.put(API_URL + "empresas", values.id.toString(), values)
               } else {
-                await apiPersona.post(values);
+                await apiEmpresa.post(values);
               }
               // Obtener las personas actualizadas y cerrar el modal
-              getPersonas();
+              getEmpresa();
               handleClose();
             }}
           >
@@ -107,42 +94,23 @@ export const ModalPersona = ({
                   <div className="container_Form_Ingredientes">
                     {/* Campos del formulario */}
                     <TextFieldValue
-                      label="Nombre:"
-                      name="firstName"
+                      label="Empresa:"
+                      name="nombre"
                       type="text"
-                      placeholder="Nombre"
+                      placeholder="Nombre Empresa"
                     />
                     <TextFieldValue
-                      label="Apellido:"
-                      name="lastName"
+                      label="Razon Social:"
+                      name="razonSocial"
                       type="text"
-                      placeholder="Apellido"
+                      placeholder="Razon Social"
                     />
 
                     <TextFieldValue
-                      label="Correo electrónico:"
-                      name="email"
+                      label="CUIL:"
+                      name="cuil"
                       type="text"
-                      placeholder="Mail"
-                    />
-
-                    <TextFieldValue
-                      label="Dirección:"
-                      name="adress"
-                      type="text"
-                      placeholder="Direccion"
-                    />
-                    <TextFieldValue
-                      label="Número de teléfono:"
-                      name="phoneNumber"
-                      type="number"
-                      placeholder="Numero de telefono"
-                    />
-                    <TextFieldValue
-                      label="Fecha de nacimiento:"
-                      name="birthdate"
-                      type="date"
-                      placeholder="Fecha de nacimiento"
+                      placeholder="Cuil"
                     />
                   </div>
                   {/* Botón para enviar el formulario */}

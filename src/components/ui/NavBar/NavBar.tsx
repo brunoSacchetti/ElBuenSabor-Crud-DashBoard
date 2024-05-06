@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 // Definición de las páginas y sus rutas
 const pages = [
-  { title: "Persona", route: "/" },
+  { title: "El Buen Sabor", route: "/" },
   // { title: "Producto", route: "/producto" },
 ];
 
@@ -23,7 +23,7 @@ export const NavBar = () => {
 
   return (
     // Barra de navegación
-    <AppBar position="static">
+    <AppBar position="static" style={{background: "#f09e2f"}}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>

@@ -1,0 +1,15 @@
+/* Estilo para el contenedor principal que incluye el sidebar y el contenido */
+.AppContainer {
+    display: flex;
+    height: 100vh;
+}
+
+.Content {
+    flex-grow: 1; /* Toma el espacio restante */
+    overflow: auto; /* Añade scroll si el contenido es muy grande */
+}
+
+.SideBarBig {
+    width: 250px; /* o el ancho que desees */
+    flex-shrink: 0; /* Evita que se reduzca */
+}

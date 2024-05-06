@@ -11,7 +11,7 @@ Desarrollado en React con TypeScript
   - Chart JS (Graficos): npm install --save chart.js react-chartjs-2
   - Redux: npm install react-redux
   - Redux - Toolkit: npm install @reduxjs/toolkit
-  - Ejecuta json-server en otra terminal para simular una API: json-server --watch db.json
+  - Ejecuta json-server en otra terminal para simular una API: json-server --watch db.json |||| json-server --watch db.json --port 3001
     -----> https://www.npmjs.com/package/json-server
   - SweetAlert 2: npm install --save sweetalert2
   - Mui Material: npm install @mui/material @emotion/react @emotion/styled

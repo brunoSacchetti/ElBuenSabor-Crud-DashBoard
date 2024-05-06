@@ -1,62 +1,44 @@
 import { useEffect, useState } from "react";
-import { PersonaService } from "../../services/PersonaService";
-import { IPersona } from "../../types/IPersona";
+
 import { TableGeneric } from "../ui/TableGeneric/TableGeneric";
 import { Button, CircularProgress } from "@mui/material";
-import { ModalPersona } from "../ui/modals/ModalPersona/ModalPersona";
 import { useAppDispatch } from "../../hooks/redux";
 
 import { setDataTable } from "../../redux/slices/TablaReducer";
 import Swal from "sweetalert2";
 
+//Importamos IEmpresa y Empresa Service
+import IEmpresa from "../../types/Empresa";
+import { EmpresaService } from "../../services/EmpresaService";
+import { ModalEmpresa } from "../ui/modals/ModalEmpresa/ModalEmpresa";
+
 // Definición de la URL base de la API
 const API_URL = import.meta.env.VITE_API_URL;
 
-export const ScreenPersona = () => {
+export const ScreenEmpresa = () => {
   // Estado para controlar la carga de datos
   const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
 
-  const personaService = new PersonaService(API_URL + "/personas");
+  const empresaService = new EmpresaService(API_URL + "/empresas");
   const dispatch = useAppDispatch();
   // Columnas de la tabla de personas
-  const ColumnsTablePersona = [
+  const ColumnsTableEmpresa = [
     {
-      label: "id",
+      label: "ID",
       key: "id",
-      render: (persona: IPersona) => (persona?.id ? persona.id : 0),
+      render: (empresa: IEmpresa) => (empresa?.id ? empresa.id : 0),
     },
-    { label: "Nombre", key: "firstName" },
-    { label: "Apellido", key: "lastName" },
+    { label: "Nombre", key: "nombre" },
+    { label: "Razon Social", key: "razonSocial" },
     {
-      label: "Email",
-      key: "email",
+      label: "Cuil",
+      key: "cuil",
     },
-    {
-      label: "Telefono",
-      key: "phoneNumber",
-    },
-    {
-      label: "Direccion",
-      key: "adress",
-    },
-    {
-      label: "Fecha de Nacimiento",
-      key: "birthdate",
-      render: (persona: IPersona) => {
-        const dateFormatOptions: Intl.DateTimeFormatOptions = {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        };
-        const date = new Date(persona.birthdate);
-        const formatedDate = date.toLocaleDateString(
-          "es-AR",
-          dateFormatOptions
-        );
-        return formatedDate;
-      },
-    },
+    /* {
+      label: "Sucursal",
+      key: "sucursalEmpresa", //OJITO  ABIERTO O CERRADO 
+    }, */
     { label: "Acciones", key: "acciones" },
   ];
 
@@ -75,16 +57,16 @@ export const ScreenPersona = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         // Eliminar la persona si se confirma
-        personaService.delete(id).then(() => {
-          getPersonas();
+        empresaService.delete(id).then(() => {
+          getEmpresas();
         });
       }
     });
   };
   // Función para obtener las personas
-  const getPersonas = async () => {
-    await personaService.getAll().then((personaData) => {
-      dispatch(setDataTable(personaData));
+  const getEmpresas = async () => {
+    await empresaService.getAll().then((empresaData) => {
+      dispatch(setDataTable(empresaData));
       setLoading(false);
     });
   };
@@ -92,7 +74,7 @@ export const ScreenPersona = () => {
   // Efecto para cargar los datos al inicio
   useEffect(() => {
     setLoading(true);
-    getPersonas();
+    getEmpresas();
   }, []);
 
   return (
@@ -134,17 +116,17 @@ export const ScreenPersona = () => {
           </div>
         ) : (
           // Mostrar la tabla de personas una vez que los datos se han cargado
-          <TableGeneric<IPersona>
+          <TableGeneric<IEmpresa>
             handleDelete={handleDelete}
-            columns={ColumnsTablePersona}
+            columns={ColumnsTableEmpresa}
             setOpenModal={setOpenModal}
           />
         )}
       </div>
 
       {/* Modal para agregar o editar una persona */}
-      <ModalPersona
-        getPersonas={getPersonas}
+      <ModalEmpresa
+        getEmpresa={getEmpresas}
         openModal={openModal}
         setOpenModal={setOpenModal}
       />

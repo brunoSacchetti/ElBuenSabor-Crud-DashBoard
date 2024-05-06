@@ -1,0 +1,11 @@
+html, body, #root {
+    height: 100%;
+    margin: 0;
+}
+
+.SideBarBig {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #dee2e6;
+}
