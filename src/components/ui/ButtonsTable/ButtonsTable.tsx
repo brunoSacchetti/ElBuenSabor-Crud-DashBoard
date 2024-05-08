@@ -39,7 +39,7 @@ export const ButtonsTable = ({
       }}
     >
       {/* Botón para editar el elemento */}
-      <Button variant="contained" onClick={handleModalSelected}>
+      <Button variant="contained" style={{background: "#f09e2f"}} onClick={handleModalSelected}>
         <span className="material-symbols-outlined">edit</span>
       </Button>
       {/* Botón para eliminar el elemento */}

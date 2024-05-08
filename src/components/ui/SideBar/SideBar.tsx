@@ -1,7 +1,7 @@
 import CIcon from '@coreui/icons-react'
 import { CBadge, CNavGroup, CNavItem, CNavTitle, CSidebar, CSidebarHeader, CSidebarNav, CSidebarToggler } from '@coreui/react'
 import styles from './SideBar.module.css'
-import { cilCloudDownload, cilLayers, cilSpeedometer, cilPuzzle } from '@coreui/icons';
+import {cilSpeedometer,cilFactory,cilRestaurant,cilGift,cilUser,cilFeaturedPlaylist,cilDrink} from '@coreui/icons';
 
 export const SideBar = () => {
   return (
@@ -12,23 +12,23 @@ export const SideBar = () => {
           <CIcon customClassName="nav-icon" icon={cilSpeedometer} /> Inicio
         </CNavItem>
         <CNavItem href="/empresas">
-          <CIcon customClassName="nav-icon" icon={cilSpeedometer} /> Empresa
+          <CIcon customClassName="nav-icon" icon={cilFactory} /> Empresa
           
         </CNavItem>
-        <CNavItem href="/productos">
-          <CIcon customClassName="nav-icon" icon={cilCloudDownload} /> Productos
+        <CNavItem href="/articulosManufacturados">
+          <CIcon customClassName="nav-icon" icon={cilRestaurant} /> Productos
         </CNavItem>
         <CNavItem href="/promociones">
-          <CIcon customClassName="nav-icon" icon={cilCloudDownload} /> Promociones
+          <CIcon customClassName="nav-icon" icon={cilGift} /> Promociones
           <CBadge color="primary ms-auto">NEW</CBadge>
         </CNavItem>
-        <CNavItem href="/">
-          <CIcon customClassName="nav-icon" icon={cilCloudDownload} /> Usuarios
+        <CNavItem href="/usuarios">
+          <CIcon customClassName="nav-icon" icon={cilUser} /> Usuarios
         </CNavItem>
         <CNavGroup
           toggler={
             <>
-              <CIcon customClassName="nav-icon" icon={cilPuzzle} /> Categorias
+              <CIcon customClassName="nav-icon" icon={cilFeaturedPlaylist} /> Categorias
             </>
           }
         >
@@ -46,7 +46,7 @@ export const SideBar = () => {
           </CNavItem>
         </CNavGroup>
         <CNavItem href="/">
-          <CIcon customClassName="nav-icon" icon={cilLayers} /> Insumos
+          <CIcon customClassName="nav-icon" icon={cilDrink} /> Insumos
         </CNavItem>
       </CSidebarNav>
       <CSidebarHeader className="border-top">

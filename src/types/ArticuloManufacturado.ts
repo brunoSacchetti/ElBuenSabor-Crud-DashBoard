@@ -14,3 +14,4 @@ interface IArticuloManufacturado extends Base<IArticuloManufacturado>  {
 }
 
 export default IArticuloManufacturado;
+

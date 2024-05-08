@@ -3,7 +3,8 @@
     {
       "id": 1,
       "auth0Id": "9565a49d-ecc1-4f4e-adea-6cdcb7edc4a3",
-      "username": "sebastian"
+      "username": "sebastian",
+      "nombre": "Lucas"
     }
   ],
   "unidadesMedidas": [
@@ -1528,9 +1529,9 @@
     },
     {
       "id": 2,
-      "nombre": "el maxi  puto y gay",
-      "razonSocial": "Venta de culos ",
-      "cuil": "2312312312",
+      "nombre": "Horst De Ratatouille",
+      "razonSocial": "Venta de Oregano",
+      "cuil": "13123123",
       "sucursales": []
     }
   ],
