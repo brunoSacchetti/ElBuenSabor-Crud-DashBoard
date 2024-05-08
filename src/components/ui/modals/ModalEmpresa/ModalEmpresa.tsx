@@ -112,6 +112,12 @@ export const ModalEmpresa = ({
                       type="text"
                       placeholder="Cuil"
                     />
+                    <TextFieldValue
+                      label="Sucursales"
+                      name="sucursales"
+                      type="text"
+                      placeholder=""
+                    />
                   </div>
                   {/* Botón para enviar el formulario */}
                   <div className="d-flex justify-content-end">
