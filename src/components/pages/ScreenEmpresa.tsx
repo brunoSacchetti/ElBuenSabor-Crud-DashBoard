@@ -38,14 +38,24 @@ export const ScreenEmpresa = () => {
       label: "Sucursales",
       key: "sucursales",
       render: (empresa:IEmpresa) => (
-        <Link to={`/empresa/${empresa.id}/sucursales`}>
+        <>
         {empresa.sucursales && empresa.sucursales.length > 0 ? (
-         <Button variant="contained" color="success" ><CIcon icon={cilLocationPin} /> </Button> 
+          <Link to={`/empresas/${empresa.id}/sucursales`}>
+          <Button variant="contained" color="success">
+            <CIcon icon={cilLocationPin} />
+          </Button>
+          </Link>
         ) : (
-          <Button variant="contained"color="error" ><CIcon icon={cilLowVision} /></Button>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => alert("No hay sucursales en esta empresa")}
+          >
+            <CIcon icon={cilLowVision} />
+          </Button>
         )}
-      </Link>
-      ),
+      </>
+    ),
     },
 
     {

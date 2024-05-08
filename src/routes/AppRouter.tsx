@@ -6,6 +6,7 @@ import { ScreenEmpresa } from "../components/pages/ScreenEmpresa";// Importamos 
 import { ScreenProducto } from "../components/pages/ScreenProducto";
 import { ScreenUsuario } from "../components/pages/ScreenUsuario";
 import { Home } from "../components/pages/Home/Home";
+import { ScreenSucursales } from "../components/pages/ScreenSucursales";
 // Componente AppRouter que define las rutas de la aplicación
 export const AppRouter = () => {
   return (
@@ -22,6 +23,7 @@ export const AppRouter = () => {
           <Route path="/empresas" element={<ScreenEmpresa />} />
           <Route path="/articulosManufacturados" element={< ScreenProducto/>} />
           <Route path="/usuarios" element={< ScreenUsuario/>} />
+          <Route path="/empresas/:id/sucursales" element={<ScreenSucursales />} />
         </Routes>
         </div>
       </div>

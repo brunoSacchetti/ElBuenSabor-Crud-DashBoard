@@ -274,6 +274,22 @@
       "promociones": [
         2
       ]
+    },
+    {
+      "id": 3,
+      "nombre": "X",
+      "horarioApertura": "2024-05-10",
+      "horarioCierre": "2024-05-25",
+      "domicilio": "",
+      "empresaId": "1"
+    },
+    {
+      "id": 4,
+      "nombre": "AA",
+      "horarioApertura": "2024-05-01",
+      "horarioCierre": "2024-05-04",
+      "domicilio": "",
+      "empresaId": "1"
     }
   ],
   "promociones": [
