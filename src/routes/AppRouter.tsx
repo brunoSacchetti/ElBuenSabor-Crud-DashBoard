@@ -19,11 +19,12 @@ export const AppRouter = () => {
         {/* Definición de las rutas */} 
         <Routes>
           {/* Ruta para la pantalla de personas */}
-          <Route path="/" element={<Home/>} />
           <Route path="/empresas" element={<ScreenEmpresa />} />
           <Route path="/articulosManufacturados" element={< ScreenProducto/>} />
           <Route path="/usuarios" element={< ScreenUsuario/>} />
           <Route path="/empresas/:id/sucursales" element={<ScreenSucursales />} />
+          <Route path="/" element={<Home/>} />
+          
         </Routes>
         </div>
       </div>
