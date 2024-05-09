@@ -1,4 +1,4 @@
-import Domicilio from "./Domicilio"
+/* import Domicilio from "./Domicilio" */
 import Provincia from "./Provincia"
 
 interface ILocalidad extends Base<ILocalidad> {
