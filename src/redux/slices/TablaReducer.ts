@@ -1,7 +1,7 @@
 // Importaciones necesarias
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { IPersona } from "../../types/IPersona"; // Importamos el tipo de dato IPersona
-import IEmpresa from "../../types/Empresa";
+/* import { IPersona } from "../../types/IPersona"; */ // Importamos el tipo de dato IPersona
+/* import IEmpresa from "../../types/Empresa"; */
 
 // Definimos la interfaz para el estado inicial del slice
 interface IInitialState<T> {
