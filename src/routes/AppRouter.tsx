@@ -19,6 +19,7 @@ export const AppRouter = () => {
       <div className="AppContainer">
         {!isHomePage && <SideBar />}
         <div className="Content">
+<<<<<<< HEAD
           <Routes>
             
             <Route path="/inicio" element={<InicioDashboard />} />
@@ -34,6 +35,18 @@ export const AppRouter = () => {
             />
             <Route path="/" element={<Home />} />
           </Routes>
+=======
+        {/* Definición de las rutas */} 
+        <Routes>
+          {/* Rutas */}
+          <Route path="/empresas" element={<ScreenEmpresa />} />
+          <Route path="/articulosManufacturados" element={< ScreenProducto/>} />
+          <Route path="/usuarios" element={< ScreenUsuario/>} />
+          <Route path="/empresas/:id/sucursales" element={<ScreenSucursales />} />
+          <Route path="/" element={<Home/>} />
+          
+        </Routes>
+>>>>>>> 9967abc64510cccad4ccd457ffc3638f25507f0d
         </div>
       </div>
     </>
