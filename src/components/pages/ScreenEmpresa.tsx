@@ -16,14 +16,14 @@ import { cilLocationPin, cilLowVision } from "@coreui/icons";
 import { Link } from "react-router-dom";
 
 // Definición de la URL base de la API
-/* const API_URL = import.meta.env.VITE_API_URL; */
+const API_URL = import.meta.env.VITE_API_URL;
 
 export const ScreenEmpresa = () => {
   // Estado para controlar la carga de datos
   const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
 
-  const empresaService = new EmpresaService("https://renderdashboard.onrender.com" + "/empresas");
+  const empresaService = new EmpresaService(API_URL + "/empresas");
   const dispatch = useAppDispatch();
   // Columnas de la tabla de personas
   const ColumnsTableEmpresa = [

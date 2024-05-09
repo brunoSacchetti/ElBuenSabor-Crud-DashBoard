@@ -18,7 +18,7 @@ export const AppRouter = () => {
         <div className="Content">
         {/* Definición de las rutas */} 
         <Routes>
-          {/* Ruta para la pantalla de personas */}
+          {/* Rutas */}
           <Route path="/empresas" element={<ScreenEmpresa />} />
           <Route path="/articulosManufacturados" element={< ScreenProducto/>} />
           <Route path="/usuarios" element={< ScreenUsuario/>} />
