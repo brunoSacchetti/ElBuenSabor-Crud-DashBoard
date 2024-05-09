@@ -1,0 +1,16 @@
+
+
+.containerChart {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 2vh;
+}
+.containerContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%;
+  height: 80%;
+}

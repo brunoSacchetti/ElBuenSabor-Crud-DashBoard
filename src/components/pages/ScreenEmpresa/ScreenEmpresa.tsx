@@ -1,36 +1,69 @@
 import { useEffect, useState } from "react";
 
-import { TableGeneric } from "../ui/TableGeneric/TableGeneric";
+import { TableGeneric } from "../../ui/TableGeneric/TableGeneric";
 import { Button, CircularProgress } from "@mui/material";
-import { useAppDispatch } from "../../hooks/redux";
+import { useAppDispatch } from "../../../hooks/redux";
 
-import { setDataTable } from "../../redux/slices/TablaReducer";
+import { setDataTable } from "../../../redux/slices/TablaReducer";
 import Swal from "sweetalert2";
 
 //Importamos IEmpresa y Empresa Service
-import IUsuarios from "../../types/Usuarios";
-import { UsuariosService } from "../../services/UsuariosService";
-import { ModalUsuario } from "../ui/modals/ModalUsuario/ModalUsuario";
+import IEmpresa from "../../../types/Empresa";
+import { EmpresaService } from "../../../services/EmpresaService";
+import { ModalEmpresa } from "../../ui/modals/ModalEmpresa/ModalEmpresa";
+import CIcon from "@coreui/icons-react";
+import { cilLocationPin, cilLowVision } from "@coreui/icons";
+import { Link } from "react-router-dom";
 
 // Definición de la URL base de la API
 const API_URL = import.meta.env.VITE_API_URL;
 
-export const ScreenUsuario = () => {
+export const ScreenEmpresa = () => {
   // Estado para controlar la carga de datos
   const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
 
-  const usuarioService = new UsuariosService(API_URL + "/usuarios");
+  const empresaService = new EmpresaService(
+    API_URL + "/empresas"
+  );
   const dispatch = useAppDispatch();
   // Columnas de la tabla de personas
   const ColumnsTableEmpresa = [
     {
       label: "ID",
       key: "id",
-      render: (usuario: IUsuarios) => (usuario?.id ? usuario.id : 0),
+      render: (empresa: IEmpresa) => (empresa?.id ? empresa.id : 0),
     },
     { label: "Nombre", key: "nombre" },
-    { label: "Auth", key: "auth0Id" },
+    { label: "Razon Social", key: "razonSocial" },
+    {
+      label: "Sucursales",
+      key: "sucursales",
+      render: (empresa: IEmpresa) => (
+        <>
+          {empresa.sucursales && empresa.sucursales.length > 0 ? (
+            <Link to={`/empresas/${empresa.id}/sucursales`}>
+              <Button variant="contained" color="success">
+                <CIcon icon={cilLocationPin} />
+              </Button>
+            </Link>
+          ) : (
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => alert("No hay sucursales en esta empresa")}
+            >
+              <CIcon icon={cilLowVision} />
+            </Button>
+          )}
+        </>
+      ),
+    },
+
+    {
+      label: "Cuil",
+      key: "cuil",
+    },
     /* {
       label: "Sucursal",
       key: "sucursalEmpresa", //OJITO  ABIERTO O CERRADO 
@@ -53,16 +86,16 @@ export const ScreenUsuario = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         // Eliminar la persona si se confirma
-        usuarioService.delete(id).then(() => {
-          getUsuario();
+        empresaService.delete(id).then(() => {
+          getEmpresas();
         });
       }
     });
   };
   // Función para obtener las personas
-  const getUsuario = async () => {
-    await usuarioService.getAll().then((usuarioData) => {
-      dispatch(setDataTable(usuarioData));
+  const getEmpresas = async () => {
+    await empresaService.getAll().then((empresaData) => {
+      dispatch(setDataTable(empresaData));
       setLoading(false);
     });
   };
@@ -70,7 +103,7 @@ export const ScreenUsuario = () => {
   // Efecto para cargar los datos al inicio
   useEffect(() => {
     setLoading(true);
-    getUsuario();
+    getEmpresas();
   }, []);
 
   return (
@@ -91,7 +124,7 @@ export const ScreenUsuario = () => {
             }}
             variant="contained"
           >
-            <span className="material-symbols-outlined">add</span>
+            Agregar
           </Button>
         </div>
         {/* Mostrar indicador de carga mientras se cargan los datos */}
@@ -112,7 +145,7 @@ export const ScreenUsuario = () => {
           </div>
         ) : (
           // Mostrar la tabla de personas una vez que los datos se han cargado
-          <TableGeneric<IUsuarios>
+          <TableGeneric<IEmpresa>
             handleDelete={handleDelete}
             columns={ColumnsTableEmpresa}
             setOpenModal={setOpenModal}
@@ -121,8 +154,8 @@ export const ScreenUsuario = () => {
       </div>
 
       {/* Modal para agregar o editar una persona */}
-      <ModalUsuario
-        getUsuario={getUsuario}
+      <ModalEmpresa
+        getEmpresa={getEmpresas}
         openModal={openModal}
         setOpenModal={setOpenModal}
       />

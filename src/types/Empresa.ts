@@ -4,7 +4,7 @@ interface IEmpresa extends Base<IEmpresa> {
  nombre:string; 
  razonSocial:string;
  cuil:number;
- sucursales: Sucursales[];
+ sucursales?: Sucursales[];
 }
 
 export default IEmpresa;

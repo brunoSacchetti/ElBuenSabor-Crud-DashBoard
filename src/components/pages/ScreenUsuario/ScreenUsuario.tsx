@@ -1,44 +1,36 @@
 import { useEffect, useState } from "react";
 
-import { TableGeneric } from "../ui/TableGeneric/TableGeneric";
+import { TableGeneric } from "../../ui/TableGeneric/TableGeneric";
 import { Button, CircularProgress } from "@mui/material";
-import { useAppDispatch } from "../../hooks/redux";
+import { useAppDispatch } from "../../../hooks/redux";
 
-import { setDataTable } from "../../redux/slices/TablaReducer";
+import { setDataTable } from "../../../redux/slices/TablaReducer";
 import Swal from "sweetalert2";
 
 //Importamos IEmpresa y Empresa Service
-import IArticuloManufacturado from "../../types/ArticuloManufacturado";
-import { ArticuloManufacturadoService } from "../../services/ArticuloManufacturadoService";
-import { ModalArticuloManufacturado } from "../ui/modals/ModalArticuloManufacturado/ModalArticuloManufacturado";
+import IUsuarios from "../../../types/Usuarios";
+import { UsuariosService } from "../../../services/UsuariosService";
+import { ModalUsuario } from "../../ui/modals/ModalUsuario/ModalUsuario";
 
 // Definición de la URL base de la API
 const API_URL = import.meta.env.VITE_API_URL;
 
-export const ScreenProducto = () => {
+export const ScreenUsuario = () => {
   // Estado para controlar la carga de datos
   const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
 
-  const articuloManufacturadoService = new ArticuloManufacturadoService(API_URL + "/articulosManufacturados");
+  const usuarioService = new UsuariosService(API_URL + "/usuarios");
   const dispatch = useAppDispatch();
   // Columnas de la tabla de personas
   const ColumnsTableEmpresa = [
     {
       label: "ID",
       key: "id",
-      render: (articuloManufacturado: IArticuloManufacturado) => (articuloManufacturado?.id ? articuloManufacturado.id : 0),
+      render: (usuario: IUsuarios) => (usuario?.id ? usuario.id : 0),
     },
-    { label: "Denominacion", key: "denominacion" },
-    { label: "Precio Venta", key: "precioVenta" },
-    {
-      label: "Descripcion",
-      key: "descripcion",
-    },
-    {
-      label: "Tiempo Estimado",
-      key: "tiempoEstimadoMinutos",
-    },
+    { label: "Nombre", key: "nombre" },
+    { label: "Auth", key: "auth0Id" },
     /* {
       label: "Sucursal",
       key: "sucursalEmpresa", //OJITO  ABIERTO O CERRADO 
@@ -61,16 +53,16 @@ export const ScreenProducto = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         // Eliminar la persona si se confirma
-        articuloManufacturadoService.delete(id).then(() => {
-          getArticuloManufacturado();
+        usuarioService.delete(id).then(() => {
+          getUsuario();
         });
       }
     });
   };
   // Función para obtener las personas
-  const getArticuloManufacturado = async () => {
-    await articuloManufacturadoService.getAll().then((articuloManufacturadoData) => {
-      dispatch(setDataTable(articuloManufacturadoData));
+  const getUsuario = async () => {
+    await usuarioService.getAll().then((usuarioData) => {
+      dispatch(setDataTable(usuarioData));
       setLoading(false);
     });
   };
@@ -78,7 +70,7 @@ export const ScreenProducto = () => {
   // Efecto para cargar los datos al inicio
   useEffect(() => {
     setLoading(true);
-    getArticuloManufacturado();
+    getUsuario();
   }, []);
 
   return (
@@ -120,7 +112,7 @@ export const ScreenProducto = () => {
           </div>
         ) : (
           // Mostrar la tabla de personas una vez que los datos se han cargado
-          <TableGeneric<IArticuloManufacturado>
+          <TableGeneric<IUsuarios>
             handleDelete={handleDelete}
             columns={ColumnsTableEmpresa}
             setOpenModal={setOpenModal}
@@ -129,8 +121,8 @@ export const ScreenProducto = () => {
       </div>
 
       {/* Modal para agregar o editar una persona */}
-      <ModalArticuloManufacturado
-        getArticuloManufacturado={getArticuloManufacturado}
+      <ModalUsuario
+        getUsuario={getUsuario}
         openModal={openModal}
         setOpenModal={setOpenModal}
       />

@@ -290,6 +290,14 @@
       "horarioCierre": "2024-05-04",
       "domicilio": "",
       "empresaId": "1"
+    },
+    {
+      "id": 5,
+      "nombre": "aa",
+      "horarioApertura": "3123-03-12",
+      "horarioCierre": "2024-05-16",
+      "domicilio": "",
+      "empresaId": "1"
     }
   ],
   "promociones": [
@@ -1023,7 +1031,7 @@
         "denominacion": "Porciones"
       },
       "descripcion": "Una pizza clasica",
-      "tiempoEstimadoMinutos": 15,
+      "tiempoEstimadoMinutos": 15.23,
       "preparacion": "Pasos de preparacion de una muzza de toda la vida",
       "articuloManufacturadoDetalles": [
         {

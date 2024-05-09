@@ -8,7 +8,7 @@ export const SideBar = () => {
     <CSidebar className={styles.SideBarBig}>
       <CSidebarNav>
         <CNavTitle>Dashboard</CNavTitle>
-        <CNavItem href="/">
+        <CNavItem href="/inicio">
           <CIcon customClassName="nav-icon" icon={cilSpeedometer} /> Inicio
         </CNavItem>
         <CNavItem href="/empresas">

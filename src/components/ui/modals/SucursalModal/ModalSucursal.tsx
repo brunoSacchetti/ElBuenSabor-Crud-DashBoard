@@ -83,7 +83,7 @@ export const ModalSucursal = ({
             onSubmit={async (values: ISucursales) => {
               // Enviar los datos al servidor al enviar el formulario
               if (elementActive) {
-                await apiSucursales.put(API_URL + `empresas/${empresaId}/sucursales`, values.id.toString(), values)
+                await apiSucursales.put(API_URL + `/empresas/${empresaId}/sucursales`, values.id.toString(), values)
               } else {
                 await apiSucursales.post(values);
               }

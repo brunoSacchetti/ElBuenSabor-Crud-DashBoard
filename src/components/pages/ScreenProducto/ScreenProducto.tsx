@@ -1,62 +1,51 @@
 import { useEffect, useState } from "react";
-import { PersonaService } from "../../services/PersonaService";
-import { IPersona } from "../../types/IPersona";
-import { TableGeneric } from "../ui/TableGeneric/TableGeneric";
-import { Button, CircularProgress } from "@mui/material";
-import { ModalPersona } from "../ui/modals/ModalPersona/ModalPersona";
-import { useAppDispatch } from "../../hooks/redux";
 
-import { setDataTable } from "../../redux/slices/TablaReducer";
+import { TableGeneric } from "../../ui/TableGeneric/TableGeneric";
+import { Button, CircularProgress } from "@mui/material";
+import { useAppDispatch } from "../../../hooks/redux";
+
+import { setDataTable } from "../../../redux/slices/TablaReducer";
 import Swal from "sweetalert2";
+
+//Importamos IEmpresa y Empresa Service
+import IArticuloManufacturado from "../../../types/ArticuloManufacturado";
+import { ArticuloManufacturadoService } from "../../../services/ArticuloManufacturadoService";
+import { ModalArticuloManufacturado } from "../../ui/modals/ModalArticuloManufacturado/ModalArticuloManufacturado";
 
 // Definición de la URL base de la API
 const API_URL = import.meta.env.VITE_API_URL;
 
-export const ScreenPersona = () => {
+export const ScreenProducto = () => {
   // Estado para controlar la carga de datos
   const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
 
-  const personaService = new PersonaService(API_URL + "/personas");
+  const articuloManufacturadoService = new ArticuloManufacturadoService(
+    API_URL + "/articulosManufacturados"
+  );
   const dispatch = useAppDispatch();
   // Columnas de la tabla de personas
-  const ColumnsTablePersona = [
+  const ColumnsTableEmpresa = [
     {
-      label: "id",
+      label: "ID",
       key: "id",
-      render: (persona: IPersona) => (persona?.id ? persona.id : 0),
+      render: (articuloManufacturado: IArticuloManufacturado) =>
+        articuloManufacturado?.id ? articuloManufacturado.id : 0,
     },
-    { label: "Nombre", key: "firstName" },
-    { label: "Apellido", key: "lastName" },
+    { label: "Denominacion", key: "denominacion" },
+    { label: "Precio Venta", key: "precioVenta" },
     {
-      label: "Email",
-      key: "email",
-    },
-    {
-      label: "Telefono",
-      key: "phoneNumber",
+      label: "Descripcion",
+      key: "descripcion",
     },
     {
-      label: "Direccion",
-      key: "adress",
+      label: "Tiempo Estimado",
+      key: "tiempoEstimadoMinutos",
     },
-    {
-      label: "Fecha de Nacimiento",
-      key: "birthdate",
-      render: (persona: IPersona) => {
-        const dateFormatOptions: Intl.DateTimeFormatOptions = {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        };
-        const date = new Date(persona.birthdate);
-        const formatedDate = date.toLocaleDateString(
-          "es-AR",
-          dateFormatOptions
-        );
-        return formatedDate;
-      },
-    },
+    /* {
+      label: "Sucursal",
+      key: "sucursalEmpresa", //OJITO  ABIERTO O CERRADO 
+    }, */
     { label: "Acciones", key: "acciones" },
   ];
 
@@ -75,24 +64,26 @@ export const ScreenPersona = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         // Eliminar la persona si se confirma
-        personaService.delete(id).then(() => {
-          getPersonas();
+        articuloManufacturadoService.delete(id).then(() => {
+          getArticuloManufacturado();
         });
       }
     });
   };
   // Función para obtener las personas
-  const getPersonas = async () => {
-    await personaService.getAll().then((personaData) => {
-      dispatch(setDataTable(personaData));
-      setLoading(false);
-    });
+  const getArticuloManufacturado = async () => {
+    await articuloManufacturadoService
+      .getAll()
+      .then((articuloManufacturadoData) => {
+        dispatch(setDataTable(articuloManufacturadoData));
+        setLoading(false);
+      });
   };
 
   // Efecto para cargar los datos al inicio
   useEffect(() => {
     setLoading(true);
-    getPersonas();
+    getArticuloManufacturado();
   }, []);
 
   return (
@@ -113,7 +104,7 @@ export const ScreenPersona = () => {
             }}
             variant="contained"
           >
-            Agregar
+            <span className="material-symbols-outlined">add</span>
           </Button>
         </div>
         {/* Mostrar indicador de carga mientras se cargan los datos */}
@@ -134,17 +125,17 @@ export const ScreenPersona = () => {
           </div>
         ) : (
           // Mostrar la tabla de personas una vez que los datos se han cargado
-          <TableGeneric<IPersona>
+          <TableGeneric<IArticuloManufacturado>
             handleDelete={handleDelete}
-            columns={ColumnsTablePersona}
+            columns={ColumnsTableEmpresa}
             setOpenModal={setOpenModal}
           />
         )}
       </div>
 
       {/* Modal para agregar o editar una persona */}
-      <ModalPersona
-        getPersonas={getPersonas}
+      <ModalArticuloManufacturado
+        getArticuloManufacturado={getArticuloManufacturado}
         openModal={openModal}
         setOpenModal={setOpenModal}
       />

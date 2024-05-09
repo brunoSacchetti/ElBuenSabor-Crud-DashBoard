@@ -1,48 +1,62 @@
 import { useEffect, useState } from "react";
-import { TableGeneric } from "../ui/TableGeneric/TableGeneric";
+import { PersonaService } from "../../../services/PersonaService";
+import { IPersona } from "../../../types/IPersona";
+import { TableGeneric } from "../../ui/TableGeneric/TableGeneric";
 import { Button, CircularProgress } from "@mui/material";
-import { useAppDispatch } from "../../hooks/redux";
-import { setDataTable } from "../../redux/slices/TablaReducer";
+import { ModalPersona } from "../../ui/modals/ModalPersona/ModalPersona";
+import { useAppDispatch } from "../../../hooks/redux";
+
+import { setDataTable } from "../../../redux/slices/TablaReducer";
 import Swal from "sweetalert2";
 
-import ISucursales from "../../types/Sucursales";
-import { SucursalService } from "../../services/SucursalService";
-
-import { ModalSucursal } from "../ui/modals/SucursalModal/SucursalModal";
-import { useParams } from "react-router-dom";
-
+// Definición de la URL base de la API
 const API_URL = import.meta.env.VITE_API_URL;
 
-export const ScreenSucursales = () => {
+export const ScreenPersona = () => {
   // Estado para controlar la carga de datos
   const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
-  const { id } = useParams(); 
-  
 
-  const sucursalService = new SucursalService(
-    API_URL + `/empresas/${id}/sucursales`
-  );
+  const personaService = new PersonaService(API_URL + "/personas");
   const dispatch = useAppDispatch();
   // Columnas de la tabla de personas
-  const ColumnsTableEmpresa = [
+  const ColumnsTablePersona = [
     {
-      label: "ID",
+      label: "id",
       key: "id",
-      render: (sucursal: ISucursales) => (sucursal?.id ? sucursal.id : 0),
+      render: (persona: IPersona) => (persona?.id ? persona.id : 0),
     },
-    { label: "Nombre", key: "nombre" },
-    { label: "Horario de Apertura", key: "horarioApertura" },
-    { label: "Horario de Cierre", key: "horarioCierre" },
-    /* {
-      label: "Dirección",
-      key: "direccion",
-      render: (sucursal:ISucursales) => (
-        <span>
-          {sucursal.domicilio.calle} {sucursal.domicilio.numero}, {sucursal.domicilio.localidad.nombre}, {sucursal.domicilio.localidad.provincia.nombre}
-        </span>
-      ),
-    }, */
+    { label: "Nombre", key: "firstName" },
+    { label: "Apellido", key: "lastName" },
+    {
+      label: "Email",
+      key: "email",
+    },
+    {
+      label: "Telefono",
+      key: "phoneNumber",
+    },
+    {
+      label: "Direccion",
+      key: "adress",
+    },
+    {
+      label: "Fecha de Nacimiento",
+      key: "birthdate",
+      render: (persona: IPersona) => {
+        const dateFormatOptions: Intl.DateTimeFormatOptions = {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        };
+        const date = new Date(persona.birthdate);
+        const formatedDate = date.toLocaleDateString(
+          "es-AR",
+          dateFormatOptions
+        );
+        return formatedDate;
+      },
+    },
     { label: "Acciones", key: "acciones" },
   ];
 
@@ -61,16 +75,16 @@ export const ScreenSucursales = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         // Eliminar la persona si se confirma
-        sucursalService.delete(id).then(() => {
-          getSucursales();
+        personaService.delete(id).then(() => {
+          getPersonas();
         });
       }
     });
   };
   // Función para obtener las personas
-  const getSucursales = async () => {
-    await sucursalService.getAll().then((sucursalData) => {
-      dispatch(setDataTable(sucursalData));
+  const getPersonas = async () => {
+    await personaService.getAll().then((personaData) => {
+      dispatch(setDataTable(personaData));
       setLoading(false);
     });
   };
@@ -78,13 +92,8 @@ export const ScreenSucursales = () => {
   // Efecto para cargar los datos al inicio
   useEffect(() => {
     setLoading(true);
-    getSucursales();
+    getPersonas();
   }, []);
-
-  if (!id) {
-    // Si empresaId es undefined, puedes manejarlo aquí, como redireccionar o mostrar un mensaje de error
-    return <p>No se encontró el ID de la empresa.</p>;
-  }
 
   return (
     <>
@@ -125,18 +134,17 @@ export const ScreenSucursales = () => {
           </div>
         ) : (
           // Mostrar la tabla de personas una vez que los datos se han cargado
-          <TableGeneric<ISucursales>
+          <TableGeneric<IPersona>
             handleDelete={handleDelete}
-            columns={ColumnsTableEmpresa}
+            columns={ColumnsTablePersona}
             setOpenModal={setOpenModal}
           />
         )}
       </div>
 
       {/* Modal para agregar o editar una persona */}
-      <ModalSucursal
-        empresaId={id}
-        getSucursales={getSucursales}
+      <ModalPersona
+        getPersonas={getPersonas}
         openModal={openModal}
         setOpenModal={setOpenModal}
       />
