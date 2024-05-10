@@ -12,7 +12,7 @@ Desarrollado en React con TypeScript
   - Redux: npm install react-redux
   - Redux - Toolkit: npm install @reduxjs/toolkit
   - Ejecuta json-server en otra terminal para simular una API: json-server --watch db.json |||| json-server --watch db.json --port 3001
-    -----> https://www.npmjs.com/package/json-server
+    -----> https://www.npmjs.com/package/json-server ---> INSTALAR json-server a la version 0.17.4
   - SweetAlert 2: npm install --save sweetalert2
   - Mui Material: npm install @mui/material @emotion/react @emotion/styled
   - Yup: npm install yup
