@@ -20,7 +20,6 @@ export const AppRouter = () => {
         {!isHomePage && <SideBar />}
         <div className="Content">
           <Routes>
-            
             <Route path="/inicio" element={<InicioDashboard />} />
             <Route path="/empresas" element={<ScreenEmpresa />} />
             <Route
@@ -29,7 +28,7 @@ export const AppRouter = () => {
             />
             <Route path="/usuarios" element={<ScreenUsuario />} />
             <Route
-              path="/empresas/:id/sucursales"
+              path="/sucursales"
               element={<ScreenSucursales />}
             />
             <Route path="/" element={<Home />} />

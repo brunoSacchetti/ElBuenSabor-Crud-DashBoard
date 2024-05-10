@@ -16,9 +16,10 @@ const API_URL = import.meta.env.VITE_API_URL;
 interface IModalSucursales {
   getSucursales: Function; // Función para obtener las personas
   openModal: boolean;
-  empresaId:string,
+  empresaId?:number,
   setOpenModal: (state: boolean) => void;
 }
+
 
 // Definición del componente ModalPersona
 export const ModalSucursal = ({

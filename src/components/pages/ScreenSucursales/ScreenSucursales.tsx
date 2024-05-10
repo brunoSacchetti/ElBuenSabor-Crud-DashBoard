@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { TableGeneric } from "../../ui/TableGeneric/TableGeneric";
 import { Button, CircularProgress } from "@mui/material";
-import { useAppDispatch } from "../../../hooks/redux";
+import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
 import { setDataTable } from "../../../redux/slices/TablaReducer";
 import Swal from "sweetalert2";
 
@@ -9,19 +9,28 @@ import ISucursales from "../../../types/Sucursales";
 import { SucursalService } from "../../../services/SucursalService";
 
 import { ModalSucursal } from "../../ui/modals/SucursalModal/ModalSucursal";
-import { useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { EmpresaService } from "../../../services/EmpresaService";
+
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 export const ScreenSucursales = () => {
-  // Estado para controlar la carga de datos
+
   const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
-  const { id } = useParams();
+
+  const empresa = useAppSelector((state) => state.empresa.empresaActual);
+
+  const location = useLocation();
+  const empresaId = location.state?.empresaId;
 
   const sucursalService = new SucursalService(
-    API_URL + `/empresas/${id}/sucursales`
+    API_URL + "/sucursales"
   );
+  const empresaService = new EmpresaService(
+    API_URL + `/empresas`
+  )
   const dispatch = useAppDispatch();
   // Columnas de la tabla de personas
   const ColumnsTableEmpresa = [
@@ -59,17 +68,21 @@ export const ScreenSucursales = () => {
       cancelButtonText: "Cancelar",
     }).then((result) => {
       if (result.isConfirmed) {
-        // Eliminar la persona si se confirma
+        // Eliminar la sucursal de la base de datos
         sucursalService.delete(id).then(() => {
-          getSucursales();
+          // Eliminar la sucursal del estado local de la empresa
+          const updatedSucursales = empresa ? empresa.sucursales.filter(sucursal => sucursal.id !== id) : [];
+        dispatch(setDataTable(updatedSucursales));
         });
       }
     });
   };
   // Función para obtener las personas
-  const getSucursales = async () => {
-    await sucursalService.getAll().then((sucursalData) => {
-      dispatch(setDataTable(sucursalData));
+  const getSucursalesEmpresa  = async () => {
+    await empresaService.getById(empresaId).then((empresaData) => {
+      const empresaSeleccionada = empresaData;
+      const sucursalesEmpresa = empresaSeleccionada ? empresaSeleccionada.sucursales : [];
+      dispatch(setDataTable(sucursalesEmpresa));
       setLoading(false);
     });
   };
@@ -77,13 +90,10 @@ export const ScreenSucursales = () => {
   // Efecto para cargar los datos al inicio
   useEffect(() => {
     setLoading(true);
-    getSucursales();
+    getSucursalesEmpresa();
   }, []);
 
-  if (!id) {
-    // Si empresaId es undefined, puedes manejarlo aquí, como redireccionar o mostrar un mensaje de error
-    return <p>No se encontró el ID de la empresa.</p>;
-  }
+
 
   return (
     <>
@@ -134,8 +144,8 @@ export const ScreenSucursales = () => {
 
       {/* Modal para agregar o editar una persona */}
       <ModalSucursal
-        empresaId={id}
-        getSucursales={getSucursales}
+         empresaId={empresa ? empresa.id : undefined}
+        getSucursales={getSucursalesEmpresa} //ENVIAR SUCURSALES DE LA EMPRESASELECCIONADA
         openModal={openModal}
         setOpenModal={setOpenModal}
       />

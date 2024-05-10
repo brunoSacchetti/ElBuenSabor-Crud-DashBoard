@@ -11,8 +11,8 @@ export const SideBar = () => {
         <CNavItem href="/inicio">
           <CIcon customClassName="nav-icon" icon={cilSpeedometer} /> Inicio
         </CNavItem>
-        <CNavItem href="/empresas">
-          <CIcon customClassName="nav-icon" icon={cilFactory} /> Empresa
+        <CNavItem href="/sucursales">
+          <CIcon customClassName="nav-icon" icon={cilFactory} /> Sucursales
           
         </CNavItem>
         <CNavItem href="/articulosManufacturados">

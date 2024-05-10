@@ -100,7 +100,7 @@ export const Home = () => {
   const handleSelectEmpresa = (id: number, empresa: IEmpresa) => {
     dispatch(setEmpresaId(id));
     dispatch(setEmpresaActual(empresa));
-    navigate("/inicio", { state: { empresaId: id } });
+    navigate("/sucursales", { state: { empresaId: id} }); 
   };
 
   // Función para manejar el borrado de una persona
