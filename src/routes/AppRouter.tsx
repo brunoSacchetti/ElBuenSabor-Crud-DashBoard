@@ -8,14 +8,17 @@ import { ScreenUsuario } from "../components/pages/ScreenUsuario/ScreenUsuario";
 import { Home } from "../components/pages/Home/Home";
 import { ScreenSucursales } from "../components/pages/ScreenSucursales/ScreenSucursales";
 import { InicioDashboard } from "../components/pages/InicioDashboard/InicioDashboard";
+import { useAppSelector } from "../hooks/redux";
 
 export const AppRouter = () => {
   const location = useLocation();
   const isHomePage = location.pathname === '/';
+  const selectedCompanyName = useAppSelector(state => state.empresa.empresaActual?.nombre); // Asume que el estado tiene esta forma
+
 
   return (
     <>
-      <NavBar />
+      <NavBar selectedCompanyName={selectedCompanyName} />
       <div className="AppContainer">
         {!isHomePage && <SideBar />}
         <div className="Content">

@@ -8,7 +8,7 @@ import Swal from "sweetalert2";
 import ISucursales from "../../../types/Sucursales";
 import { SucursalService } from "../../../services/SucursalService";
 
-import { ModalSucursal } from "../../ui/modals/SucursalModal/ModalSucursal";
+import { ModalSucursal } from "../../ui/modals/ModalSucursal/ModalSucursal";
 import { useLocation } from "react-router-dom";
 import { EmpresaService } from "../../../services/EmpresaService";
 
@@ -144,7 +144,7 @@ export const ScreenSucursales = () => {
 
       {/* Modal para agregar o editar una persona */}
       <ModalSucursal
-         empresaId={empresa ? empresa.id : undefined}
+        empresaId={empresa ? empresa.id : undefined}
         getSucursales={getSucursalesEmpresa} //ENVIAR SUCURSALES DE LA EMPRESASELECCIONADA
         openModal={openModal}
         setOpenModal={setOpenModal}

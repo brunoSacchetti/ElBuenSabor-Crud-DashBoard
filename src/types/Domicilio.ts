@@ -1,9 +1,10 @@
-/* import Localidad from "./Localidad" */
+import Localidad from "./Localidad"
+
 interface IDomicilio extends Base<IDomicilio> {
   calle:string;
   numero:number;
   codigoPostal:number;
-  /* localidad: Localidad; */
+  localidad: Localidad;
 }
 
 export default IDomicilio;

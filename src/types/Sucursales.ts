@@ -6,7 +6,6 @@ interface ISucursales extends Base<ISucursales> {
   horarioApertura:string;
   horarioCierre:string;
   domicilio:IDomicilio;
-  
 }
 
 export default ISucursales;

@@ -3,43 +3,47 @@ import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 // Definición de las páginas y sus rutas
 const pages = [
-  { title: "El Buen Sabor", route: "/" },
+  { title: "Listado de Empresas", route: "/" },
   // { title: "Producto", route: "/producto" },
 ];
 
-// Componente NavBar
-export const NavBar = () => {
-  // Hook de navegación de React Router
-  const navigate = useNavigate();
+interface NavBarProps {
+  selectedCompanyName?: string;
+}
 
-  // Función para manejar la navegación a una ruta específica
+export const NavBar: React.FC<NavBarProps> = ({ selectedCompanyName }) => {
+  const navigate = useNavigate();
+  const location = useLocation();  // Hook para obtener la ruta actual
+
   const handleNavigate = (route: string) => {
     navigate(route);
   };
 
   return (
-    // Barra de navegación
-    <AppBar position="static" style={{background: "#f09e2f"}}>
+    <AppBar position="static" style={{ background: "#f09e2f" }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {/* Botones para cada página */}
             {pages.map((page) => (
               <Button
                 key={page.title}
-                onClick={() => {
-                  handleNavigate(page.route);
-                }}
+                onClick={() => handleNavigate(page.route)}
                 sx={{ my: 2, color: "white", display: "block" }}
               >
                 {page.title}
               </Button>
             ))}
           </Box>
+          {/* Renderizar el nombre de la empresa solo si no estamos en la ruta "/" */}
+          {selectedCompanyName && location.pathname !== "/" && (
+            <Box component="span" sx={{ color: "white", mx: 2 }}>
+              Empresa: {selectedCompanyName}
+            </Box>
+          )}
         </Toolbar>
       </Container>
     </AppBar>
