@@ -29,7 +29,7 @@ export const ModalEmpresa = ({
     nombre: "",
     razonSocial: "",
     cuil: "" as any,
-    sucursales: []
+    sucursales: [],
   };
 
   // URL de la API obtenida desde las variables de entorno
@@ -78,7 +78,11 @@ export const ModalEmpresa = ({
             onSubmit={async (values: IEmpresa) => {
               // Enviar los datos al servidor al enviar el formulario
               if (elementActive) {
-                await apiEmpresa.put(API_URL + "empresas", values.id.toString(), values)
+                await apiEmpresa.put(
+                  API_URL + "empresas",
+                  values.id.toString(),
+                  values
+                );
               } else {
                 await apiEmpresa.post(values);
               }

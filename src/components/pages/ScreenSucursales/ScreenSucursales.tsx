@@ -12,6 +12,7 @@ import { ModalSucursal } from "../../ui/modals/ModalSucursal/ModalSucursal";
 import { useLocation } from "react-router-dom";
 import { EmpresaService } from "../../../services/EmpresaService";
 
+import { ModalPrueba } from "../../ui/modals/ModalSucursal/ModalPrueba";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -82,6 +83,8 @@ export const ScreenSucursales = () => {
     await empresaService.getById(empresaId).then((empresaData) => {
       const empresaSeleccionada = empresaData;
       const sucursalesEmpresa = empresaSeleccionada ? empresaSeleccionada.sucursales : [];
+      console.log(sucursalesEmpresa);
+      
       dispatch(setDataTable(sucursalesEmpresa));
       setLoading(false);
     });
@@ -143,9 +146,9 @@ export const ScreenSucursales = () => {
       </div>
 
       {/* Modal para agregar o editar una persona */}
-      <ModalSucursal
-        empresaId={empresa ? empresa.id : undefined}
-        getSucursales={getSucursalesEmpresa} //ENVIAR SUCURSALES DE LA EMPRESASELECCIONADA
+      <ModalPrueba
+        empresa={empresa}
+        getSucursales={getSucursalesEmpresa} 
         openModal={openModal}
         setOpenModal={setOpenModal}
       />
