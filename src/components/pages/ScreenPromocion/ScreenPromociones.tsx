@@ -24,7 +24,7 @@ export const ScreenPromocion = () => {
   const promocionService = new PromocionService(API_URL + "/promociones");
   const dispatch = useAppDispatch();
   // Columnas de la tabla de personas
-  const ColumnsTableEmpresa = [                                         //Coincidir la key  con el type de promocion*/                                  
+  const ColumnsTableEmpresa = [                                                                           
     {
       label: "ID",
       key: "id",
@@ -38,6 +38,9 @@ export const ScreenPromocion = () => {
     { label: "DescripcionDescuento", key: "descripcionDescuento" },
     { label: "PrecioPromocional", key: "precioPromocional" },
     { label: "TipoPromocion", key: "tipoPromocion" },
+    { label: "Articulos", key: "articulos" },
+    { label: "Imagenes", key: "imagenes" },
+    
         /* {
       label: "Sucursal",
       key: "sucursalEmpresa", //OJITO  ABIERTO O CERRADO 
