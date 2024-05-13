@@ -27,7 +27,7 @@ export const ScreenSucursales = () => {
   const empresaId = location.state?.empresaId;
 
   const sucursalService = new SucursalService(
-    API_URL + "/sucursales"
+    API_URL + "/empresa/sucursales"
   );
   const empresaService = new EmpresaService(
     API_URL + `/empresas`

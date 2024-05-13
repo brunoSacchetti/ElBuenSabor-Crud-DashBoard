@@ -63,7 +63,8 @@ export const ModalSucursal = ({
   const [localidades, setLocalidades] = useState<ILocalidad[]>([]);
 
   useEffect(() => {
-    fetch(API_URL + "/paises")
+    //fetch(API_URL + "/paises")
+    fetch(API_URL + "/pais")
       .then((response) => response.json())
       .then((data) => setPaises(data));
   }, []);
@@ -72,7 +73,8 @@ export const ModalSucursal = ({
     paisId: string,
     setFieldValue: (field: string, value: any) => void
   ) => {
-    fetch(API_URL + `/provincias?pais.id=${paisId}`)
+    //fetch(API_URL + `/provincias?pais.id=${paisId}`)
+    fetch(API_URL + `/provincia/findByPais/${paisId}`)
       .then((response) => response.json())
       .then((data) => {
         setProvincias(data);
@@ -86,7 +88,8 @@ export const ModalSucursal = ({
     provinciaId: string,
     setFieldValue: (field: string, value: any) => void
   ) => {
-    fetch(API_URL + `/localidades?provincia.id=${provinciaId}`)
+    //fetch(API_URL + `/localidades?provincia.id=${provinciaId}`)
+    fetch(API_URL + `/findByProvincia/${provinciaId}`)
       .then((response) => response.json())
       .then((data) => {
         setLocalidades(data);
@@ -95,7 +98,7 @@ export const ModalSucursal = ({
   };
 
   // URL de la API obtenida desde las variables de entorno
-  const apiSucursales = new SucursalService(API_URL + "/sucursales");
+  const apiSucursales = new SucursalService(API_URL + "/sucursal");
 
   const elementActive = useAppSelector(
     (state) => state.tablaReducer.elementActive

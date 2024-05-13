@@ -23,7 +23,7 @@ export const ScreenEmpresa = () => {
   const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
 
-  const empresaService = new EmpresaService(API_URL + "/empresas");
+  const empresaService = new EmpresaService(API_URL + "/empresa");
   const dispatch = useAppDispatch();
   // Columnas de la tabla de personas
   const ColumnsTableEmpresa = [
