@@ -11,19 +11,43 @@ export abstract class BackendClient<T> extends AbstractBackendClient<T> {
     return data as T[];
   }
 
-  async getById(id: number): Promise<T | null> {
+  /* async getById(id: number): Promise<T | null> {
     const response = await fetch(`${this.baseUrl}/${id}`);
     if (!response.ok) {
       return null;
     }
     const data = await response.json();
     return data as T;
+  } */
+
+  async getById(id: number): Promise<T | null> {
+    const url = `${this.baseUrl}/${id}`;
+  
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!response.ok) {
+        return null;
+      }
+  
+      const data = await response.json();
+      return data as T;
+    } catch (error) {
+      console.error(`Error al obtener el elemento con ID ${id}:`, error);
+      throw error;
+    }
   }
 
-  async post(data: T): Promise<T> {
+  async post(url: string, data: T): Promise<T> {
     const response = await fetch(`${this.baseUrl}`, {
       method: "POST",
       headers: {
+        Accept: "application/json",
         "Content-Type": "application/json",
       },
       body: JSON.stringify(data),

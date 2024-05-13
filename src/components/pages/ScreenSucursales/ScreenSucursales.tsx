@@ -8,7 +8,6 @@ import Swal from "sweetalert2";
 import ISucursales from "../../../types/Sucursales";
 import { SucursalService } from "../../../services/SucursalService";
 
-
 import { useLocation } from "react-router-dom";
 import { EmpresaService } from "../../../services/EmpresaService";
 
@@ -17,7 +16,6 @@ import { ModalSucursal } from "../../ui/modals/ModalSucursal/ModalSucursal";
 const API_URL = import.meta.env.VITE_API_URL;
 
 export const ScreenSucursales = () => {
-
   const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
 
@@ -27,10 +25,10 @@ export const ScreenSucursales = () => {
   const empresaId = location.state?.empresaId;
 
   const sucursalService = new SucursalService(
-    API_URL + "/empresa/sucursales"
+    API_URL + "/sucursal"
   );
   const empresaService = new EmpresaService(
-    API_URL + `/empresas`
+    API_URL + `/empresa/sucursales`
   )
   const dispatch = useAppDispatch();
   // Columnas de la tabla de personas
@@ -46,9 +44,11 @@ export const ScreenSucursales = () => {
     {
       label: "Dirección",
       key: "direccion",
-      render: (sucursal:ISucursales) => (
+      render: (sucursal: ISucursales) => (
         <span>
-          {sucursal.domicilio.calle} {sucursal.domicilio.numero}, {sucursal.domicilio.localidad.nombre}, {sucursal.domicilio.localidad.provincia.nombre}
+          {sucursal.domicilio.calle} {sucursal.domicilio.numero},{" "}
+          {sucursal.domicilio.localidad.nombre},{" "}
+          {sucursal.domicilio.localidad.provincia.nombre}
         </span>
       ),
     },
@@ -72,8 +72,10 @@ export const ScreenSucursales = () => {
         // Eliminar la sucursal de la base de datos
         sucursalService.delete(id).then(() => {
           // Eliminar la sucursal del estado local de la empresa
-          const updatedSucursales = empresa ? empresa.sucursales.filter(sucursal => sucursal.id !== id) : [];
-        dispatch(setDataTable(updatedSucursales));
+          const updatedSucursales = empresa
+            ? empresa.sucursales.filter((sucursal) => sucursal.id !== id)
+            : [];
+          dispatch(setDataTable(updatedSucursales));
         });
       }
     });
@@ -95,8 +97,6 @@ export const ScreenSucursales = () => {
     setLoading(true);
     getSucursalesEmpresa();
   }, []);
-
-
 
   return (
     <>
@@ -148,7 +148,7 @@ export const ScreenSucursales = () => {
       {/* Modal para agregar o editar una persona */}
       <ModalSucursal
         empresaId={empresa ? empresa.id : undefined}
-        getSucursales={getSucursalesEmpresa} 
+        getSucursales={getSucursalesEmpresa}
         openModal={openModal}
         setOpenModal={setOpenModal}
       />

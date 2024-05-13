@@ -9,7 +9,7 @@ export abstract class AbstractBackendClient<T> {
 
   abstract getById(id: number): Promise<T | null>;
 
-  abstract post(data: T): Promise<T>;
+  abstract post(url: string, data: T): Promise<T>;
 
   /* abstract put(id: number, data: T): Promise<T>; */
 
