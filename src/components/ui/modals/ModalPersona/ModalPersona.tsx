@@ -12,7 +12,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 // Interfaz para los props del componente ModalPersona
 interface IModalPersona {
-  getPersonas: Function; // Función para obtener las personas
+  getPersonas: Function; 
   openModal: boolean;
   setOpenModal: (state: boolean) => void;
 }

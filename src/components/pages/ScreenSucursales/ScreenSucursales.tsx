@@ -8,11 +8,11 @@ import Swal from "sweetalert2";
 import ISucursales from "../../../types/Sucursales";
 import { SucursalService } from "../../../services/SucursalService";
 
-import { ModalSucursal } from "../../ui/modals/ModalSucursal/ModalSucursal";
+
 import { useLocation } from "react-router-dom";
 import { EmpresaService } from "../../../services/EmpresaService";
 
-import { ModalPrueba } from "../../ui/modals/ModalSucursal/ModalPrueba";
+import { ModalSucursal } from "../../ui/modals/ModalSucursal/ModalSucursal";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -43,7 +43,7 @@ export const ScreenSucursales = () => {
     { label: "Nombre", key: "nombre" },
     { label: "Horario de Apertura", key: "horarioApertura" },
     { label: "Horario de Cierre", key: "horarioCierre" },
-    /* {
+    {
       label: "Dirección",
       key: "direccion",
       render: (sucursal:ISucursales) => (
@@ -51,7 +51,7 @@ export const ScreenSucursales = () => {
           {sucursal.domicilio.calle} {sucursal.domicilio.numero}, {sucursal.domicilio.localidad.nombre}, {sucursal.domicilio.localidad.provincia.nombre}
         </span>
       ),
-    }, */
+    },
     { label: "Acciones", key: "acciones" },
   ];
 
@@ -146,8 +146,8 @@ export const ScreenSucursales = () => {
       </div>
 
       {/* Modal para agregar o editar una persona */}
-      <ModalPrueba
-        empresa={empresa}
+      <ModalSucursal
+        empresaId={empresa ? empresa.id : undefined}
         getSucursales={getSucursalesEmpresa} 
         openModal={openModal}
         setOpenModal={setOpenModal}

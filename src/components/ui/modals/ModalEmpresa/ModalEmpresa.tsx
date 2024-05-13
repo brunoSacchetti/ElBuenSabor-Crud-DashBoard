@@ -38,6 +38,7 @@ export const ModalEmpresa = ({
   const elementActive = useAppSelector(
     (state) => state.tablaReducer.elementActive
   );
+
   const dispatch = useAppDispatch();
 
   // Función para cerrar el modal
