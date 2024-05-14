@@ -54,11 +54,4 @@ export const AppRouter = () => {
         <SideBar />
         <div className="Content">
         <Routes>
-          <Route path="/empresas" element={<ScreenEmpresa />} />
-          <Route path="/articulosManufacturados" element={< ScreenProducto/>} />
-          <Route path="/usuarios" element={< ScreenUsuario/>} />
-          <Route path="/empresas/:id/sucursales" element={<ScreenSucursales />} />
-          <Route path="/" element={<Home/>} />
-        </Routes>
-        </div>
-      </div>  */
+          <Route path="/empresas" element={<ScreenEmpresa />} />*/

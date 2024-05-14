@@ -18,6 +18,8 @@ Desarrollado en React con TypeScript
   - Yup: npm install yup
   - Formik: npm install formik
 
+  - Ejecutar el comando de manera temporal --> et-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
 ## Correr el proyecto
   - En consola colocar: npm install
   - Ejecucion del proyecto: npm run dev
