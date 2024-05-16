@@ -1,6 +1,7 @@
 import DomicilioPost from "./DomicilioPost";
 
 export default interface SucursalPost{
+    id: number,
     nombre: string;
     horarioApertura: string; 
     horarioCierre: string; 

@@ -11,9 +11,9 @@ export abstract class AbstractBackendClient<T> {
 
   abstract post(url: string, data: T): Promise<T>;
 
-  /* abstract put(id: number, data: T): Promise<T>; */
+  abstract put(id: number, data: T): Promise<T>;
 
-  abstract put(url: string, id: string, data: T): Promise<T>;
+  /* abstract put(url: string, id: string, data: T): Promise<T>; */
 
   // Método abstracto para eliminar un elemento por su ID
   abstract delete(id: number): Promise<void>;

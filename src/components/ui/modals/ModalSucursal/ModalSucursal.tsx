@@ -33,6 +33,7 @@ export const ModalSucursal = ({
 }: IModalSucursales) => {
   // Valores iniciales para el formulario
   const initialValues: SucursalPost = {
+    id: 0,
     nombre: "",
     horarioApertura: "",
     horarioCierre: "",
@@ -149,10 +150,16 @@ export const ModalSucursal = ({
               // Enviar los datos al servidor al enviar el formulario
               if (elementActive) {
                 /* await apiSucursales.put(
-                  API_URL + "sucursales",
+                  "http://localhost:8080/sucursal",
                   values.id.toString(),
                   values
                 ); */
+
+                await apiSucursales.put(
+                  values.id,
+                  values
+                );
+
               } else {
                 console.log(values);
                 await apiSucursales.post("http://localhost:8080/sucursal", values);
