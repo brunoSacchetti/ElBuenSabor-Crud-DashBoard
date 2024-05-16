@@ -59,37 +59,44 @@ export const ScreenSucursales = () => {
   const handleDelete = async (id: number) => {
     // Mostrar confirmación antes de eliminar
     Swal.fire({
-      title: "¿Estas seguro?",
+      title: "¿Estás seguro?",
       text: `¿Seguro que quieres eliminar?`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Si, Eliminar!",
+      confirmButtonText: "Sí, Eliminar!",
       cancelButtonText: "Cancelar",
     }).then((result) => {
       if (result.isConfirmed) {
         // Eliminar la sucursal de la base de datos
         sucursalService.delete(id).then(() => {
-          // Eliminar la sucursal del estado local de la empresa
-          const updatedSucursales = empresa
-            ? empresa.sucursales.filter((sucursal) => sucursal.id !== id)
-            : [];
-          dispatch(setDataTable(updatedSucursales));
+          // Verificar que empresa y empresa.sucursales no sean undefined
+          if (empresa && empresa.sucursales) {
+            // Eliminar la sucursal del estado local de la empresa
+            const updatedSucursales = empresa.sucursales.filter((sucursal) => sucursal.id !== id);
+            dispatch(setDataTable(updatedSucursales));
+          }
         });
       }
     });
   };
+  
   // Función para obtener las personas
-  const getSucursalesEmpresa  = async () => {
-    await empresaService.getById(empresaId).then((empresaData) => {
-      const empresaSeleccionada = empresaData;
-      const sucursalesEmpresa = empresaSeleccionada ? empresaSeleccionada.sucursales : [];
-      console.log(sucursalesEmpresa);
-      
-      dispatch(setDataTable(sucursalesEmpresa));
+  const getSucursalesEmpresa = async () => {
+    try {
+      const empresaData = await empresaService.getById(empresaId);
+      if (empresaData && empresaData.sucursales) {
+        dispatch(setDataTable(empresaData.sucursales));
+      } else {
+        dispatch(setDataTable([])); // Manejar el caso donde no hay sucursales
+      }
+    } catch (error) {
+      console.error("Error al obtener las sucursales de la empresa:", error);
+      dispatch(setDataTable([])); // Manejar errores estableciendo una lista vacía
+    } finally {
       setLoading(false);
-    });
+    }
   };
 
   // Efecto para cargar los datos al inicio

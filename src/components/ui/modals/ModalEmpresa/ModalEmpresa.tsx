@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from "../../../../hooks/redux";
 import { removeElementActive } from "../../../../redux/slices/TablaReducer";
 import IEmpresa from "../../../../types/Empresa";
 import { EmpresaService } from "../../../../services/EmpresaService";
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 // Interfaz para los props del componente ModalPersona
@@ -26,14 +27,15 @@ export const ModalEmpresa = ({
   // Valores iniciales para el formulario
   const initialValues: IEmpresa = {
     id: 0,
+    eliminado: false,
     nombre: "",
     razonSocial: "",
-    cuil: "" as any,
+    cuil: 0,
     sucursales: [],
   };
 
   // URL de la API obtenida desde las variables de entorno
-  const apiEmpresa = new EmpresaService(API_URL + "/empresas");
+  const apiEmpresa = new EmpresaService(API_URL + "/empresa");
 
   const elementActive = useAppSelector(
     (state) => state.tablaReducer.elementActive
@@ -80,12 +82,12 @@ export const ModalEmpresa = ({
               // Enviar los datos al servidor al enviar el formulario
               if (elementActive) {
                 await apiEmpresa.put(
-                  API_URL + "empresas",
+                  API_URL + "empresa",
                   values.id.toString(),
                   values
                 );
               } else {
-                await apiEmpresa.post(values);
+                await apiEmpresa.post("http://localhost:8080/empresa", values);
               }
               // Obtener las personas actualizadas y cerrar el modal
               getEmpresa();
@@ -117,12 +119,12 @@ export const ModalEmpresa = ({
                       type="text"
                       placeholder="Cuil"
                     />
-                    <TextFieldValue
+                    {/* <TextFieldValue
                       label="Sucursales"
                       name="sucursales"
                       type="text"
                       placeholder=""
-                    />
+                    /> */}
                   </div>
                   {/* Botón para enviar el formulario */}
                   <div className="d-flex justify-content-end">

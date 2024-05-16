@@ -6,8 +6,6 @@ import TextFieldValue from "../../TextFildValue/TextFildValue";
 import { Form, Formik } from "formik";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/redux";
 import { removeElementActive } from "../../../../redux/slices/TablaReducer";
-import IEmpresa from "../../../../types/Empresa";
-import { EmpresaService } from "../../../../services/EmpresaService";
 import ISucursales from "../../../../types/Sucursales";
 import { SucursalService } from "../../../../services/SucursalService";
 import { useEffect, useState } from "react";
@@ -15,6 +13,7 @@ import IPais from "../../../../types/Pais";
 import IProvincia from "../../../../types/Provincia";
 import ILocalidad from "../../../../types/Localidad";
 import { CFormSelect } from "@coreui/react";
+import SucursalPost from "../../../../types/Dtos/SucursalPost";
 const API_URL = import.meta.env.VITE_API_URL;
 
 // Interfaz para los props del componente ModalPersona
@@ -33,29 +32,21 @@ export const ModalSucursal = ({
   setOpenModal,
 }: IModalSucursales) => {
   // Valores iniciales para el formulario
-  const initialValues: ISucursales = {
+  const initialValues: SucursalPost = {
     id: 0,
     nombre: "",
     horarioApertura: "",
     horarioCierre: "",
+    esCasaMatriz: true, // Agregar casa matriz con valor predeterminado
     domicilio: {
-      id: 0,
       calle: "",
       numero: 0,
-      codigoPostal: 0,
-      localidad: {
-        id: 0,
-        nombre: "",
-        provincia: {
-          id: 0,
-          nombre: "",
-          pais: {
-            id: 0,
-            nombre: "",
-          },
-        },
-      },
+      cp: 0,
+      piso: 0,
+      nroDpto: 0,
+      idLocalidad: 0,
     },
+    idEmpresa: empresaId,
   };
 
   const [paises, setPaises] = useState<IPais[]>([]);
@@ -89,12 +80,19 @@ export const ModalSucursal = ({
     setFieldValue: (field: string, value: any) => void
   ) => {
     //fetch(API_URL + `/localidades?provincia.id=${provinciaId}`)
-    fetch(API_URL + `/findByProvincia/${provinciaId}`)
+    fetch(API_URL + `/localidad/findByProvincia/${provinciaId}`)
       .then((response) => response.json())
       .then((data) => {
         setLocalidades(data);
         setFieldValue("domicilio.localidad", "");
       });
+  };
+
+  const handleLocalidadChange = (
+    localidadId: string,
+    setFieldValue: (field: string, value: any) => void
+  ) => {
+    setFieldValue("domicilio.idLocalidad", Number(localidadId)); // Convertir localidadId a número si es necesario
   };
 
   // URL de la API obtenida desde las variables de entorno
@@ -141,29 +139,30 @@ export const ModalSucursal = ({
               domicilio: Yup.object().shape({
                 calle: Yup.string().required("Campo requerido"),
                 numero: Yup.number().required("Campo requerido"),
-                localidad: Yup.object().shape({
-                  nombre: Yup.string().required("Campo requerido"),
-                  provincia: Yup.object().shape({
-                    nombre: Yup.string().required("Campo requerido"),
-                    pais: Yup.object().shape({
-                      nombre: Yup.string().required("Campo requerido"),
-                    }),
-                  }),
-                }),
+                cp: Yup.number().required("Campo requerido"), // Se añade validación para cp
+                piso: Yup.number().required("Campo requerido"), // Se añade validación para piso
+                nroDpto: Yup.number().required("Campo requerido"), // Se añade validación para nroDpto
               }),
             })}
             initialValues={elementActive ? elementActive : initialValues}
             enableReinitialize={true}
-            onSubmit={async (values: ISucursales) => {
+            onSubmit={async (values: SucursalPost | ISucursales) => {
               // Enviar los datos al servidor al enviar el formulario
               if (elementActive) {
-                await apiSucursales.put(
-                  API_URL + "sucursales",
+                /* await apiSucursales.put(
+                  "http://localhost:8080/sucursal",
                   values.id.toString(),
                   values
+                ); */
+
+                await apiSucursales.put(
+                  values.id,
+                  values
                 );
+
               } else {
-                await apiSucursales.post(values);
+                console.log(values);
+                await apiSucursales.post("http://localhost:8080/sucursal", values);
               }
               // Obtener las personas actualizadas y cerrar el modal
               getSucursales();
@@ -184,13 +183,13 @@ export const ModalSucursal = ({
                     <TextFieldValue
                       label="Horario de apertura:"
                       name="horarioApertura"
-                      type="text"
+                      type="time"
                       placeholder="Horario de apertura"
                     />
                     <TextFieldValue
                       label="Horario de cierre:"
                       name="horarioCierre"
-                      type="text"
+                      type="time"
                       placeholder="Horario de cierre"
                     />
                     <TextFieldValue
@@ -207,9 +206,21 @@ export const ModalSucursal = ({
                     />
                     <TextFieldValue
                       label="Código Postal"
-                      name="domicilio.codigoPostal"
+                      name="domicilio.cp"
                       type="number"
                       placeholder="Código Postal"
+                    />
+                    <TextFieldValue
+                      label="Piso"
+                      name="domicilio.piso"
+                      type="number"
+                      placeholder="Piso"
+                    />
+                    <TextFieldValue
+                      label="Número de Depto"
+                      name="domicilio.nroDpto"
+                      type="number"
+                      placeholder="Número de Depto"
                     />
                   </div>
 
@@ -263,11 +274,7 @@ export const ModalSucursal = ({
                       aria-label="Localidad select example"
                       onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                         const localidadId = e.target.value;
-                        const selectedLocalidad = localidades.find(
-                          (localidad) => localidad.id === Number(localidadId)
-                        );
-                        setFieldValue("domicilio.localidad", selectedLocalidad);
-                        setFieldValue("domicilio.localidad.id", localidadId);
+                        handleLocalidadChange(localidadId, setFieldValue);
                       }}
                     >
                       <option value="">Seleccione una localidad</option>
