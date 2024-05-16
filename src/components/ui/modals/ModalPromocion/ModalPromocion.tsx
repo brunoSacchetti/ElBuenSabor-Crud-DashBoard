@@ -83,7 +83,7 @@ export const ModalPromocion = ({
             onSubmit={async (values: IPromocion) => {
               // Enviar los datos al servidor al enviar el formulario
               if (elementActive) {
-                await apiPromocion.put(API_URL + "promocion", values.id.toString(), values)
+                await apiPromocion.put(API_URL + "/promociones", values.id.toString(), values)
               } else {
                 await apiPromocion.post(values);
               }

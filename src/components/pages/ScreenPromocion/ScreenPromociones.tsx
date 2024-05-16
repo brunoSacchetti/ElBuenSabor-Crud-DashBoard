@@ -38,8 +38,8 @@ export const ScreenPromocion = () => {
     { label: "DescripcionDescuento", key: "descripcionDescuento" },
     { label: "PrecioPromocional", key: "precioPromocional" },
     { label: "TipoPromocion", key: "tipoPromocion" },
-    { label: "Articulos", key: "articulos" },
-    { label: "Imagenes", key: "imagenes" },
+/*     { label: "Articulos", key: "articulos" },
+    { label: "Imagenes", key: "imagenes" }, */
     
         /* {
       label: "Sucursal",
