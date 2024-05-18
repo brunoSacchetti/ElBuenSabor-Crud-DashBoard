@@ -82,8 +82,7 @@ export const ModalEmpresa = ({
               // Enviar los datos al servidor al enviar el formulario
               if (elementActive) {
                 await apiEmpresa.put(
-                  API_URL + "empresa",
-                  values.id.toString(),
+                  values.id,
                   values
                 );
               } else {
