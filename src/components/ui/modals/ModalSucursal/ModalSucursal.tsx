@@ -12,8 +12,8 @@ import IPais from "../../../../types/Pais";
 import IProvincia from "../../../../types/Provincia";
 import ILocalidad from "../../../../types/Localidad";
 import { CFormSelect } from "@coreui/react";
-import SucursalPost from "../../../../types/Dtos/SucursalPost";
-import SucursalPut from "../../../../types/Dtos/SucursalPut";
+import SucursalPost from "../../../../types/Dtos/SucursalDto/SucursalPost";
+import SucursalPut from "../../../../types/Dtos/SucursalDto/SucursalPut";
 import { Checkbox } from "@mui/material";
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -176,7 +176,10 @@ export const ModalSucursal = ({
                     placeholder="Horario de cierre"
                   />
 
-                  <Field type="checkbox" name="esCasaMatriz" as={Checkbox} />
+                  <label>
+                    <Field type="checkbox" name="esCasaMatriz" as={Checkbox} />
+                    ¿Es Casa Matriz?
+                  </label>
 
                   {!elementActive && (
                     <>

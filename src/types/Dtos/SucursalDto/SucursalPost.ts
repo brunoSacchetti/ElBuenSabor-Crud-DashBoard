@@ -1,4 +1,4 @@
-import DomicilioPost from "./DomicilioPost";
+import DomicilioPost from "../DomicilioDto/DomicilioPost";
 
 export default interface SucursalPost{
     id: number,

@@ -10,6 +10,7 @@ import { ScreenSucursales } from "../components/pages/ScreenSucursales/ScreenSuc
 import { InicioDashboard } from "../components/pages/InicioDashboard/InicioDashboard";
 import { useAppSelector } from "../hooks/redux";
 import { ScreenPromocion } from "../components/pages/ScreenPromocion/ScreenPromociones";
+import { ScreenUnidadMedida } from "../components/pages/ScreenUnidadMedida/ScreenUnidadMedida";
 
 export const AppRouter = () => {
   const location = useLocation();
@@ -36,6 +37,7 @@ export const AppRouter = () => {
               path="/sucursales"
               element={<ScreenSucursales />}
             />
+            <Route path="/unidadMedida" element={<ScreenUnidadMedida />} />
             <Route path="/" element={<Home />} />
           </Routes>
         </div>
