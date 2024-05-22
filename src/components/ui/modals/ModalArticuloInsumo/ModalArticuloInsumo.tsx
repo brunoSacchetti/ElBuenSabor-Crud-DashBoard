@@ -1,15 +1,11 @@
-// Importación de las dependencias necesarias
-import { Button, Modal } from "react-bootstrap";
+import { Button, Modal } from "@mui/material";
 import * as Yup from "yup";
-
-import TextFieldValue from "../../TextFildValue/TextFildValue";
-import { Field, Form, Formik } from "formik";
+import { Field, Form, Formik, ErrorMessage } from "formik";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/redux";
 import { removeElementActive } from "../../../../redux/slices/TablaReducer";
-
 import { ArticuloInsumoService } from "../../../../services/ArticuloInsumoService";
 import InsumoPost from "../../../../types/Dtos/InsumosDto/InsumoPost";
-import { Checkbox, MenuItem, Select, SelectChangeEvent } from "@mui/material";
+import { MenuItem, Select, TextField, Checkbox, FormControl, InputLabel, FormHelperText } from "@mui/material";
 import { useEffect, useState } from "react";
 import { UnidadMedidaService } from "../../../../services/UnidadMedidaService";
 import IUnidadMedidaPost from "../../../../types/Dtos/UnidadMedidaDto/UnidadMedidaPost";
@@ -18,58 +14,32 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 // Interfaz para los props del componente ModalPersona
 interface IModalInsumos {
-  getInsumos: Function; // Función para obtener las personas
+  getInsumos: () => void; // Función para obtener las personas
   openModal: boolean;
   setOpenModal: (state: boolean) => void;
 }
 
-// Definición del componente ModalPersona
-export const ModalArticuloInsumo = ({
-  getInsumos,
-  openModal,
-  setOpenModal,
-}: IModalInsumos) => {
-  // Valores iniciales para el formulario
-  const initialValues: InsumoPost = {
-    id: 0,
-    denominacion: "",
-    precioVenta: 0,
-    idUnidadMedida: 0,
-    precioCompra: 0,
-    stockActual: 0,
-    stockMaximo: 0,
-    esParaElaborar: false,
-  };
+const initialValues: InsumoPost = {
+  id: 0,
+  denominacion: "",
+  precioVenta: 0,
+  idUnidadMedida: 3,
+  precioCompra: 0,
+  stockActual: 0,
+  stockMaximo: 0,
+  esParaElaborar: false,
+};
 
-  // URL de la API obtenida desde las variables de entorno
+export const ModalArticuloInsumo = ({ getInsumos, openModal, setOpenModal }: IModalInsumos) => {
   const insumoService = new ArticuloInsumoService(`${API_URL}/ArticuloInsumo`);
-
-  const elementActive = useAppSelector(
-    (state) => state.tablaReducer.elementActive
-  );
-
   const dispatch = useAppDispatch();
+  const elementActive = useAppSelector((state) => state.tablaReducer.elementActive);
+  const [unidadMedida, setUnidadMedida] = useState<IUnidadMedidaPost[]>([]);
+  const unidadMedidaService = new UnidadMedidaService(`${API_URL}/UnidadMedida`);
 
-  // Función para cerrar el modal
   const handleClose = () => {
     setOpenModal(false);
     dispatch(removeElementActive());
-  };
-
-  const [itemValue, setItemValue] = useState<InsumoPost>(initialValues);
-  const [selectedUnidadMedidaId, setSelectedUnidadMedidaId] = useState<number | null>(null);
-  const [unidadMedida, setUnidadMedida] = useState<IUnidadMedidaPost[]>([]);
-
-  const unidadMedidaService = new UnidadMedidaService(`${API_URL}/UnidadMedida`);
-
-  /* UNIDAD MEDIDA */
-  const handleChangeUnidadMedidaValues = (e: SelectChangeEvent<number>) => {
-    const unidadMedidaId = e.target.value as number;
-    setSelectedUnidadMedidaId(unidadMedidaId);
-    setItemValue({
-      ...itemValue,
-      idUnidadMedida: unidadMedidaId,
-    });
   };
 
   const getUnidadMedida = async () => {
@@ -87,105 +57,123 @@ export const ModalArticuloInsumo = ({
     }
   }, [openModal]);
 
+  const validationSchema = Yup.object({
+    denominacion: Yup.string().required("Campo requerido"),
+    precioVenta: Yup.number().required("Campo requerido").min(0, "El precio debe ser mayor o igual a 0"),
+    precioCompra: Yup.number().required("Campo requerido").min(0, "El precio debe ser mayor o igual a 0"),
+    stockActual: Yup.number().required("Campo requerido").min(0, "El stock debe ser mayor o igual a 0"),
+    stockMaximo: Yup.number().required("Campo requerido").min(0, "El stock debe ser mayor o igual a 0"),
+    idUnidadMedida: Yup.number().required("Campo requerido"),
+  });
+
   return (
-    <div>
-      {/* Componente Modal de React Bootstrap */}
-      <Modal
-        id={"modal"}
-        show={openModal}
-        onHide={handleClose}
-        size={"lg"}
-        backdrop="static"
-        keyboard={false}
-      >
-        <Modal.Header closeButton>
-          {/* Título del modal dependiendo de si se está editando o añadiendo una persona */}
-          {elementActive ? (
-            <Modal.Title>Editar un Insumo:</Modal.Title>
-          ) : (
-            <Modal.Title>Añadir un Insumo:</Modal.Title>
+    <Modal
+      open={openModal}
+      onClose={handleClose}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+    >
+      <div style={{ padding: "2rem", backgroundColor: "white", borderRadius: "8px", margin: "auto", marginTop: "5rem", maxWidth: "600px" }}>
+        <h2>{elementActive ? "Editar" : "Añadir"} un Insumo</h2>
+        <Formik
+          initialValues={elementActive ? elementActive : initialValues}
+          validationSchema={validationSchema}
+          enableReinitialize={true}
+          onSubmit={async (values: InsumoPost) => {
+            if (elementActive) {
+              await insumoService.put(values.id, values);
+            } else {
+              await insumoService.post("http://localhost:8080/ArticuloInsumo",values);
+            }
+            getInsumos();
+            handleClose();
+          }}
+        >
+          {({ handleChange, values }) => (
+            <Form>
+              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                <FormControl>
+                  <TextField
+                    label="Denominación"
+                    name="denominacion"
+                    value={values.denominacion}
+                    onChange={handleChange}
+                  />
+                  <ErrorMessage name="denominacion" component={FormHelperText}  />
+                </FormControl>
+                <FormControl>
+                  <TextField
+                    label="Precio Venta"
+                    name="precioVenta"
+                    type="number"
+                    value={values.precioVenta}
+                    onChange={handleChange}
+                  />
+                  <ErrorMessage name="precioVenta" component={FormHelperText}  />
+                </FormControl>
+                <FormControl>
+                  <InputLabel id="unidad-medida-label">Unidad de Medida</InputLabel>
+                  <Select
+                    labelId="unidad-medida-label"
+                    label="Unidad de Medida"
+                    name="idUnidadMedida"
+                    value={values.idUnidadMedida}
+                    onChange={handleChange}
+                  >
+                    {unidadMedida.map((unidad) => (
+                      <MenuItem key={unidad.id} value={unidad.id}>
+                        {unidad.denominacion}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  <ErrorMessage name="idUnidadMedida" component={FormHelperText}  />
+                </FormControl>
+                <FormControl>
+                  <TextField
+                    label="Precio Compra"
+                    name="precioCompra"
+                    type="number"
+                    value={values.precioCompra}
+                    onChange={handleChange}
+                  />
+                  <ErrorMessage name="precioCompra" component={FormHelperText}  />
+                </FormControl>
+                <FormControl>
+                  <TextField
+                    label="Stock Actual"
+                    name="stockActual"
+                    type="number"
+                    value={values.stockActual}
+                    onChange={handleChange}
+                  />
+                  <ErrorMessage name="stockActual" component={FormHelperText} />
+                </FormControl>
+                <FormControl>
+                  <TextField
+                    label="Stock Máximo"
+                    name="stockMaximo"
+                    type="number"
+                    value={values.stockMaximo}
+                    onChange={handleChange}
+                  />
+                  <ErrorMessage name="stockMaximo" component={FormHelperText}  />
+                </FormControl>
+                <FormControl>
+                  <label>
+                    <Field type="checkbox" name="esParaElaborar" as={Checkbox} />
+                    Es Para Elaborar?
+                  </label>
+                </FormControl>
+              </div>
+              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "1rem" }}>
+                <Button variant="contained" color="primary" type="submit">
+                  Enviar
+                </Button>
+              </div>
+            </Form>
           )}
-        </Modal.Header>
-        <Modal.Body>
-          {/* Componente Formik para el formulario */}
-          <Formik
-            validationSchema={Yup.object({
-              denominacion: Yup.string().required("Campo requerido"),
-              precioVenta: Yup.number().required("Campo requerido"),
-              precioCompra: Yup.number().required("Campo requerido"),
-            })}
-            initialValues={elementActive ? elementActive : initialValues}
-            enableReinitialize={true}
-            onSubmit={async (values: InsumoPost) => {
-              // Enviar los datos al servidor al enviar el formulario
-              if (elementActive) {
-                await insumoService.put(
-                  values.id,
-                  values
-                );
-              } else {
-                console.log(values);
-                
-                await insumoService.post(API_URL, values);
-              }
-              // Obtener las personas actualizadas y cerrar el modal
-              getInsumos();
-              handleClose();
-            }}
-          >
-            {() => (
-              <>
-                {/* Formulario */}
-                <Form autoComplete="off" className="form-obraAlta">
-                  <div className="container_Form_Ingredientes">
-                    {/* Campos del formulario */}
-                    <TextFieldValue
-                      label="Denominación:"
-                      name="denominacion"
-                      type="text"
-                      placeholder="Nombre Insumo"
-                    />
-                    <TextFieldValue
-                      label="Precio Venta"
-                      name="precioVenta"
-                      type="number"
-                      placeholder="Precio Venta"
-                    />
-                    <Select
-                      label="Unidad de Medida"
-                      value={selectedUnidadMedidaId ?? ""}
-                      onChange={handleChangeUnidadMedidaValues}
-                      variant="filled"
-                    >
-                      {unidadMedida.map((unidad) => (
-                        <MenuItem key={unidad.id} value={unidad.id}>
-                          {unidad.denominacion}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                    <TextFieldValue
-                      label="Precio Compra"
-                      name="precioCompra"
-                      type="number"
-                      placeholder="Precio Compra"
-                    />
-                    <label>
-                      <Field type="checkbox" name="esParaElaborar" as={Checkbox} />
-                      Es Para Elaborar?
-                    </label>
-                  </div>
-                  {/* Botón para enviar el formulario */}
-                  <div className="d-flex justify-content-end">
-                    <Button variant="success" type="submit">
-                      Enviar
-                    </Button>
-                  </div>
-                </Form>
-              </>
-            )}
-          </Formik>
-        </Modal.Body>
-      </Modal>
-    </div>
+        </Formik>
+      </div>
+    </Modal>
   );
 };
