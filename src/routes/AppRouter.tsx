@@ -11,6 +11,7 @@ import { InicioDashboard } from "../components/pages/InicioDashboard/InicioDashb
 import { useAppSelector } from "../hooks/redux";
 import { ScreenPromocion } from "../components/pages/ScreenPromocion/ScreenPromociones";
 import { ScreenUnidadMedida } from "../components/pages/ScreenUnidadMedida/ScreenUnidadMedida";
+import { ScreenInsumos } from "../components/pages/ScreenInsumos/ScreenInsumos";
 
 export const AppRouter = () => {
   const location = useLocation();
@@ -26,7 +27,7 @@ export const AppRouter = () => {
         <div className="Content">
           <Routes>
             <Route path="/inicio" element={<InicioDashboard />} />
-            <Route path="/empresas" element={<ScreenEmpresa />} />
+            <Route path="/insumos" element={<ScreenInsumos />} />
             <Route
               path="/articulosManufacturados"
               element={<ScreenProducto />}

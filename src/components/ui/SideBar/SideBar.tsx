@@ -45,7 +45,7 @@ export const SideBar = () => {
             Subcategoria 2
           </CNavItem>
         </CNavGroup>
-        <CNavItem href="/">
+        <CNavItem href="/insumos">
           <CIcon customClassName="nav-icon" icon={cilDrink} /> Insumos
         </CNavItem>
         <CNavItem href="/unidadMedida">
