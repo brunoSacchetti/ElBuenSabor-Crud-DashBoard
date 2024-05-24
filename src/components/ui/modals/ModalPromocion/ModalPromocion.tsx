@@ -12,7 +12,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 // Interfaz para los props del componente IModalPromocion
 interface IModalPromocion {
-  getPromocion: Function; // Función para obtener las promociones
+  getPromocion: Function;
   openModal: boolean;
   setOpenModal: (state: boolean) => void;
 }
@@ -27,6 +27,7 @@ export const ModalPromocion = ({
   const initialValues: IPromocion = {
     id: 0,
     denominacion: "",
+    eliminado:false,
     fechaDesde: "",
     fechaHasta: "",
     horaDesde: "",
@@ -83,9 +84,9 @@ export const ModalPromocion = ({
             onSubmit={async (values: IPromocion) => {
               // Enviar los datos al servidor al enviar el formulario
               if (elementActive) {
-                await apiPromocion.put(API_URL + "/promociones", values.id.toString(), values)
+                await apiPromocion.put(API_URL + "/promociones", values)
               } else {
-                await apiPromocion.post(values);
+                await apiPromocion.post(API_URL + "/promociones",values);
               }
               // Obtener las personas actualizadas y cerrar el modal
               getPromocion();

@@ -2,12 +2,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 import TablaReducer from "./slices/TablaReducer"; // Importamos el reducer del slice TablaReducer
 import EmpresaReducer from "./slices/EmpresaReducer";
+import TablaReducerProducto from "./slices/TablaProductoReducer";
 
 // Configuración de la tienda de Redux
 export const store = configureStore({
   reducer: {
     tablaReducer: TablaReducer, // Agregamos el reducer del slice TablaReducer al estado global con la clave tablaReducer
-    empresa: EmpresaReducer
+    empresa: EmpresaReducer,
+    tablaReducerProducto: TablaReducerProducto 
   },
 });
 

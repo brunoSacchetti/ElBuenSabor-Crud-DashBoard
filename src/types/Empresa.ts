@@ -1,3 +1,4 @@
+import { Base } from "./Base";
 import Sucursales from "./Sucursales"
 
 interface IEmpresa extends Base<IEmpresa> {

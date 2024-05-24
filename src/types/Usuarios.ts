@@ -1,3 +1,4 @@
+import { Base } from "./Base";
 
 interface IUsuarios extends Base<IUsuarios> {
   nombre:string;

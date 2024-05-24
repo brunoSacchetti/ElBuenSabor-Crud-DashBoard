@@ -1,17 +1,15 @@
-import ArticuloManufacturadoDetalle from "./ArticuloManufacturadoDetalle";
-import Imagenes from "./Imagenes";
-import UnidadMedida from "./UnidadMedida"
+import IArticuloManufacturadoDetalle from "./ArticuloManufacturadoDetalle";
+import IArticulo from "./IArticulo";
 
-interface IArticuloManufacturado extends Base<IArticuloManufacturado>  {
-  denominacion: string;
-  precioVenta: number;
-  imagenes:Imagenes [];
-  unidadMedida: UnidadMedida;
+
+
+interface IArticuloManufacturado extends IArticulo{
   descripcion: string;
-  tiempoEstimadoMinutos: number;
   preparacion: string;
-  articuloManufacturadoDetalles: ArticuloManufacturadoDetalle[];
+  tiempoEstimadoMinutos: number;
+  productoDetalle: IArticuloManufacturadoDetalle[];
 }
 
 export default IArticuloManufacturado;
 
+ 

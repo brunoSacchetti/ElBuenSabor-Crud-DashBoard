@@ -20,7 +20,7 @@ export abstract class BackendClient<T> extends AbstractBackendClient<T> {
     return data as T;
   } */
 
-  async getById(id: number): Promise<T | null> {
+  async getById(id: number| string): Promise<T | null> {
     const url = `${this.baseUrl}/${id}`;
   
     try {
@@ -55,8 +55,19 @@ export abstract class BackendClient<T> extends AbstractBackendClient<T> {
     const newData = await response.json();
     return newData as T;
   }
+  async postOnlyData(data: T): Promise<T> {
+    const response = await fetch(`${this.baseUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    const newData = await response.json();
+    return newData as T;
+  }
 
-  async put(id: number, data: T): Promise<T> {
+  async put(id: number | string, data: T): Promise<T> {
     const response = await fetch(`${this.baseUrl}/${id}`, {
       method: "PUT",
       headers: {
@@ -83,7 +94,7 @@ export abstract class BackendClient<T> extends AbstractBackendClient<T> {
   } */
 
   // Método para eliminar un elemento por su ID
-  async delete(id: number): Promise<void> {
+  async delete(id: number | string): Promise<void> {
     const response = await fetch(`${this.baseUrl}/${id}`, {
       method: "DELETE",
     });

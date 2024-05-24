@@ -1,7 +1,8 @@
-interface Categoria extends Base<Categoria>{
-  denominacion: string,
-  articulos: [],
-  subCategorias: Categoria[]
-}
+import { Base } from "./Base";
 
-export default Categoria;
+export interface ICategoria extends Base<ICategoria> {
+  denominacion: string; 
+  esInsumo:boolean;
+  subCategoria: ICategoria[] | null;
+  idArticulos:number
+}

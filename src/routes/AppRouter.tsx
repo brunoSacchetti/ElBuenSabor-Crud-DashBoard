@@ -2,8 +2,6 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import { NavBar } from "../components/ui/NavBar/NavBar"; // Importamos el componente NavBar
 import { SideBar } from "../components/ui/SideBar/SideBar";
 import "./AppRouter.css";
-import { ScreenEmpresa } from "../components/pages/ScreenEmpresa/ScreenEmpresa"; // Importamos el componente ScreenEmpresa
-import { ScreenProducto } from "../components/pages/ScreenProducto/ScreenProducto";
 import { ScreenUsuario } from "../components/pages/ScreenUsuario/ScreenUsuario";
 import { Home } from "../components/pages/Home/Home";
 import { ScreenSucursales } from "../components/pages/ScreenSucursales/ScreenSucursales";
@@ -12,6 +10,7 @@ import { useAppSelector } from "../hooks/redux";
 import { ScreenPromocion } from "../components/pages/ScreenPromocion/ScreenPromociones";
 import { ScreenUnidadMedida } from "../components/pages/ScreenUnidadMedida/ScreenUnidadMedida";
 import { ScreenInsumos } from "../components/pages/ScreenInsumos/ScreenInsumos";
+import { ArticuloManufacturadoScreen } from "../components/pages/ScreenProducto/ArticuloManufacturadoScreen";
 
 export const AppRouter = () => {
   const location = useLocation();
@@ -30,7 +29,7 @@ export const AppRouter = () => {
             <Route path="/insumos" element={<ScreenInsumos />} />
             <Route
               path="/articulosManufacturados"
-              element={<ScreenProducto />}
+              element={<ArticuloManufacturadoScreen />}
             />
             <Route path="/usuarios" element={<ScreenUsuario />} />
             <Route path="/promociones" element={<ScreenPromocion />} />

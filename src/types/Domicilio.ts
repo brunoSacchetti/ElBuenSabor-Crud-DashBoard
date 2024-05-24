@@ -1,3 +1,4 @@
+import { Base } from "./Base";
 import Localidad from "./Localidad"
 
 interface IDomicilio extends Base<IDomicilio> {
