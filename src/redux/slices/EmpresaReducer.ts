@@ -12,6 +12,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import IEmpresa from '../../types/Empresa';
   
   interface EmpresaState {
+    data: IEmpresa[];
     empresaId: number | null;
     empresaActual: IEmpresa | null;
     loading: boolean;
@@ -19,6 +20,7 @@ import IEmpresa from '../../types/Empresa';
   }
   
   const initialState: EmpresaState = {
+    data: [],
     empresaId: null,
     empresaActual: null,
     loading: false,
@@ -29,6 +31,9 @@ import IEmpresa from '../../types/Empresa';
     name: 'empresa',
     initialState,
     reducers: {
+      setData: (state, action: PayloadAction<IEmpresa[]>) => {
+        state.data = action.payload;
+      },
       setEmpresaId: (state, action: PayloadAction<number>) => {
         state.empresaId = action.payload;
       },
@@ -44,6 +49,6 @@ import IEmpresa from '../../types/Empresa';
     },
   });
   
-  export const { setEmpresaId, setEmpresaActual, setLoading, setError } = empresaSlice.actions;
+  export const { setData, setEmpresaId, setEmpresaActual, setLoading, setError } = empresaSlice.actions;
   export default empresaSlice.reducer;
   

@@ -1,131 +1,65 @@
 import { useEffect, useState } from "react";
-
-import { TableGeneric } from "../../ui/TableGeneric/TableGeneric";
-import { Button, CircularProgress, IconButton } from "@mui/material";
+import { CircularProgress, Button } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
-
 import { setDataTable } from "../../../redux/slices/TablaReducer";
 import Swal from "sweetalert2";
-
-//Importamos IEmpresa y Empresa Service
-import IEmpresa from "../../../types/Empresa";
 import { EmpresaService } from "../../../services/EmpresaService";
 import { ModalEmpresa } from "../../ui/modals/ModalEmpresa/ModalEmpresa";
-import CIcon from "@coreui/icons-react";
-import {
-  cilChevronCircleRightAlt,
-  cilLocationPin,
-  cilLowVision,
-} from "@coreui/icons";
-import { Link, useNavigate } from "react-router-dom";
-import {
-  setEmpresaActual,
-  setEmpresaId
-} from "../../../redux/slices/EmpresaReducer";
+import { setEmpresaActual, setEmpresaId } from "../../../redux/slices/EmpresaReducer";
+import { useNavigate } from "react-router-dom";
+import { CardGeneric } from "../../ui/CardGeneric/CardGeneric";
+import IEmpresa from "../../../types/Empresa";
 
 // Definición de la URL base de la API
 const API_URL = import.meta.env.VITE_API_URL;
 
 export const Home = () => {
-  // Estado para controlar la carga de datos
   const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
-
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const empresaId = useAppSelector((state) => state.empresa.empresaId);
-  const empresa = useAppSelector((state) => state.empresa.empresaActual);
 
   const empresaService = new EmpresaService(API_URL + "/empresa");
-  const dispatch = useAppDispatch();
-  // Columnas de la tabla de personas
-  const ColumnsTableEmpresa = [
-    {
-      label: "ID",
-      key: "id",
-      render: (empresa: IEmpresa) => (empresa?.id ? empresa.id : 0),
-    },
-    { label: "Nombre", key: "nombre" },
-    { label: "Razon Social", key: "razonSocial" },
-    {
-      label: "Sucursales",
-      key: "sucursales",
-      render: (empresa: IEmpresa) => (
-        <>
-          {empresa.sucursales && empresa.sucursales.length > 0 ? (
-            <Link to={`/empresas/${empresa.id}/sucursales`}>
-              <Button variant="contained" color="success">
-                <CIcon icon={cilLocationPin} />
-              </Button>
-            </Link>
-          ) : (
-            <Button
-              variant="contained"
-              color="error"
-              onClick={() => alert("No hay sucursales en esta empresa")}
-            >
-              <CIcon icon={cilLowVision} />
-            </Button>
-          )}
-        </>
-      ),
-    },
 
-    {
-      label: "Cuil",
-      key: "cuil",
-    },
-    {
-      label: "Seleccionar",
-      key: "seleccionar",
-      render: (empresa: IEmpresa) => (
-        <>
-          <IconButton
-            color="inherit"
-            onClick={() => handleSelectEmpresa(empresa.id, empresa)}
-            aria-label="Ir a la acción"
-          >
-            <CIcon icon={cilChevronCircleRightAlt} />
-          </IconButton>
-        </>
-      ),
-    },
-    /* {
-      label: "Sucursal",
-      key: "sucursalEmpresa", //OJITO  ABIERTO O CERRADO 
-    }, */
-    { label: "Acciones", key: "acciones" },
-  ];
+  // Obtener los datos de la tabla del estado global
+  const dataTable = useAppSelector((state) => state.tablaReducer.dataTable);
 
-  //Funcion para seleccionar empresa
-  const handleSelectEmpresa = (id: number, empresa: IEmpresa) => {
-    dispatch(setEmpresaId(id));
-    dispatch(setEmpresaActual(empresa));
-    navigate("/sucursales", { state: { empresaId: id} }); 
-  };
-
-  // Función para manejar el borrado de una persona
+  // Función para manejar el borrado de una empresa
   const handleDelete = async (id: number) => {
-    // Mostrar confirmación antes de eliminar
     Swal.fire({
-      title: "¿Estas seguro?",
-      text: `¿Seguro que quieres eliminar?`,
+      title: "¿Estás seguro?",
+      text: "¿Seguro que quieres eliminar?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Si, Eliminar!",
+      confirmButtonText: "Sí, eliminar",
       cancelButtonText: "Cancelar",
     }).then((result) => {
       if (result.isConfirmed) {
-        // Eliminar la persona si se confirma
         empresaService.delete(id).then(() => {
           getEmpresas();
         });
       }
     });
   };
-  // Función para obtener las personas
+
+  // Función para manejar la edición de una empresa
+  const handleEdit = (empresa: IEmpresa) => {
+    setOpenModal(true);
+    dispatch(setEmpresaActual(empresa));
+  };
+
+  // Función para seleccionar una empresa
+  const handleSelectEmpresa = (id: number, empresa: IEmpresa) => {
+    dispatch(setEmpresaId(id));
+    dispatch(setEmpresaActual(empresa));
+    navigate("/sucursales", { state: { empresaId: id } });
+  };
+
+  // Función para obtener las empresas
   const getEmpresas = async () => {
+    setLoading(true);
     await empresaService.getAll().then((empresaData) => {
       dispatch(setDataTable(empresaData));
       setLoading(false);
@@ -134,7 +68,6 @@ export const Home = () => {
 
   // Efecto para cargar los datos al inicio
   useEffect(() => {
-    setLoading(true);
     getEmpresas();
   }, []);
 
@@ -151,28 +84,20 @@ export const Home = () => {
         >
           <h2
             style={{
-              flexGrow: 1, // Asegura que el título se expanda y centre
-              textAlign: "center", // Alinea el texto al centro
-              margin: 0, // Remueve cualquier margen predeterminado
-              fontSize: "2.5rem", // Ajusta el tamaño de la fuente según necesites
-              color: "#333", // Cambia el color del texto
-              fontWeight: "bold", // Hace que la fuente sea en negrita
+              flexGrow: 1,
+              textAlign: "center",
+              margin: 0,
+              fontSize: "2.5rem",
+              color: "#333",
+              fontWeight: "bold",
             }}
           >
             Listado de Empresas
           </h2>
-
-          {/* Botón para abrir el modal de agregar persona */}
-          <Button
-            onClick={() => {
-              setOpenModal(true);
-            }}
-            variant="contained"
-          >
+          <Button onClick={() => setOpenModal(true)} variant="contained">
             Agregar
           </Button>
         </div>
-        {/* Mostrar indicador de carga mientras se cargan los datos */}
         {loading ? (
           <div
             style={{
@@ -189,16 +114,19 @@ export const Home = () => {
             <h2>Cargando...</h2>
           </div>
         ) : (
-          // Mostrar la tabla de personas una vez que los datos se han cargado
-          <TableGeneric<IEmpresa>
-            handleDelete={handleDelete}
-            columns={ColumnsTableEmpresa}
-            setOpenModal={setOpenModal}
-          />
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", justifyContent: "center" }}>
+            {dataTable.map((empresa: IEmpresa) => (
+              <CardGeneric
+                key={empresa.id}
+                empresa={empresa}
+                onDelete={handleDelete}
+                onEdit={handleEdit}
+                onSelect={handleSelectEmpresa}
+              />
+            ))}
+          </div>
         )}
       </div>
-
-      {/* Modal para agregar o editar una persona */}
       <ModalEmpresa
         getEmpresa={getEmpresas}
         openModal={openModal}
