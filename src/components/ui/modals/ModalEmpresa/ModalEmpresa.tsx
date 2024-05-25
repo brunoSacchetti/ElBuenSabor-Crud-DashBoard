@@ -8,6 +8,10 @@ import { useAppDispatch, useAppSelector } from "../../../../hooks/redux";
 import { removeElementActive } from "../../../../redux/slices/TablaReducer";
 import IEmpresa from "../../../../types/Empresa";
 import { EmpresaService } from "../../../../services/EmpresaService";
+import { TextField } from "@mui/material";
+import { useState } from "react";
+import { ImagenService } from "../../../../services/ImagenService";
+import IImagen from "../../../../types/IImagen";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -37,8 +41,11 @@ export const ModalEmpresa = ({
   // URL de la API obtenida desde las variables de entorno
   const apiEmpresa = new EmpresaService(API_URL + "/empresa");
 
+  const imagenService = new ImagenService(API_URL + "/empresa");
+
   const elementActive = useAppSelector(
-    (state) => state.tablaReducer.elementActive
+    //(state) => state.tablaReducer.elementActive
+    (state) => state.empresa.empresaActual
   );
 
   const dispatch = useAppDispatch();
@@ -48,6 +55,35 @@ export const ModalEmpresa = ({
     setOpenModal(false);
     dispatch(removeElementActive());
   };
+
+  
+
+  // #region IMAGENES EMPRESA
+
+  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedFiles(event.target.files);
+  };
+
+  const uploadImages = async (files: FileList, idEmpresa: number) => {
+    try {
+      const formData = new FormData();
+      for (let i = 0; i < files.length; i++) {
+        formData.append("uploads", files[i]);
+      }
+      formData.append("id", String(idEmpresa)); // Adjuntar el ID de la empresa
+      console.log("ID EMPRESA" + idEmpresa);
+      
+      // Enviar las imágenes al backend
+      await imagenService.uploadImages(`http://localhost:8080/empresa/uploads?id=${idEmpresa}`, formData);
+      console.log("Imágenes subidas correctamente.");
+    } catch (error) {
+      console.error("Error al subir imágenes:", error);
+    }
+  };
+  
+
 
   return (
     <div>
@@ -79,18 +115,29 @@ export const ModalEmpresa = ({
             initialValues={elementActive ? elementActive : initialValues}
             enableReinitialize={true}
             onSubmit={async (values: IEmpresa) => {
-              // Enviar los datos al servidor al enviar el formulario
-              if (elementActive) {
-                await apiEmpresa.put(
-                  values.id,
-                  values
-                );
-              } else {
-                await apiEmpresa.post("http://localhost:8080/empresa", values);
+              try {
+
+                let idEmpresa;
+
+                // Enviar los datos de la empresa al servidor
+                if (elementActive) {
+                  await apiEmpresa.put(values.id, values);
+                  idEmpresa = values.id;
+                } else {
+                  const response = await apiEmpresa.post(API_URL + "/empresa", values);
+                  idEmpresa = response.id; // Obtener el ID de la empresa creada
+                  console.log("ID EMPRESA ON SUBMIT: " + idEmpresa);
+                  // Subir las imágenes seleccionadas
+                  if (selectedFiles) {
+                    await uploadImages(selectedFiles, idEmpresa);
+                  }
+                }
+                // Obtener las empresas actualizadas y cerrar el modal
+                getEmpresa();
+                handleClose();
+              } catch (error) {
+                console.error("Error al enviar datos al servidor:", error);
               }
-              // Obtener las personas actualizadas y cerrar el modal
-              getEmpresa();
-              handleClose();
             }}
           >
             {() => (
@@ -117,6 +164,15 @@ export const ModalEmpresa = ({
                       name="cuil"
                       type="text"
                       placeholder="Cuil"
+                    />
+                    <TextField
+                      id="outlined-basic"
+                      variant="outlined"
+                      type="file"
+                      onChange={handleFileChange}
+                      inputProps={{
+                        multiple: true,
+                      }}
                     />
                     {/* <TextFieldValue
                       label="Sucursales"
