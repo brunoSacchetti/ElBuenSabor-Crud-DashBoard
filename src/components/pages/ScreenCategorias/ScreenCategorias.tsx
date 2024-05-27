@@ -19,6 +19,8 @@ import { setCategoriaData } from "../../../redux/slices/CategoriaReducer";
 import { ICategoria } from "../../../types/Categoria";
 import { AccordionCategoria } from "../../ui/AccordionCategoria/AccordionCategoria";
 import { SucursalService } from "../../../services/SucursalService";
+import { ModalEditCategoria } from "../../ui/modals/ModalCategoria/ModalEditCategoria";
+import { CategoriaPostService } from "../../../services/CategoriaPostService/CategoriaPostService";
 
 // Definición de la URL base de la API
 const API_URL = import.meta.env.VITE_API_URL;
@@ -28,8 +30,13 @@ export const ScreenCategorias = () => {
   const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [categorias, setCategorias] = useState<ICategoria[]>([]);
+  const [subcategoria, setSubcategoria] = useState<ICategoria>({ id: 0, eliminado: false, denominacion: '', esInsumo: false, subCategoria:[]});
+  const [categoriaEdit, setCategoriaEdit] = useState<ICategoria | null>(null);
+  const [openEditModal, setOpenEditModal] = useState(false);
+   
 
   const categoriaService = new CategoriaService(API_URL + "/categoria");
+  const categoriaPostService = new CategoriaPostService(API_URL + "/categoria/addSubcategoria");
   const dispatch = useAppDispatch();
 
   //obtenemos el id de la sucursal actual
@@ -73,6 +80,16 @@ export const ScreenCategorias = () => {
     setLoading(true);
     getCategorias();
   }, []);
+
+  const handleAddSubcategoria = () => {
+    setSubcategoria({ id: 0, eliminado: false, denominacion: '', esInsumo: false, subCategoria:[] });
+    setOpenModal(true);
+  };
+
+  const handleEditCategoria = (categoria: ICategoria) => {
+    setCategoriaEdit(categoria);
+    setOpenEditModal(true);
+  };
 
   return (
     <>
@@ -121,7 +138,11 @@ export const ScreenCategorias = () => {
           <h2>Cargando...</h2>
         </div>
       ) : (
-        <AccordionCategoria categories={categorias} />
+        <AccordionCategoria 
+          categories={categorias}
+          onEdit={handleEditCategoria} 
+          onAddSubcategoria={handleAddSubcategoria} 
+          onDelete={handleDelete} />
       )}
       </div>
 
@@ -130,6 +151,13 @@ export const ScreenCategorias = () => {
         getCategorias={getCategorias}
         openModal={openModal}
         setOpenModal={setOpenModal}
+      />
+      {/* Modal de edición de categoría */}
+      <ModalEditCategoria
+        getCategorias={getCategorias}
+        categoriaEdit={categoriaEdit}
+        openEditModal={openEditModal}
+        setOpenEditModal={setOpenEditModal}
       />
     </>
   );
