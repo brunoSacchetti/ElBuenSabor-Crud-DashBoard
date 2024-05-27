@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { TableGeneric } from "../../ui/TableGeneric/TableGeneric";
-import { Button, CircularProgress } from "@mui/material";
+import { Button, CircularProgress, Typography } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
 
 import { setDataTable } from "../../../redux/slices/TablaReducer";
@@ -85,6 +85,14 @@ export const ScreenCategorias = () => {
             width: "90%",
           }}
         >
+          <Typography
+          variant="h4"
+          component="h1"
+          gutterBottom
+          style={{ textAlign: "center", alignContent: "center", alignItems: "center", justifyContent: "center", display: "flex", paddingRight: "40%"}}
+        >
+          Categorías
+        </Typography>
           {/* Botón para abrir el modal de agregar categoría */}
           <Button
             onClick={() => {

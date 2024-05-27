@@ -12,15 +12,15 @@ import { ICategoria } from '../../../types/Categoria';
 interface CategoriaProps {
   id: number;
   denominacion: string;
-  subcategories?: ICategoria[];
+  subCategorias?: ICategoria[];
 }
 
 interface AccordionCategoriaProps {
   categories: ICategoria[];
 }
 
-export var Categoria: React.FC<CategoriaProps> = ({ id, denominacion, subcategories }) => (
-  <Accordion>
+export var Categoria: React.FC<CategoriaProps> = ({ id, denominacion, subCategorias }) => (
+  <Accordion sx={{ width: '80%', margin: '1rem auto', boxSizing: 'border-box' }}>
     <AccordionSummary
       expandIcon={<ExpandMoreIcon />}
       aria-controls={`panel-${id}-content`}
@@ -28,9 +28,9 @@ export var Categoria: React.FC<CategoriaProps> = ({ id, denominacion, subcategor
     >
       {denominacion}
     </AccordionSummary>
-    <AccordionDetails>
-      {subcategories && subcategories.length > 0 && (
-        <AccordionCategoria categories={subcategories} />
+    <AccordionDetails sx={{ width: '100%', padding: '0 1rem' }}>
+      {subCategorias && subCategorias.length > 0 && (
+        <AccordionCategoria categories={subCategorias} />
       )}
     </AccordionDetails>
     <AccordionActions>

@@ -13,15 +13,16 @@ interface MediaCardProps {
   onDelete: (id: number) => void;
   onEdit: (empresa: IEmpresa) => void;
   onSelect: (id: number, empresa: IEmpresa) => void;
-  imageUrl: string | null;
+  imageUrl?: string | null;
 }
 
 export const CardEmpresa: React.FC<MediaCardProps> = ({ empresa, onDelete, onEdit, onSelect, imageUrl }) => {
+  
+  const defaultImageUrl = 'https://th.bing.com/th/id/OIP.85Afj-Uwn6gr70bOie8WFgHaHa?rs=1&pid=ImgDetMain';
+
   return (
     <Card sx={{ maxWidth: 345 }}>
-      {imageUrl && (
-        <img src={imageUrl} alt={`${empresa.nombre} logo`} style={{ width: '100%', height: 'auto' }} />
-      )}
+      <img src={imageUrl || defaultImageUrl} alt={`${empresa.nombre} logo`} style={{ width: '100%', height: 'auto' }} />
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
           {empresa.nombre}
@@ -56,4 +57,3 @@ export const CardEmpresa: React.FC<MediaCardProps> = ({ empresa, onDelete, onEdi
     </Card>
   );
 }
-

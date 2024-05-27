@@ -58,28 +58,24 @@ export const Home = () => {
   };
 
   // Función para obtener las empresas
-  /* const getEmpresas = async () => {
-    setLoading(true);
-    await empresaService.getAll().then((empresaData) => {
-      dispatch(setDataTable(empresaData));
-      setLoading(false);
-    });
-  }; */
-
   const getEmpresas = async () => {
     setLoading(true);
     const empresas = await empresaService.getAll();
   
     // Fetch images for each empresa
     const empresasWithImages = await Promise.all(empresas.map(async (empresa: IEmpresa) => {
-      const images = await empresaService.getImagesByEmpresaId(empresa.id);
-      return { ...empresa, imageUrl: images.length > 0 ? images[0].url : null };
+      try {
+        const images = await empresaService.getImagesByEmpresaId(empresa.id);
+        return { ...empresa, imageUrl: images.length > 0 ? images[0].url : null };
+      } catch (error) {
+        console.error("Error fetching images:", error);
+        return { ...empresa, imageUrl: null };
+      }
     }));
   
     dispatch(setDataTable(empresasWithImages));
     setLoading(false);
   };
-  
 
   // Efecto para cargar los datos al inicio
   useEffect(() => {
