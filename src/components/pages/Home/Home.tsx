@@ -7,7 +7,7 @@ import { EmpresaService } from "../../../services/EmpresaService";
 import { ModalEmpresa } from "../../ui/modals/ModalEmpresa/ModalEmpresa";
 import { setEmpresaActual, setEmpresaId } from "../../../redux/slices/EmpresaReducer";
 import { useNavigate } from "react-router-dom";
-import { CardGeneric } from "../../ui/CardGeneric/CardGeneric";
+import { CardEmpresa } from "../../ui/CardEmpresa/CardEmpresa";
 import IEmpresa from "../../../types/Empresa";
 
 // Definición de la URL base de la API
@@ -58,13 +58,28 @@ export const Home = () => {
   };
 
   // Función para obtener las empresas
-  const getEmpresas = async () => {
+  /* const getEmpresas = async () => {
     setLoading(true);
     await empresaService.getAll().then((empresaData) => {
       dispatch(setDataTable(empresaData));
       setLoading(false);
     });
+  }; */
+
+  const getEmpresas = async () => {
+    setLoading(true);
+    const empresas = await empresaService.getAll();
+  
+    // Fetch images for each empresa
+    const empresasWithImages = await Promise.all(empresas.map(async (empresa: IEmpresa) => {
+      const images = await empresaService.getImagesByEmpresaId(empresa.id);
+      return { ...empresa, imageUrl: images.length > 0 ? images[0].url : null };
+    }));
+  
+    dispatch(setDataTable(empresasWithImages));
+    setLoading(false);
   };
+  
 
   // Efecto para cargar los datos al inicio
   useEffect(() => {
@@ -116,12 +131,13 @@ export const Home = () => {
         ) : (
           <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", justifyContent: "center" }}>
             {dataTable.map((empresa: IEmpresa) => (
-              <CardGeneric
+              <CardEmpresa
                 key={empresa.id}
                 empresa={empresa}
                 onDelete={handleDelete}
                 onEdit={handleEdit}
                 onSelect={handleSelectEmpresa}
+                imageUrl={empresa.imageUrl}
               />
             ))}
           </div>

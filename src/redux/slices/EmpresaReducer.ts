@@ -46,9 +46,12 @@ import IEmpresa from '../../types/Empresa';
       setError: (state, action: PayloadAction<string>) => {
         state.error = action.payload;
       },
+      removeEmpresaActive: (state) => {
+        state.empresaActual = null;
+      }
     },
   });
   
-  export const { setData, setEmpresaId, setEmpresaActual, setLoading, setError } = empresaSlice.actions;
+  export const { setData, setEmpresaId, setEmpresaActual, setLoading, setError, removeEmpresaActive } = empresaSlice.actions;
   export default empresaSlice.reducer;
   

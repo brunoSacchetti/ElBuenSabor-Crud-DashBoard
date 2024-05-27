@@ -4,5 +4,5 @@ export interface ICategoria extends Base<ICategoria> {
   denominacion: string; 
   esInsumo:boolean;
   subCategoria: ICategoria[] | null;
-  idArticulos:number
+  idArticulos?:number
 }

@@ -13,11 +13,15 @@ interface MediaCardProps {
   onDelete: (id: number) => void;
   onEdit: (empresa: IEmpresa) => void;
   onSelect: (id: number, empresa: IEmpresa) => void;
+  imageUrl: string | null;
 }
 
-export const CardGeneric: React.FC<MediaCardProps> = ({ empresa, onDelete, onEdit, onSelect }) => {
+export const CardEmpresa: React.FC<MediaCardProps> = ({ empresa, onDelete, onEdit, onSelect, imageUrl }) => {
   return (
     <Card sx={{ maxWidth: 345 }}>
+      {imageUrl && (
+        <img src={imageUrl} alt={`${empresa.nombre} logo`} style={{ width: '100%', height: 'auto' }} />
+      )}
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
           {empresa.nombre}

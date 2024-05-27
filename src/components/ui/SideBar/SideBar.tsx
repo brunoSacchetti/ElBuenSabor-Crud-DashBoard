@@ -25,7 +25,7 @@ export const SideBar = () => {
         <CNavItem href="/usuarios">
           <CIcon customClassName="nav-icon" icon={cilUser} /> Usuarios
         </CNavItem>
-        <CNavGroup
+        {/* <CNavGroup
           toggler={
             <>
               <CIcon customClassName="nav-icon" icon={cilFeaturedPlaylist} /> Categorias
@@ -44,7 +44,10 @@ export const SideBar = () => {
             </span>{' '}
             Subcategoria 2
           </CNavItem>
-        </CNavGroup>
+        </CNavGroup> */}
+        <CNavItem href="/categorias">
+          <CIcon customClassName="nav-icon" icon={cilFeaturedPlaylist} /> Categorias
+        </CNavItem>
         <CNavItem href="/insumos">
           <CIcon customClassName="nav-icon" icon={cilDrink} /> Insumos
         </CNavItem>

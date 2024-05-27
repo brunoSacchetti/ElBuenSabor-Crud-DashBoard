@@ -15,6 +15,7 @@ import { CFormSelect } from "@coreui/react";
 import SucursalPost from "../../../../types/Dtos/SucursalDto/SucursalPost";
 import SucursalPut from "../../../../types/Dtos/SucursalDto/SucursalPut";
 import { Checkbox } from "@mui/material";
+import { removeSucursalActive } from "../../../../redux/slices/SucursalReducer";
 const API_URL = import.meta.env.VITE_API_URL;
 
 interface IModalSucursales {
@@ -92,15 +93,24 @@ export const ModalSucursal = ({
 
   const apiSucursales = new SucursalService(API_URL + "/sucursal");
 
-  const elementActive = useAppSelector(
+  /* const elementActive = useAppSelector(
     (state) => state.tablaReducer.elementActive
+  ); */
+
+  const elementActive = useAppSelector(
+    (state) => state.sucursal.sucursalActual
   );
 
   const dispatch = useAppDispatch();
 
-  const handleClose = () => {
+  /* const handleClose = () => {
     setOpenModal(false);
     dispatch(removeElementActive());
+  }; */
+
+  const handleClose = () => {
+    setOpenModal(false);
+    dispatch(removeSucursalActive());
   };
 
   return (

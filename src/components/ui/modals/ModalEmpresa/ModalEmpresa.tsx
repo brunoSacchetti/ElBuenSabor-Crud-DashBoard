@@ -9,9 +9,10 @@ import { removeElementActive } from "../../../../redux/slices/TablaReducer";
 import IEmpresa from "../../../../types/Empresa";
 import { EmpresaService } from "../../../../services/EmpresaService";
 import { TextField } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ImagenService } from "../../../../services/ImagenService";
 import IImagen from "../../../../types/IImagen";
+import { removeEmpresaActive } from "../../../../redux/slices/EmpresaReducer";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -53,7 +54,7 @@ export const ModalEmpresa = ({
   // Función para cerrar el modal
   const handleClose = () => {
     setOpenModal(false);
-    dispatch(removeElementActive());
+    dispatch(removeEmpresaActive());
   };
 
   
@@ -83,8 +84,6 @@ export const ModalEmpresa = ({
     }
   };
   
-
-
   return (
     <div>
       {/* Componente Modal de React Bootstrap */}
@@ -112,7 +111,7 @@ export const ModalEmpresa = ({
               nombre: Yup.string().required("Campo requerido"),
               razonSocial: Yup.string().required("Campo requerido"),
             })}
-            initialValues={elementActive ? elementActive : initialValues}
+            initialValues= {elementActive ? elementActive : initialValues}
             enableReinitialize={true}
             onSubmit={async (values: IEmpresa) => {
               try {

@@ -4,6 +4,10 @@ import Toolbar from "@mui/material/Toolbar";
 import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
+import { useEffect } from "react";
+import { setEmpresaActual } from "../../../redux/slices/EmpresaReducer";
+import { setSucursalActual } from "../../../redux/slices/SucursalReducer";
 
 // Definición de las páginas y sus rutas
 const pages = [
@@ -19,9 +23,28 @@ export const NavBar: React.FC<NavBarProps> = ({ selectedCompanyName }) => {
   const navigate = useNavigate();
   const location = useLocation();  // Hook para obtener la ruta actual
 
+  const selectedCompany = useAppSelector((state) => state.empresa.empresaActual);
+  //const selectedSucursal = useAppSelector((state) => state.sucursal.sucursalActual?.nombre);
+  const selectedSucursal = useAppSelector((state) => state.sucursal.sucursalActual);
+
+  const dispatch = useAppDispatch();
+
   const handleNavigate = (route: string) => {
     navigate(route);
   };
+
+  /* useEffect(() => {
+    // Load company and branch names from localStorage or API
+    const empresa = JSON.parse(localStorage.getItem("empresa") || "null");
+    const sucursal = JSON.parse(localStorage.getItem("sucursal") || "null");
+
+    if (empresa) {
+      dispatch(setEmpresaActual(empresa));
+    }
+    if (sucursal) {
+      dispatch(setSucursalActual(sucursal));
+    }
+  }, [dispatch]); */
 
   return (
     <AppBar position="static" style={{ background: "#f09e2f" }}>
@@ -38,12 +61,30 @@ export const NavBar: React.FC<NavBarProps> = ({ selectedCompanyName }) => {
               </Button>
             ))}
           </Box>
-          {/* Renderizar el nombre de la empresa solo si no estamos en la ruta "/" */}
-          {selectedCompanyName && location.pathname !== "/" && (
+          {location.pathname === "/inicio" && selectedCompany && selectedSucursal && (
             <Box component="span" sx={{ color: "white", mx: 2 }}>
-              Empresa: {selectedCompanyName}
+              {selectedCompany.nombre} - {selectedSucursal.nombre}
             </Box>
           )}
+          {selectedCompany && selectedSucursal && location.pathname !== "/" && location.pathname !== "/inicio" && (
+            <Box component="span" sx={{ color: "white", mx: 2 }}>
+              Empresa: {selectedCompany.nombre}
+            </Box>
+          )}
+          {/* {selectedCompany && selectedSucursal && location.pathname !== "/" && (
+            <Box component="span" sx={{ color: "white", mx: 2 }}>
+              {location.pathname !== "/sucursales" && (
+                <>
+                  Empresa: {selectedCompany.nombre} - {selectedSucursal.nombre}
+                </>
+              )}
+              {location.pathname === "/sucursales" && (
+                <>
+                  {selectedCompany.nombre} - {selectedSucursal.nombre}
+                </>
+              )}
+            </Box>
+          )} */}
         </Toolbar>
       </Container>
     </AppBar>
