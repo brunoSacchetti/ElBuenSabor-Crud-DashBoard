@@ -161,6 +161,7 @@ export const ScreenCategorias = () => {
   openModal={openModal}
   setOpenModal={setOpenModal}
   isAddingSubcategoria={isAddingSubcategoria} // pasa el nuevo estado como prop
+  setIsAddingSubcategoria={setIsAddingSubcategoria}
 />
       {/* Modal de edición de categoría */}
       <ModalEditCategoria

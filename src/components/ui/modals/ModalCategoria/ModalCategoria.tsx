@@ -16,12 +16,14 @@ interface IModalCategoria {
   openModal: boolean;
   setOpenModal: (state: boolean) => void;
   isAddingSubcategoria: boolean; // nueva prop para determinar si es una subcategoría
+  setIsAddingSubcategoria: (state: boolean) => void;
 }
 
 export const ModalCategoria = ({
   getCategorias,
   openModal,
   isAddingSubcategoria, // recibe la nueva prop
+  setIsAddingSubcategoria, 
   setOpenModal,
 }: IModalCategoria) => {
   const initialValues: CategoriaPost = {
@@ -56,6 +58,7 @@ export const ModalCategoria = ({
   const handleClose = () => {
     setOpenModal(false);
     dispatch(removeCategoriaActive());
+    setIsAddingSubcategoria(false);
   };
 
   /* const handleCheckboxChange = (sucursalId: number) => {
