@@ -8,7 +8,7 @@ export class CategoriaPostService extends BackendClient<CategoriaPost> {
         super(baseUrl);
     }
     
-    async addSubCategoria(idCategoria: number, subCategoria: CategoriaPost): Promise<CategoriaPost> {
+    async addSubCategoria(idCategoria: number | null, subCategoria: CategoriaPost): Promise<CategoriaPost> {
         try {
           const response = await fetch(`${this.baseUrl}/addSubCategoria/${idCategoria}`, {
             method: 'PUT',

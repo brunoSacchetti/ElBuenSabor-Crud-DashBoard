@@ -14,14 +14,14 @@ interface CategoriaProps {
   denominacion: string;
   subCategorias?: ICategoria[];
   onEdit: () => void;
-  onAddSubcategoria: () => void;
+  onAddSubcategoria: (parentId: number | null) => void;
   onDelete: () => void;
 }
 
 interface AccordionCategoriaProps {
   categories: ICategoria[];
   onEdit: (category: ICategoria) => void;
-  onAddSubcategoria: () => void;
+  onAddSubcategoria: (id:number | null) => void;
   onDelete: (id: number) => void;
 }
 
@@ -40,7 +40,7 @@ export const Categoria: React.FC<CategoriaProps> = ({ id, denominacion, subCateg
       )}
     </AccordionDetails>
     <AccordionActions>
-      <Button variant="contained" color="primary" onClick={onAddSubcategoria}>
+      <Button variant="contained" color="primary" onClick={() => onAddSubcategoria(id)}>
         Agregar Subcategoría
       </Button>
       <Button variant="contained" color="secondary" onClick={onDelete}>
@@ -59,11 +59,10 @@ export const AccordionCategoria: React.FC<AccordionCategoriaProps> = ({ categori
       <Categoria 
         key={category.id} 
         {...category} 
-        onEdit={() => onEdit(category)} // Llama a la función onEdit con la categoría correspondiente como argumento
-        onAddSubcategoria={onAddSubcategoria} 
-        onDelete={() => onDelete(category.id)} // Llama a la función onDelete con el ID de la categoría correspondiente como argumento
+        onEdit={() => onEdit(category)} 
+        onAddSubcategoria={(parentId) => onAddSubcategoria(parentId)}
+        onDelete={() => onDelete(category.id)} 
       />
     ))}
   </>
 );
-

@@ -15,7 +15,7 @@ import CIcon from "@coreui/icons-react";
 import { cilLocationPin, cilLowVision } from "@coreui/icons";
 import { Link } from "react-router-dom";
 import { CategoriaService } from "../../../services/CategoriaService";
-import { setCategoriaData } from "../../../redux/slices/CategoriaReducer";
+import { setCategoriaData, setCategoriaPadreId } from "../../../redux/slices/CategoriaReducer";
 import { ICategoria } from "../../../types/Categoria";
 import { AccordionCategoria } from "../../ui/AccordionCategoria/AccordionCategoria";
 import { SucursalService } from "../../../services/SucursalService";
@@ -81,8 +81,16 @@ export const ScreenCategorias = () => {
     getCategorias();
   }, []);
 
-  const handleAddSubcategoria = () => {
-    setSubcategoria({ id: 0, eliminado: false, denominacion: '', esInsumo: false, subCategoria:[] });
+  const [isAddingSubcategoria, setIsAddingSubcategoria] = useState(false);
+  const handleAddSubcategoria = (parentId: number | null) => {
+    console.log(parentId);
+    
+    if (parentId !== null) {
+      // Solo realiza el dispatch si parentId no es null (es una subcategoría)
+      dispatch(setCategoriaPadreId(parentId));
+    }
+    setSubcategoria({ id: 0, eliminado: false, denominacion: '', esInsumo: false, subCategoria:[], parentId: parentId });
+    setIsAddingSubcategoria(true);
     setOpenModal(true);
   };
 
@@ -139,19 +147,21 @@ export const ScreenCategorias = () => {
         </div>
       ) : (
         <AccordionCategoria 
-          categories={categorias}
-          onEdit={handleEditCategoria} 
-          onAddSubcategoria={handleAddSubcategoria} 
-          onDelete={handleDelete} />
+  categories={categorias}
+  onEdit={handleEditCategoria} 
+  onAddSubcategoria={(parentId) => handleAddSubcategoria(parentId)} 
+  onDelete={handleDelete} 
+/>
       )}
       </div>
 
       {/* Modal para agregar o editar una categoría */}
       <ModalCategoria
-        getCategorias={getCategorias}
-        openModal={openModal}
-        setOpenModal={setOpenModal}
-      />
+  getCategorias={getCategorias}
+  openModal={openModal}
+  setOpenModal={setOpenModal}
+  isAddingSubcategoria={isAddingSubcategoria} // pasa el nuevo estado como prop
+/>
       {/* Modal de edición de categoría */}
       <ModalEditCategoria
         getCategorias={getCategorias}

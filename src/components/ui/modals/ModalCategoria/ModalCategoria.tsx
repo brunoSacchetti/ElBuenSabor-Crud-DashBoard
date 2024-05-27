@@ -15,11 +15,13 @@ interface IModalCategoria {
   getCategorias: Function;
   openModal: boolean;
   setOpenModal: (state: boolean) => void;
+  isAddingSubcategoria: boolean; // nueva prop para determinar si es una subcategoría
 }
 
 export const ModalCategoria = ({
   getCategorias,
   openModal,
+  isAddingSubcategoria, // recibe la nueva prop
   setOpenModal,
 }: IModalCategoria) => {
   const initialValues: CategoriaPost = {
@@ -28,9 +30,12 @@ export const ModalCategoria = ({
     denominacion: "",
     esInsumo: false,
     idSucursales: [],
+    parentId: null
   };
-
+  
+  
   const apiCategoria = new CategoriaPostService(API_URL + "/categoria");
+  
 
   const categoriaActual = useAppSelector(
     (state) => state.categoria.categoriaActual
@@ -77,9 +82,10 @@ export const ModalCategoria = ({
     });
   };
   
-  console.log(selectedSucursales);
-  
+  /* console.log(selectedSucursales); */
+const parentId =useAppSelector((state) => state.categoria.categoriaPadreId)
 
+   
   return (
     <div>
       <Modal
@@ -94,7 +100,7 @@ export const ModalCategoria = ({
           {categoriaActual ? (
             <Modal.Title>Editar una Categoria:</Modal.Title>
           ) : (
-            <Modal.Title>Añadir una Categoria:</Modal.Title>
+            <Modal.Title>{isAddingSubcategoria ? "Añadir una Subcategoría:" : "Añadir una Categoria:"}</Modal.Title>
           )}
         </Modal.Header>
         <Modal.Body>
@@ -105,51 +111,32 @@ export const ModalCategoria = ({
             })}
             initialValues={categoriaActual ? categoriaActual : initialValues}
             enableReinitialize={true}
-            /* onSubmit={async (values: CategoriaPost) => {
+            onSubmit={async (values: CategoriaPost) => {
               try {
                 let idCategoria;
-
+              
+                values.idSucursales = selectedSucursales;
+              
                 if (categoriaActual) {
                   await apiCategoria.put(values.id, values);
                   idCategoria = values.id;
                 } else {
-                  const response = await apiCategoria.post(
-                    "http://localhost:8080/categoria",
-                    values
-                  );
-                  idCategoria = response.id;
+                  if (isAddingSubcategoria) {
+                    // Solo agregamos como subcategoría si es una subcategoría
+                    await apiCategoria.addSubCategoria(parentId, values);
+                  } else {
+                    // Resto del código para agregar una categoría principal
+                    const response = await apiCategoria.post(`${API_URL}/categoria`, values);
+                    idCategoria = response.id;
+                  }
                 }
-
+              
                 getCategorias();
                 handleClose();
               } catch (error) {
                 console.error("Error al enviar datos al servidor:", error);
               }
-            }} */
-            onSubmit={async (values: CategoriaPost) => {
-                try {
-                  let idCategoria;
-              
-                  // Agregar los IDs de las sucursales seleccionadas al objeto values
-                  values.idSucursales = selectedSucursales;
-              
-                  if (categoriaActual) {
-                    await apiCategoria.put(values.id, values);
-                    idCategoria = values.id;
-                  } else {
-                    const response = await apiCategoria.post(
-                      "http://localhost:8080/categoria",
-                      values
-                    );
-                    idCategoria = response.id;
-                  }
-              
-                  getCategorias();
-                  handleClose();
-                } catch (error) {
-                  console.error("Error al enviar datos al servidor:", error);
-                }
-              }}
+            }}
           >
             {({ values, handleChange, setFieldValue }) => (
               <Form autoComplete="off" className="form-obraAlta">
@@ -168,19 +155,21 @@ export const ModalCategoria = ({
                       setFieldValue("esInsumo", e.target.checked)
                     }
                   />
-                  <BootstrapForm.Group>
-                    <BootstrapForm.Label>¿A que Sucursal desea añadir la categoria?</BootstrapForm.Label>
-                    {sucursales.map((sucursal) => (
-                      <BootstrapForm.Check
-                        key={sucursal.id}
-                        type="checkbox"
-                        id={`sucursal-${sucursal.id}`}
-                        label={sucursal.nombre}
-                        checked={selectedSucursales.includes(sucursal.id)}
-                        onChange={() => handleCheckboxChange(sucursal.id)}
-                      />
-                    ))}
-                  </BootstrapForm.Group>
+                  {!isAddingSubcategoria && (
+                    <BootstrapForm.Group>
+                      <BootstrapForm.Label>¿A que Sucursal desea añadir la categoria?</BootstrapForm.Label>
+                      {sucursales.map((sucursal) => (
+                        <BootstrapForm.Check
+                          key={sucursal.id}
+                          type="checkbox"
+                          id={`sucursal-${sucursal.id}`}
+                          label={sucursal.nombre}
+                          checked={selectedSucursales.includes(sucursal.id)}
+                          onChange={() => handleCheckboxChange(sucursal.id)}
+                        />
+                      ))}
+                    </BootstrapForm.Group>
+                  )}
                 </div>
 
                 <div className="d-flex justify-content-end">

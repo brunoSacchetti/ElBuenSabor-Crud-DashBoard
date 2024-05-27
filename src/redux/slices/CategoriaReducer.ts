@@ -9,6 +9,7 @@ interface CategoriaState {
   categoriaActual: CategoriaDto | null;
   loading: boolean;
   error: string | null;
+  categoriaPadreId: number | null;
 }
 
 const initialState: CategoriaState = {
@@ -17,6 +18,7 @@ const initialState: CategoriaState = {
   categoriaActual: null,
   loading: false,
   error: null,
+  categoriaPadreId: null,
 };
 
 export const categoriaSlice = createSlice({
@@ -40,9 +42,12 @@ export const categoriaSlice = createSlice({
     },
     removeCategoriaActive: (state) => {
       state.categoriaActual = null;
+    },
+    setCategoriaPadreId: (state, action: PayloadAction<number | null>) => {
+      state.categoriaPadreId = action.payload;
     }
   },
 });
 
-export const { setCategoriaData, setCategoriaId, setCategoriaActual, setLoading, setError, removeCategoriaActive } = categoriaSlice.actions;
+export const { setCategoriaData, setCategoriaId, setCategoriaActual, setLoading, setError, removeCategoriaActive,setCategoriaPadreId } = categoriaSlice.actions;
 export default categoriaSlice.reducer;
