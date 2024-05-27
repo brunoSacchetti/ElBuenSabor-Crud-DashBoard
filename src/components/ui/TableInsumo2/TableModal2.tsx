@@ -5,7 +5,6 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
-
 import TableRow from "@mui/material/TableRow";
 import TextField from "@mui/material/TextField";
 import { MenuItem, Select } from "@mui/material";
@@ -15,30 +14,26 @@ import { CategoriaService } from "../../../services/CategoriaService";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-interface ITableIngredients {
+interface ITableIngredientsProps {
   dataIngredients: IArticuloInsumo[];
-  onSelect: (selectedData: any[]) => void;
+  onSelect: (selectedData: IArticuloInsumo[]) => void;
 }
 
-export const TableModal2 = ({
+interface ITableRow extends IArticuloInsumo {
+  id: number;
+}
+
+export const TableModal2: React.FC<ITableIngredientsProps> = ({
   dataIngredients,
   onSelect,
-}: ITableIngredients) => {
-  const [rows, setRows] = useState<any[]>([]);
-  const [selectedRows, setSelectedRows] = useState<any[]>([]);
+}) => {
+  const [originalRows, setOriginalRows] = useState<ITableRow[]>([]);
+  const [displayedRows, setDisplayedRows] = useState<ITableRow[]>([]);
+  const [selectedRows, setSelectedRows] = useState<ITableRow[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedCategoriaId, setSelectedCategoriaId] = useState<number>(-1);
   const [categoria, setCategoria] = useState<any[]>([]);
   const [selectedCategoryInsumos, setSelectedCategoryInsumos] = useState<any[]>([]);
-
-  useEffect(() => {
-    const updatedRows = dataIngredients.map((ingredient, index) => ({
-      ...ingredient,
-      id: index + 1,
-      cantidad: ingredient.cantidad || 0,
-    }));
-    setRows(updatedRows);
-  }, [dataIngredients]);
 
   useEffect(() => {
     const categoriaService = new CategoriaService(API_URL + "/categoria");
@@ -47,9 +42,46 @@ export const TableModal2 = ({
     });
   }, []);
 
+  /* useEffect(() => {
+    setOriginalRows(
+      dataIngredients.map((ingredient, index) => ({
+        ...ingredient,
+        id: index + 1,
+        cantidad: ingredient.cantidad || 0,
+      }))
+    );
+  }, [dataIngredients]); */
+
+  useEffect(() => {
+    setOriginalRows(
+      dataIngredients.map((ingredient) => ({
+        ...ingredient,
+        cantidad: ingredient.cantidad || 0,
+      }))
+    );
+  }, [dataIngredients]);
+  
+
+  useEffect(() => {
+    let results: ITableRow[] = [];
+
+    if (selectedCategoryInsumos.length === 0) {
+      results = originalRows;
+    } else {
+      results = selectedCategoryInsumos;
+    }
+
+    // Filtrar por término de búsqueda
+    results = results.filter((ingredient) =>
+      ingredient.denominacion.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    setDisplayedRows(results);
+  }, [searchTerm, selectedCategoryInsumos, originalRows]);
+
   const handleCheckboxChange = (
     event: React.ChangeEvent<HTMLInputElement>,
-    rowData: any
+    rowData: ITableRow
   ) => {
     const checked = event.target.checked;
     let updatedSelectedRows;
@@ -66,16 +98,24 @@ export const TableModal2 = ({
 
   const handleCantidadChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    rowData: any
+    rowData: ITableRow
   ) => {
     const newCantidad = parseFloat(event.target.value);
-    const updatedRows = rows.map((row) => {
+    const updatedDisplayedRows = displayedRows.map((row) => {
       if (row.id === rowData.id) {
         return { ...row, cantidad: newCantidad };
       }
       return row;
     });
-    setRows(updatedRows);
+    setDisplayedRows(updatedDisplayedRows);
+
+    const updatedOriginalRows = originalRows.map((row) => {
+      if (row.id === rowData.id) {
+        return { ...row, cantidad: newCantidad };
+      }
+      return row;
+    });
+    setOriginalRows(updatedOriginalRows);
 
     const updatedSelectedRows = selectedRows.map((row) => {
       if (row.id === rowData.id) {
@@ -90,25 +130,13 @@ export const TableModal2 = ({
   const onSelectCategory = async (categoryId: number) => {
     setSelectedCategoriaId(categoryId);
     if (categoryId === -1) {
-      setRows(dataIngredients);
+      setSelectedCategoryInsumos([]);
     } else {
       const categoriaService = new CategoriaService(API_URL + "/categoria");
       const selectedCategory = await categoriaService.getById(categoryId);
-      setSelectedCategoryInsumos(selectedCategory?.insumos);
+      setSelectedCategoryInsumos(selectedCategory?.insumos || []);
     }
   };
-  
-
-  useEffect(() => {
-    let results = selectedCategoryInsumos;
-
-    // Filtrar por término de búsqueda
-    results = results.filter((ingredient) =>
-      ingredient.denominacion.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-    setRows(results);
-  }, [searchTerm, selectedCategoryInsumos]);
 
   return (
     <div>
@@ -147,8 +175,8 @@ export const TableModal2 = ({
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row, index) => (
-              <TableRow role="checkbox" tabIndex={-1} key={index}>
+            {displayedRows.map((row) => (
+              <TableRow key={row.id}>
                 <TableCell align="center">{row.id}</TableCell>
                 <TableCell align="center">{row.denominacion}</TableCell>
                 <TableCell align="center">{row.unidadMedida?.denominacion ?? "N/A"}</TableCell>

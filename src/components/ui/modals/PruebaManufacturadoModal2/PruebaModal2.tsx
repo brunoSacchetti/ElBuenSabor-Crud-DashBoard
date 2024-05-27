@@ -3,8 +3,14 @@ import {
   Button,
   MenuItem,
   Modal,
+  Paper,
   Select,
   SelectChangeEvent,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   TextField,
 } from "@mui/material";
 import styles from "./MasterDetailModal.module.css";
@@ -23,6 +29,9 @@ import { InsumosModal } from "./InsumosModal"; // Importamos el modal secundario
 import { TablePruebaModal2 } from "../../TablePruebaModal2/TablePruebaModal2";
 import IArticuloInsumo from "../../../../types/ArticuloInsumo";
 import { UnidadMedidaGetService } from "../../../../services/UnidadMedidaGetService";
+import DeleteIcon from "@mui/icons-material/Delete";
+import Swal from "sweetalert2";
+import { Table } from "react-bootstrap";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -111,7 +120,9 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
 
   const getProductoDetalles = async (productoId: number) => {
     try {
-      const detallesResponse = await fetch(`http://localhost:8080/ArticuloManufacturado/allDetalles/${productoId}`);
+      const detallesResponse = await fetch(
+        `http://localhost:8080/ArticuloManufacturado/allDetalles/${productoId}`
+      );
       const detallesData = await detallesResponse.json();
       // Ahora debes formatear los detalles obtenidos según la estructura esperada en selectedDetalle
       const formattedDetalles = detallesData.map((detalle: any) => ({
@@ -135,11 +146,12 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
         tiempoEstimadoMinutos: productoData.tiempoEstimadoMinutos,
         descripcion: productoData.descripcion,
         preparacion: productoData.preparacion,
-        idsArticuloManufacturadoDetalles: productoData.idsArticuloManufacturadoDetalles,
+        idsArticuloManufacturadoDetalles:
+          productoData.idsArticuloManufacturadoDetalles,
         idUnidadMedida: productoData.idUnidadMedida,
       });
       setSelectedUnidadMedidaId(productoData.idUnidadMedida);
-  
+
       // Fetch and set the insumos related to the product
       getProductoDetalles(productoData.id); // Esta función se encargará de realizar la llamada a la API y actualizar los detalles de los insumos
     } else {
@@ -170,7 +182,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
   };
   console.log(itemValue);
 
-  const handleConfirmModal = async () => {
+  /* const handleConfirmModal = async () => {
     try {
       let productoId: number;
       let detallesIds: number[] = [];
@@ -194,6 +206,144 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
             idArticuloManufacturado: productoId,
           };
           const createdDetalle = await productoDetalleService.postOnlyData(newDetalle);
+          detallesIds.push(createdDetalle.id);
+        })
+      );
+
+      await productoManufacturadoService.put(productoId, {
+        ...itemValue,
+        idsArticuloManufacturadoDetalles: detallesIds,
+      });
+
+      handleSuccess("Elemento guardado correctamente");
+      handleClose();
+      resetValues();
+      getData();
+      getUnidadMedida();
+      getInsumos();
+      dispatch(removeElementActive());
+    } catch (error) {
+      console.error("Error al confirmar modal:", error);
+    }
+  }; */
+
+  /* const handleConfirmModal = async () => {
+    try {
+      // Verifica si hay al menos un detalle agregado
+      if (selectedDetalle.length === 0) {
+        // Muestra un mensaje de error con SweetAlert
+        await Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Debes agregar al menos un detalle antes de confirmar.',
+        });
+        return;
+      }
+
+      let productoId: number;
+      let detallesIds: number[] = [];
+
+      if (data) {
+        await productoManufacturadoService.put(itemValue.id, itemValue);
+        productoId = itemValue.id;
+      } else {
+        const newProducto = await productoManufacturadoService.postOnlyData(itemValue);
+        productoId = newProducto.id;
+      }
+
+      await categoriaService.addArticuloManufacturado(selectedCategoriaId, productoId);
+
+      await Promise.all(
+        selectedDetalle.map(async (detalle) => {
+          const newDetalle = {
+            id: 0,
+            cantidad: detalle.cantidad,
+            idArticuloInsumo: detalle.id,
+            idArticuloManufacturado: productoId,
+          };
+          const createdDetalle = await productoDetalleService.postOnlyData(newDetalle);
+          detallesIds.push(createdDetalle.id);
+        })
+      );
+
+      await productoManufacturadoService.put(productoId, {
+        ...itemValue,
+        idsArticuloManufacturadoDetalles: detallesIds,
+      });
+
+      handleSuccess("Elemento guardado correctamente");
+      handleClose();
+      resetValues();
+      getData();
+      getUnidadMedida();
+      getInsumos();
+      dispatch(removeElementActive());
+    } catch (error) {
+      console.error("Error al confirmar modal:", error);
+    }
+  }; */
+
+  const handleConfirmModal = async () => {
+    try {
+      // Verifica si hay al menos un detalle agregado
+      if (selectedDetalle.length === 0) {
+        // Muestra un mensaje de error con SweetAlert
+        await Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Debes agregar al menos un detalle antes de confirmar.",
+        });
+        return;
+      }
+
+      // Verifica que todos los campos obligatorios estén completos
+      if (
+        itemValue.denominacion.trim() === "" ||
+        itemValue.descripcion.trim() === "" ||
+        itemValue.preparacion.trim() === "" ||
+        itemValue.precioVenta === 0 ||
+        itemValue.tiempoEstimadoMinutos === 0 ||
+        selectedUnidadMedidaId === 0 ||
+        selectedCategoriaId === 0
+      ) {
+        // Muestra un mensaje de error con SweetAlert
+        await Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Por favor completa todos los campos obligatorios antes de confirmar.",
+        });
+        return;
+      }
+
+      let productoId: number;
+      let detallesIds: number[] = [];
+
+      if (data) {
+        await productoManufacturadoService.put(itemValue.id, itemValue);
+        productoId = itemValue.id;
+      } else {
+        const newProducto = await productoManufacturadoService.postOnlyData(
+          itemValue
+        );
+        productoId = newProducto.id;
+      }
+
+      await categoriaService.addArticuloManufacturado(
+        selectedCategoriaId,
+        productoId
+      );
+
+      await Promise.all(
+        selectedDetalle.map(async (detalle) => {
+          const newDetalle = {
+            id: 0,
+            cantidad: detalle.cantidad,
+            idArticuloInsumo: detalle.id,
+            idArticuloManufacturado: productoId,
+          };
+          const createdDetalle = await productoDetalleService.postOnlyData(
+            newDetalle
+          );
           detallesIds.push(createdDetalle.id);
         })
       );
@@ -376,7 +526,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
               </div>
             </div>
 
-            <div className={styles.ingredientesTableContainer}>
+            {/* <div className={styles.ingredientesTableContainer}>
               {selectedDetalle.length > 0 ? (
                 <div className={styles.ingredientesTableContainerItem}>
                   {selectedDetalle.map((detalle) => (
@@ -414,6 +564,62 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
                   variant="contained"
                   color="primary"
                   onClick={handleConfirmModal}
+                >
+                  Confirmar
+                </Button>
+              </div>
+            </div> */}
+            <div className={styles.ingredientesTableContainer}>
+              {selectedDetalle.length > 0 ? (
+                <TableContainer component={Paper} style={{ maxWidth: "80%" }}>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell align="center">Nombre</TableCell>
+                        <TableCell align="center">Cantidad</TableCell>
+                        <TableCell align="center">Acciones</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {selectedDetalle.map((detalle) => (
+                        <TableRow key={detalle.id}>
+                          <TableCell align="center">
+                            {detalle.denominacion}
+                          </TableCell>
+                          <TableCell align="center">
+                            {detalle.cantidad}
+                          </TableCell>
+                          <TableCell align="center">
+                            <Button
+                              variant="outlined"
+                              color="info"
+                              onClick={() => handleRemoveInsumo(detalle.id)}
+                              startIcon={<DeleteIcon />}
+                            >
+                              Quitar
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              ) : (
+                <div>No hay insumos agregados</div>
+              )}
+              <div style={{ textAlign: "center", marginTop: "1rem" }}>
+                <Button
+                  variant="contained"
+                  color="error"
+                  onClick={handleClose}
+                >
+                  Cerrar Modal
+                </Button>
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={handleConfirmModal}
+                  style={{ marginLeft: "1rem" }}
                 >
                   Confirmar
                 </Button>

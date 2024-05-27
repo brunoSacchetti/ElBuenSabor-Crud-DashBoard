@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from "../../../../hooks/redux";
 import IEmpresa from "../../../../types/Empresa";
 import { EmpresaService } from "../../../../services/EmpresaService";
 import { TextField } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ImagenService } from "../../../../services/ImagenService";
 import { removeEmpresaActive } from "../../../../redux/slices/EmpresaReducer";
 
@@ -72,6 +72,12 @@ export const ModalEmpresa = ({
       console.error("Error al subir imágenes:", error);
     }
   };
+
+  useEffect(() => {
+    if (!openModal) {
+      dispatch(removeEmpresaActive());
+    }
+  }, [openModal, dispatch]);
   
   return (
     <div>

@@ -21,7 +21,7 @@ export const InsumosModal: React.FC<InsumosModalProps> = ({
 }) => {
   const [insumos, setInsumos] = useState<IArticuloInsumo[]>([]);
   const [selectedInsumos, setSelectedInsumos] = useState<any[]>([]);
-  const [searchTerm, setSearchTerm] = useState<string>("");
+  //const [searchTerm, setSearchTerm] = useState<string>("");
   const [categoria, setCategoria] = useState<any[]>([]);
 
   const categoriaService = new CategoriaService(API_URL + "/categoria");
