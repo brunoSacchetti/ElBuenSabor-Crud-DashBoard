@@ -82,11 +82,11 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
   const sucursalService = new SucursalService(`${API_URL}/sucursal`);
 
   //obtenemos la sucursal actual
-  const sucursalActual = useAppSelector((state) => state.sucursal.sucursalActual);
+ 
 
   const dispatch = useAppDispatch();
   const data = useAppSelector((state) => state.tablaReducer.elementActive);
-
+  const sucursalActual = useAppSelector((state) => state.sucursal.sucursalActual);
   const getUnidadMedida = async () => {
     try {
       const data = await unidadMedidaService.getAll();

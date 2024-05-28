@@ -14,6 +14,8 @@ import { PruebaModal2 } from "../../ui/modals/PruebaManufacturadoModal2/PruebaMo
 import { SucursalService } from "../../../services/SucursalService";
 import ProductoPost from "../../../types/post/ProductoPost";
 
+
+import { useDispatch } from "react-redux";
 // Definición de la URL base de la API
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -78,7 +80,6 @@ export const ArticuloManufacturadoScreen = () => {
   const [categorias, setCategorias] = useState<ICategoria[]>([]);
 
   // instanciamos el dispatch
-  const dispatch = useAppDispatch();
 
   //obtenemos la sucursal actual
   const sucursalActual = useAppSelector((state) => state.sucursal.sucursalActual);
@@ -95,33 +96,39 @@ export const ArticuloManufacturadoScreen = () => {
   // Función para obtener las categorías
   const fetchCategorias = async () => {
     if (!sucursalActual) {
-      console.error("Error al obtener categorias: sucursalActual es null");
-      setLoading(false);
-      return;
+      console.error("Error: sucursalActual is null");
+      return; // Return early if sucursalActual is null
     }
+  
     setLoading(true);
     try {
       const data = await sucursalService.getCategoriasPorSucursal(sucursalActual?.id);
       setCategorias(data);
     } catch (error) {
-      console.error("Error al obtener categorias:", error);
+      console.error("Error fetching categorias:", error);
+      // Handle the error, display a message, or retry fetching categories
     } finally {
       setLoading(false);
     }
   };
 
   // Función para obtener los productos manufacturados
-  const getDataTable = async () => {
-    const dataTable = await productoManufacturadoService.getAll();
-    const filteredArticulos = dataTable.filter((item: IArticuloManufacturado | ProductoPost): item is IArticuloManufacturado =>
+  const getDataTable = (dispatch: any) => {
+  productoManufacturadoService.getAll().then(dataTable => {
+    const filteredArticulos = dataTable.filter((item) =>
       categorias.some(cat =>
-        cat.articulosManufacturados.some((am: IArticuloManufacturado) => am.id === (item as IArticuloManufacturado).id)
+        cat.articulosManufacturados.some((am: IArticuloManufacturado) => am.id === item.id)
       )
     );
-    dispatch(setDataTable(filteredArticulos));
-  };
-  
+    const productoPosts = filteredArticulos.map((item) => item as IArticuloManufacturado);
+    dispatch(setDataTable(productoPosts));
+  });
+};
 
+
+const dispatch = useDispatch();
+
+getDataTable(dispatch);
   // Efecto para cargar los datos al inicio
   useEffect(() => {
     const fetchData = async () => {
