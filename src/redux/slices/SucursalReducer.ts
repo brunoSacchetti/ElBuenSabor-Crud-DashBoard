@@ -4,7 +4,7 @@ import ISucursales from '../../types/Sucursales';
 
 interface SucursalesState {
   data: ISucursales[];
-  sucursalId: number | null;
+  sucursalId: number; // | null;
   sucursalActual: ISucursales | null;
   loading: boolean;
   error: string | null;
@@ -12,7 +12,7 @@ interface SucursalesState {
 
 const initialState: SucursalesState = {
   data: [],
-  sucursalId: null,
+  sucursalId: 0,
   sucursalActual: null,
   loading: false,
   error: null,

@@ -12,7 +12,7 @@ import { ScreenUnidadMedida } from "../components/pages/ScreenUnidadMedida/Scree
 import { ScreenInsumos } from "../components/pages/ScreenInsumos/ScreenInsumos";
 import { ArticuloManufacturadoScreen } from "../components/pages/ScreenProducto/ArticuloManufacturadoScreen";
 import { useEffect } from "react";
-import { setEmpresaActual } from "../redux/slices/EmpresaReducer";
+import { setEmpresaActual, setEmpresaId } from "../redux/slices/EmpresaReducer";
 import { ScreenCategorias } from "../components/pages/ScreenCategorias/ScreenCategorias";
 import { setDataSucursales, setSucursalActual } from "../redux/slices/SucursalReducer";
 
@@ -27,12 +27,14 @@ export const AppRouter = () => {
   const empresaActual = useAppSelector(state => state.empresa.empresaActual);
   const sucursalActual = useAppSelector(state => state.sucursal.sucursalActual);
   const sucursales = useAppSelector(state => state.sucursal.data);
+  const sucursalId = useAppSelector(state => state.sucursal.sucursalId);
 
 
   useEffect(() => {
     const storedEmpresa = localStorage.getItem("empresaActual");
     const storedSucursal = localStorage.getItem("sucursalActual");
     const storedSucursalData = localStorage.getItem("sucursales");
+    const storedSucursalId = localStorage.getItem("sucursalId");
     
     if (storedEmpresa) {
       dispatch(setEmpresaActual(JSON.parse(storedEmpresa)));
@@ -44,6 +46,9 @@ export const AppRouter = () => {
 
     if(storedSucursalData) {
       dispatch(setDataSucursales(JSON.parse(storedSucursalData)));
+    };
+    if(storedSucursalId) {
+      dispatch(setEmpresaId(JSON.parse(storedSucursalId)));
     };
   }, [dispatch]);
 
@@ -58,6 +63,10 @@ export const AppRouter = () => {
   useEffect(() => {
     localStorage.setItem("sucursales", JSON.stringify(sucursales));
   }, [sucursales]);
+  
+  useEffect(() => {
+    localStorage.setItem("sucursalId", JSON.stringify(sucursalId));
+  }, [sucursalId]);
 
   return (
     <>

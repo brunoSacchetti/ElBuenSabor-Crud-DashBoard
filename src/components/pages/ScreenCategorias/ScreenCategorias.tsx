@@ -36,13 +36,12 @@ export const ScreenCategorias = () => {
    
 
   const categoriaService = new CategoriaService(API_URL + "/categoria");
+  const sucursalService = new SucursalService(API_URL + "/sucursal");
   const categoriaPostService = new CategoriaPostService(API_URL + "/categoria/addSubcategoria");
   const dispatch = useAppDispatch();
 
-  //obtenemos el id de la sucursal actual
-  const sucursalActual = useAppSelector((state) => state.sucursal.sucursalId);
-
-  const sucursalCategoriaService = new SucursalService(API_URL + "/sucursal/getCategorias/{idSucursal}");
+  //obtenemos la sucursal actual
+  const sucursalActual = useAppSelector((state) => state.sucursal.sucursalActual);
 
   // Función para manejar el borrado de una persona
   const handleDelete = async (id: number) => {
@@ -67,19 +66,51 @@ export const ScreenCategorias = () => {
   };
 
   // Función para obtener las categorías
-  const getCategorias = async () => {
-    await categoriaService.getAll().then((categoriaData) => {
+  /* const getCategorias = async () => {
+    //await categoriaService.getAll().then((categoriaData) => {
+    console.log(sucursalActual);
+    
+    if(sucursalActual == null){
+      console.error("Error al obtener categorias")
+    } else { 
+    await sucursalService.getCategoriasPorSucursal(sucursalActual.id).then((categoriaData) => {
       dispatch(setCategoriaData(categoriaData));
       setCategorias(categoriaData);
       setLoading(false);
-    });
+      });
+    };
+  }
+ */
+  const getCategorias = async () => {
+    if (!sucursalActual) {
+      console.error("Error al obtener categorias: sucursalActual es null");
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    try {
+      const categoriaData = await sucursalService.getCategoriasPorSucursal(sucursalActual.id);
+      dispatch(setCategoriaData(categoriaData));
+      setCategorias(categoriaData);
+    } catch (error) {
+      console.error("Error al obtener categorias:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Efecto para cargar los datos al inicio
   useEffect(() => {
+    if (sucursalActual) {
+      setLoading(true);
+      getCategorias();
+    }
+  }, [sucursalActual]);
+
+  // Efecto para cargar los datos al inicio
+  /* useEffect(() => {
     setLoading(true);
     getCategorias();
-  }, []);
+  }, []);  */
 
   const [isAddingSubcategoria, setIsAddingSubcategoria] = useState(false);
   const handleAddSubcategoria = (parentId: number | null) => {

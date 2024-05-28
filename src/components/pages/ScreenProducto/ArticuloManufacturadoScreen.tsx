@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { NavBar } from "../../ui/NavBar/NavBar";
 import { TableGeneric } from "../../ui/TableScreenProducto/TableGeneric";
 import { ArticuloManufacturadoService } from "../../../services/ArticuloManufacturadoService";
-import { useAppDispatch } from "../../../hooks/redux";
-import { removeElementActive,setDataTable } from "../../../redux/slices/TablaProductoReducer";
+import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
+import { removeElementActive, setDataTable } from "../../../redux/slices/TablaProductoReducer";
 import { Button, CircularProgress, styled } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 
@@ -11,6 +11,8 @@ import { CategoriaService } from "../../../services/CategoriaService";
 import { ICategoria } from "../../../types/Categoria";
 import IArticuloManufacturado from "../../../types/ArticuloManufacturado";
 import { PruebaModal2 } from "../../ui/modals/PruebaManufacturadoModal2/PruebaModal2";
+import { SucursalService } from "../../../services/SucursalService";
+import ProductoPost from "../../../types/post/ProductoPost";
 
 // Definición de la URL base de la API
 const API_URL = import.meta.env.VITE_API_URL;
@@ -78,26 +80,46 @@ export const ArticuloManufacturadoScreen = () => {
   // instanciamos el dispatch
   const dispatch = useAppDispatch();
 
+  //obtenemos la sucursal actual
+  const sucursalActual = useAppSelector((state) => state.sucursal.sucursalActual);
+
   // #region SERVICIOS
   const productoManufacturadoService = new ArticuloManufacturadoService(
     `${API_URL}/ArticuloManufacturado`
   );
 
   const categoriaService = new CategoriaService(`${API_URL}/categoria`);
+  const sucursalService = new SucursalService(`${API_URL}/sucursal`);
 
   // Función para obtener las categorías
   const fetchCategorias = async () => {
-    const data = await categoriaService.getAll();
-    setCategorias(data);
+    if (!sucursalActual) {
+      console.error("Error al obtener categorias: sucursalActual es null");
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    try {
+      const data = await sucursalService.getCategoriasPorSucursal(sucursalActual?.id);
+      setCategorias(data);
+    } catch (error) {
+      console.error("Error al obtener categorias:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Función para obtener los productos manufacturados
   const getDataTable = async () => {
-    await productoManufacturadoService.getAll().then((dataTable) => {
-      const productoPosts = dataTable.map((item) => item as IArticuloManufacturado);
-      dispatch(setDataTable(productoPosts));
-    });
+    const dataTable = await productoManufacturadoService.getAll();
+    const filteredArticulos = dataTable.filter((item: IArticuloManufacturado | ProductoPost): item is IArticuloManufacturado =>
+      categorias.some(cat =>
+        cat.articulosManufacturados.some((am: IArticuloManufacturado) => am.id === (item as IArticuloManufacturado).id)
+      )
+    );
+    dispatch(setDataTable(filteredArticulos));
   };
+  
 
   // Efecto para cargar los datos al inicio
   useEffect(() => {
@@ -107,7 +129,7 @@ export const ArticuloManufacturadoScreen = () => {
       setLoading(false);
     };
     fetchData();
-  }, []);
+  }, [sucursalActual]);
 
   // Funcion para recargar datos (categorías y productos)
   const reloadData = async () => {
@@ -164,11 +186,11 @@ export const ArticuloManufacturadoScreen = () => {
 
       {!loading ? (
         <TableGeneric<IArticuloManufacturado>
-        handleDelete={handleDelete}
-        columns={ColumnsProductosManufacturados(categorias)}
-        setOpenModal={setOpenModal}
-        handleCancelOrRegister={handleCancelOrRegister}
-      />
+          handleDelete={handleDelete}
+          columns={ColumnsProductosManufacturados(categorias)}
+          setOpenModal={setOpenModal}
+          handleCancelOrRegister={handleCancelOrRegister}
+        />
       ) : (
         <div
           style={{
@@ -181,11 +203,6 @@ export const ArticuloManufacturadoScreen = () => {
           <CircularProgress />
         </div>
       )}
-      {/* <PruebaManufacturadoModal         
-        getData={reloadData}
-        open={openModal}
-        handleClose={handleCloseModal}
-      /> */}
       <PruebaModal2         
         getData={reloadData}
         open={openModal}

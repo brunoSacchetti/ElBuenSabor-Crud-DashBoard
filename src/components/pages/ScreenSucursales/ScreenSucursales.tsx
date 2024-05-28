@@ -114,7 +114,7 @@ export const ScreenSucursales = () => {
 
   const handleSelectSucursal = (id: number, sucursal: ISucursales) => {
     dispatch(setSucursalActual(sucursal));
-    dispatch(setSucursalId(id));
+    dispatch(setSucursalId(sucursal.id));
     navigate("/inicio", {state: {sucursalId: id}});
   };
 

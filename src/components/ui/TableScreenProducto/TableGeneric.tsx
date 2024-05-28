@@ -14,6 +14,7 @@ import IArticuloManufacturado from "../../../types/ArticuloManufacturado";
 import { MenuItem, Select, SelectChangeEvent } from "@mui/material";
 import { CategoriaService } from "../../../services/CategoriaService";
 import { ICategoria } from "../../../types/Categoria";
+import { SucursalService } from "../../../services/SucursalService";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -47,6 +48,10 @@ export const TableGeneric = <T extends { id: any }>({
   const [selectedCategoriaId, setSelectedCategoriaId] = useState<number>(-1); // -1 para indicar que no hay categoría seleccionada
   const [productosManufacturados, setProductosManufacturados] = useState<IArticuloManufacturado[]>([]);
 
+  const sucursalActual = useAppSelector((state) => state.sucursal.sucursalActual);
+
+  const sucursalService = new SucursalService(API_URL + "/sucursal");
+
   const handleChangePage = (_: unknown, newPage: number) => {
     setPage(newPage);
   };
@@ -78,12 +83,25 @@ export const TableGeneric = <T extends { id: any }>({
     getCategorias();
   }, []);
 
-  const getCategorias = async () => {
+  /* const getCategorias = async () => {
     try {
       const data = await categoriaService.getAll();
       setCategoria(data);
     } catch (error) {
       console.error("Error al obtener categorías:", error);
+    }
+  }; */
+
+  const getCategorias = async () => {
+    if (!sucursalActual) {
+      console.error("Error al obtener categorias: sucursalActual es null");
+      return;
+    }
+    try {
+      const data = await sucursalService.getCategoriasPorSucursal(sucursalActual?.id);
+      setCategoria(data);
+    } catch (error) {
+      console.error("Error al obtener categorias:", error);
     }
   };
 

@@ -5,6 +5,7 @@ import { BackendClient } from "./BackendClient";
 
 export class CategoriaService extends BackendClient<ICategoria> {
 
+
     async addArticuloManufacturado(idCategoria: number, idArticulo: number): Promise<ICategoria> {
         const response = await fetch(`${this.baseUrl}/addArticuloManufacturado/${idCategoria}/${idArticulo}`, {
           method: "PUT",
