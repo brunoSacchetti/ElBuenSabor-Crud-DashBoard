@@ -32,6 +32,7 @@ import { UnidadMedidaGetService } from "../../../../services/UnidadMedidaGetServ
 import DeleteIcon from "@mui/icons-material/Delete";
 import Swal from "sweetalert2";
 import { Table } from "react-bootstrap";
+import { SucursalService } from "../../../../services/SucursalService";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -78,6 +79,10 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
   );
   const insumosServices = new InsumoGetService(`${API_URL}/ArticuloInsumo`);
   const categoriaService = new CategoriaService(`${API_URL}/categoria`);
+  const sucursalService = new SucursalService(`${API_URL}/sucursal`);
+
+  //obtenemos la sucursal actual
+  const sucursalActual = useAppSelector((state) => state.sucursal.sucursalActual);
 
   const dispatch = useAppDispatch();
   const data = useAppSelector((state) => state.tablaReducer.elementActive);
@@ -91,12 +96,26 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
     }
   };
 
-  const getCategorias = async () => {
+  /* const getCategorias = async () => {
     try {
       const data = await categoriaService.getAll();
       setCategoria(data);
     } catch (error) {
       console.error("Error al obtener las categorías:", error);
+    }
+  };} */
+
+  const getCategorias = async () => {
+    if (!sucursalActual) {
+      console.error("Error al obtener categorias: sucursalActual es null");
+      return;
+    }
+    try {
+      console.log(sucursalActual);
+      const data = await sucursalService.getCategoriasPorSucursal(sucursalActual?.id);
+      setCategoria(data);
+    } catch (error) {
+      console.error("Error al obtener categorias:", error);
     }
   };
 
@@ -160,12 +179,12 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
   }, [data]);
 
   useEffect(() => {
-    if (open) {
+    if (open && sucursalActual) {
       getInsumos();
       getUnidadMedida();
       getCategorias();
     }
-  }, [open]);
+  }, [open, sucursalActual]);
 
   const resetValues = () => {
     setItemValue(initialValues);
@@ -327,6 +346,9 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
         );
         productoId = newProducto.id;
       }
+
+      console.log(selectedCategoriaId);
+      
 
       await categoriaService.addArticuloManufacturado(
         selectedCategoriaId,

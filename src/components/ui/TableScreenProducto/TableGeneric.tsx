@@ -48,6 +48,7 @@ export const TableGeneric = <T extends { id: any }>({
   const [selectedCategoriaId, setSelectedCategoriaId] = useState<number>(-1); // -1 para indicar que no hay categoría seleccionada
   const [productosManufacturados, setProductosManufacturados] = useState<IArticuloManufacturado[]>([]);
 
+  
   const sucursalActual = useAppSelector((state) => state.sucursal.sucursalActual);
 
   const sucursalService = new SucursalService(API_URL + "/sucursal");
@@ -79,9 +80,17 @@ export const TableGeneric = <T extends { id: any }>({
 
   const categoriaService = new CategoriaService(API_URL + "/categoria");
 
-  useEffect(() => {
+  /* useEffect(() => {
+
     getCategorias();
-  }, []);
+  }, []); */
+
+  useEffect(() => {
+    if (sucursalActual) {
+      getCategorias();
+    }
+  }, [,sucursalActual]);
+  
 
   /* const getCategorias = async () => {
     try {
@@ -98,14 +107,15 @@ export const TableGeneric = <T extends { id: any }>({
       return;
     }
     try {
-      const data = await sucursalService.getCategoriasPorSucursal(sucursalActual?.id);
+      console.log(sucursalActual);
+      const data = await sucursalService.getCategoriasPorSucursal(sucursalActual.id);
       setCategoria(data);
     } catch (error) {
       console.error("Error al obtener categorias:", error);
     }
   };
 
-  const handleChangeCategorias = async (
+  /* const handleChangeCategorias = async (
     e: SelectChangeEvent<number>
   ) => {
     const categoriaId = e.target.value as number;
@@ -120,8 +130,28 @@ export const TableGeneric = <T extends { id: any }>({
     } else {
       setProductosManufacturados([]); // Si no hay categoría seleccionada, limpiar la lista de productos manufacturados
     }
-  };
+  }; */
 
+  const handleChangeCategorias = async (e: SelectChangeEvent<number>) => {
+    const categoriaId = e.target.value as number;
+    console.log(categoriaId);
+    
+    setSelectedCategoriaId(categoriaId);
+    if (categoriaId !== -1) { // Si se selecciona una categoría
+      try {
+        const categoriaSeleccionada = categoria.find(cat => cat.id === categoriaId); // Encontrar la categoría seleccionada en el estado
+        if (categoriaSeleccionada) {
+          setProductosManufacturados(categoriaSeleccionada.articulosManufacturados); // Establecer los productos manufacturados asociados a esa categoría
+        }
+      } catch (error) {
+        console.error("Error al obtener la categoría:", error);
+      }
+    } else {
+      setProductosManufacturados([]); // Si no hay categoría seleccionada, limpiar la lista de productos manufacturados
+      
+    }
+  };
+  
   return (
     <>
       <div

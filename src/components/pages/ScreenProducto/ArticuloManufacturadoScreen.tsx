@@ -89,6 +89,7 @@ export const ArticuloManufacturadoScreen = () => {
   );
 
   const categoriaService = new CategoriaService(`${API_URL}/categoria`);
+  
   const sucursalService = new SucursalService(`${API_URL}/sucursal`);
 
   // Función para obtener las categorías
