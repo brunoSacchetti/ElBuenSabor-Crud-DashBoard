@@ -5,16 +5,26 @@ import { useAppDispatch, useAppSelector } from "../../../../hooks/redux";
 import { removeElementActive } from "../../../../redux/slices/TablaReducer";
 import { ArticuloInsumoService } from "../../../../services/ArticuloInsumoService";
 import InsumoPost from "../../../../types/Dtos/InsumosDto/InsumoPost";
-import { MenuItem, Select, TextField, Checkbox, FormControl, InputLabel, FormHelperText } from "@mui/material";
+import {
+  MenuItem,
+  Select,
+  TextField,
+  Checkbox,
+  FormControl,
+  InputLabel,
+  FormHelperText,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import { UnidadMedidaService } from "../../../../services/UnidadMedidaService";
 import IUnidadMedidaPost from "../../../../types/Dtos/UnidadMedidaDto/UnidadMedidaPost";
+import { ICategoria } from "../../../../types/Categoria";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 // Interfaz para los props del componente ModalPersona
 interface IModalInsumos {
   getInsumos: () => void; // Función para obtener las personas
+  categorias: ICategoria[];
   openModal: boolean;
   setOpenModal: (state: boolean) => void;
 }
@@ -27,15 +37,25 @@ const initialValues: InsumoPost = {
   precioCompra: 0,
   stockActual: 0,
   stockMaximo: 0,
+  stockMinimo: 0,
   esParaElaborar: false,
 };
 
-export const ModalArticuloInsumo = ({ getInsumos, openModal, setOpenModal }: IModalInsumos) => {
+export const ModalArticuloInsumo = ({
+  getInsumos,
+  openModal,
+  categorias,
+  setOpenModal,
+}: IModalInsumos) => {
   const insumoService = new ArticuloInsumoService(`${API_URL}/ArticuloInsumo`);
   const dispatch = useAppDispatch();
-  const elementActive = useAppSelector((state) => state.tablaReducer.elementActive);
+  const elementActive = useAppSelector(
+    (state) => state.tablaReducer.elementActive
+  );
   const [unidadMedida, setUnidadMedida] = useState<IUnidadMedidaPost[]>([]);
-  const unidadMedidaService = new UnidadMedidaService(`${API_URL}/UnidadMedida`);
+  const unidadMedidaService = new UnidadMedidaService(
+    `${API_URL}/UnidadMedida`
+  );
 
   const handleClose = () => {
     setOpenModal(false);
@@ -59,10 +79,18 @@ export const ModalArticuloInsumo = ({ getInsumos, openModal, setOpenModal }: IMo
 
   const validationSchema = Yup.object({
     denominacion: Yup.string().required("Campo requerido"),
-    precioVenta: Yup.number().required("Campo requerido").min(0, "El precio debe ser mayor o igual a 0"),
-    precioCompra: Yup.number().required("Campo requerido").min(0, "El precio debe ser mayor o igual a 0"),
-    stockActual: Yup.number().required("Campo requerido").min(0, "El stock debe ser mayor o igual a 0"),
-    stockMaximo: Yup.number().required("Campo requerido").min(0, "El stock debe ser mayor o igual a 0"),
+    precioVenta: Yup.number()
+      .required("Campo requerido")
+      .min(0, "El precio debe ser mayor o igual a 0"),
+    precioCompra: Yup.number()
+      .required("Campo requerido")
+      .min(0, "El precio debe ser mayor o igual a 0"),
+    stockActual: Yup.number()
+      .required("Campo requerido")
+      .min(0, "El stock debe ser mayor o igual a 0"),
+    stockMaximo: Yup.number()
+      .required("Campo requerido")
+      .min(0, "El stock debe ser mayor o igual a 0"),
     idUnidadMedida: Yup.number().required("Campo requerido"),
   });
 
@@ -73,7 +101,16 @@ export const ModalArticuloInsumo = ({ getInsumos, openModal, setOpenModal }: IMo
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <div style={{ padding: "2rem", backgroundColor: "white", borderRadius: "8px", margin: "auto", marginTop: "5rem", maxWidth: "600px" }}>
+      <div
+        style={{
+          padding: "2rem",
+          backgroundColor: "white",
+          borderRadius: "8px",
+          margin: "auto",
+          marginTop: "5rem",
+          maxWidth: "600px",
+        }}
+      >
         <h2>{elementActive ? "Editar" : "Añadir"} un Insumo</h2>
         <Formik
           initialValues={elementActive ? elementActive : initialValues}
@@ -83,7 +120,10 @@ export const ModalArticuloInsumo = ({ getInsumos, openModal, setOpenModal }: IMo
             if (elementActive) {
               await insumoService.put(values.id, values);
             } else {
-              await insumoService.post("http://localhost:8080/ArticuloInsumo",values);
+              await insumoService.post(
+                "http://localhost:8080/ArticuloInsumo",
+                values
+              );
             }
             getInsumos();
             handleClose();
@@ -91,7 +131,13 @@ export const ModalArticuloInsumo = ({ getInsumos, openModal, setOpenModal }: IMo
         >
           {({ handleChange, values }) => (
             <Form>
-              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "1rem",
+                }}
+              >
                 <FormControl>
                   <TextField
                     label="Denominación"
@@ -99,7 +145,10 @@ export const ModalArticuloInsumo = ({ getInsumos, openModal, setOpenModal }: IMo
                     value={values.denominacion}
                     onChange={handleChange}
                   />
-                  <ErrorMessage name="denominacion" component={FormHelperText}  />
+                  <ErrorMessage
+                    name="denominacion"
+                    component={FormHelperText}
+                  />
                 </FormControl>
                 <FormControl>
                   <TextField
@@ -109,10 +158,29 @@ export const ModalArticuloInsumo = ({ getInsumos, openModal, setOpenModal }: IMo
                     value={values.precioVenta}
                     onChange={handleChange}
                   />
-                  <ErrorMessage name="precioVenta" component={FormHelperText}  />
+                  <ErrorMessage name="precioVenta" component={FormHelperText} />
                 </FormControl>
                 <FormControl>
-                  <InputLabel id="unidad-medida-label">Unidad de Medida</InputLabel>
+                  <InputLabel id="categoria-label">Categoría</InputLabel>
+                  <Select
+                    labelId="categoria-label"
+                    label="Categoría"
+                    name="id"
+                    value={values.id} // Utiliza values.categoriaId en lugar de values.id
+                    onChange={handleChange}
+                  >
+                    {categorias.map((categoria) => (
+                      <MenuItem key={categoria.id} value={categoria.id}>
+                        {categoria.denominacion}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  <ErrorMessage name="categoriaId" component={FormHelperText} />
+                </FormControl>
+                <FormControl>
+                  <InputLabel id="unidad-medida-label">
+                    Unidad de Medida
+                  </InputLabel>
                   <Select
                     labelId="unidad-medida-label"
                     label="Unidad de Medida"
@@ -126,7 +194,10 @@ export const ModalArticuloInsumo = ({ getInsumos, openModal, setOpenModal }: IMo
                       </MenuItem>
                     ))}
                   </Select>
-                  <ErrorMessage name="idUnidadMedida" component={FormHelperText}  />
+                  <ErrorMessage
+                    name="idUnidadMedida"
+                    component={FormHelperText}
+                  />
                 </FormControl>
                 <FormControl>
                   <TextField
@@ -136,7 +207,10 @@ export const ModalArticuloInsumo = ({ getInsumos, openModal, setOpenModal }: IMo
                     value={values.precioCompra}
                     onChange={handleChange}
                   />
-                  <ErrorMessage name="precioCompra" component={FormHelperText}  />
+                  <ErrorMessage
+                    name="precioCompra"
+                    component={FormHelperText}
+                  />
                 </FormControl>
                 <FormControl>
                   <TextField
@@ -156,16 +230,36 @@ export const ModalArticuloInsumo = ({ getInsumos, openModal, setOpenModal }: IMo
                     value={values.stockMaximo}
                     onChange={handleChange}
                   />
-                  <ErrorMessage name="stockMaximo" component={FormHelperText}  />
+                  <ErrorMessage name="stockMaximo" component={FormHelperText} />
+                </FormControl>
+                <FormControl>
+                  <TextField
+                    label="Stock Mínimo"
+                    name="stockMinimo"
+                    type="number"
+                    value={values.stockMinimo}
+                    onChange={handleChange}
+                  />
+                  <ErrorMessage name="stockMinimo" component={FormHelperText} />
                 </FormControl>
                 <FormControl>
                   <label>
-                    <Field type="checkbox" name="esParaElaborar" as={Checkbox} />
+                    <Field
+                      type="checkbox"
+                      name="esParaElaborar"
+                      as={Checkbox}
+                    />
                     Es Para Elaborar?
                   </label>
                 </FormControl>
               </div>
-              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "1rem" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  marginTop: "1rem",
+                }}
+              >
                 <Button variant="contained" color="primary" type="submit">
                   Enviar
                 </Button>

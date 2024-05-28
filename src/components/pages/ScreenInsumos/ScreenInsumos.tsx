@@ -1,29 +1,29 @@
 import { useEffect, useState } from "react";
-
 import { TableGeneric } from "../../ui/TableGeneric/TableGeneric";
 import { Button, CircularProgress } from "@mui/material";
-import { useAppDispatch } from "../../../hooks/redux";
-
+import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
 import { setDataTable } from "../../../redux/slices/TablaReducer";
 import Swal from "sweetalert2";
-
-
 import IArticuloInsumo from "../../../types/ArticuloInsumo";
 import { ArticuloInsumoService } from "../../../services/ArticuloInsumoService";
 import { ModalArticuloInsumo } from "../../ui/modals/ModalArticuloInsumo/ModalArticuloInsumo";
-
+import { SucursalService } from "../../../services/SucursalService";
+import { setCategoriaData } from "../../../redux/slices/CategoriaReducer";
+import { ICategoria } from "../../../types/Categoria";
 
 // Definición de la URL base de la API
 const API_URL = import.meta.env.VITE_API_URL;
 
 export const ScreenInsumos = () => {
-  // Estado para controlar la carga de datos
   const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   
   const insumosService = new ArticuloInsumoService(API_URL + "/ArticuloInsumo");
+  const sucursalService = new SucursalService(API_URL + "/sucursal");
   const dispatch = useAppDispatch();
-  // Columnas de la tabla de personas
+  const [categorias, setCategorias] = useState<ICategoria[]>([]);
+  const sucursalActual = useAppSelector((state) => state.sucursal.sucursalActual);
+
   const ColumnsTableEmpresa = [
     {
       label: "ID",
@@ -37,16 +37,34 @@ export const ScreenInsumos = () => {
       key: "precioCompra",
     },
     {
-      label:"Para Elaborar",
-      key:"esParaElaborar",
+      label: "Para Elaborar",
+      key: "esParaElaborar",
       render: (insumos: IArticuloInsumo) => (insumos?.esParaElaborar ? "Si" : "No"),
     },
     { label: "Acciones", key: "acciones" },
   ];
 
-  // Función para manejar el borrado de una persona
+  const getCategorias = async () => {
+    if (!sucursalActual) {
+      console.error("Error al obtener categorias: sucursalActual es null");
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    try {
+      const categoriaData = await sucursalService.getCategoriasPorSucursal(sucursalActual.id);
+      dispatch(setCategoriaData(categoriaData));
+      setCategorias(categoriaData); // Aquí se establecen las categorías en el estado local
+    } catch (error) {
+      console.error("Error al obtener categorias:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+
   const handleDelete = async (id: number) => {
-    // Mostrar confirmación antes de eliminar
     Swal.fire({
       title: "¿Estas seguro?",
       text: `¿Seguro que quieres eliminar?`,
@@ -58,14 +76,13 @@ export const ScreenInsumos = () => {
       cancelButtonText: "Cancelar",
     }).then((result) => {
       if (result.isConfirmed) {
-        // Eliminar la persona si se confirma
         insumosService.delete(id).then(() => {
           getInsumos();
         });
       }
     });
   };
-  // Función para obtener las personas
+
   const getInsumos = async () => {
     await insumosService.getAll().then((insumosData) => {
       dispatch(setDataTable(insumosData));
@@ -73,11 +90,18 @@ export const ScreenInsumos = () => {
     });
   };
 
-  // Efecto para cargar los datos al inicio
   useEffect(() => {
     setLoading(true);
     getInsumos();
   }, []);
+
+
+  useEffect(() => {
+    if (sucursalActual) {
+      setLoading(true);
+      getCategorias();
+    }
+  }, [sucursalActual]);
 
   return (
     <>
@@ -90,17 +114,10 @@ export const ScreenInsumos = () => {
             width: "90%",
           }}
         >
-          {/* Botón para abrir el modal de agregar persona */}
-          <Button
-            onClick={() => {
-              setOpenModal(true);
-            }}
-            variant="contained"
-          >
+          <Button onClick={() => setOpenModal(true)} variant="contained">
             Agregar
           </Button>
         </div>
-        {/* Mostrar indicador de carga mientras se cargan los datos */}
         {loading ? (
           <div
             style={{
@@ -117,7 +134,6 @@ export const ScreenInsumos = () => {
             <h2>Cargando...</h2>
           </div>
         ) : (
-          // Mostrar la tabla de personas una vez que los datos se han cargado
           <TableGeneric<IArticuloInsumo>
             handleDelete={handleDelete}
             columns={ColumnsTableEmpresa}
@@ -126,8 +142,8 @@ export const ScreenInsumos = () => {
         )}
       </div>
 
-      {/* Modal para agregar o editar una persona */}
       <ModalArticuloInsumo
+        categorias={categorias}
         getInsumos={getInsumos}
         openModal={openModal}
         setOpenModal={setOpenModal}

@@ -6,5 +6,6 @@ export default interface InsumoPost{
   precioCompra:number;
   stockActual: number;
   stockMaximo: number;
+  stockMinimo:number;
   esParaElaborar: boolean;
 }
