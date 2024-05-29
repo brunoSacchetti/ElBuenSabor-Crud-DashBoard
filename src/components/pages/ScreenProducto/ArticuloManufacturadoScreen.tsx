@@ -128,23 +128,27 @@ export const ArticuloManufacturadoScreen = () => {
 
 const dispatch = useDispatch();
 
-getDataTable(dispatch);
+getDataTable(dispatch); 
+
+
+
   // Efecto para cargar los datos al inicio
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      await Promise.all([fetchCategorias(), getDataTable()]);
+      await Promise.all([fetchCategorias(), getDataTable(dispatch)]);
       setLoading(false);
     };
     fetchData();
   }, [sucursalActual]);
 
-  // Funcion para recargar datos (categorías y productos)
+  // Función para recargar datos (categorías y productos)
   const reloadData = async () => {
     setLoading(true);
-    await Promise.all([fetchCategorias(), getDataTable()]);
+    await Promise.all([fetchCategorias(), getDataTable(dispatch)]);
     setLoading(false);
   };
+
 
   // función para eliminar un elemento
   const handleDelete = async (id: number | string) => {

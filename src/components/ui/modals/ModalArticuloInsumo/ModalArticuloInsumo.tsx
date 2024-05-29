@@ -1,9 +1,11 @@
-import { Button, Modal } from "@mui/material";
+import { Button, Modal, SelectChangeEvent } from "@mui/material";
 import * as Yup from "yup";
 import { Field, Form, Formik, ErrorMessage } from "formik";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/redux";
 import { removeElementActive } from "../../../../redux/slices/TablaReducer";
 import { ArticuloInsumoService } from "../../../../services/ArticuloInsumoService";
+import { CategoriaService } from "../../../../services/CategoriaService";
+
 import InsumoPost from "../../../../types/Dtos/InsumosDto/InsumoPost";
 import {
   MenuItem,
@@ -29,7 +31,7 @@ interface IModalInsumos {
   setOpenModal: (state: boolean) => void;
 }
 
-const initialValues: InsumoPost = {
+const initialValues: InsumoPost & { categoriaId: number } = {
   id: 0,
   denominacion: "",
   precioVenta: 0,
@@ -39,8 +41,8 @@ const initialValues: InsumoPost = {
   stockMaximo: 0,
   stockMinimo: 0,
   esParaElaborar: false,
+  categoriaId: 0, // Nuevo campo para el id de la categoría
 };
-
 export const ModalArticuloInsumo = ({
   getInsumos,
   openModal,
@@ -53,9 +55,12 @@ export const ModalArticuloInsumo = ({
     (state) => state.tablaReducer.elementActive
   );
   const [unidadMedida, setUnidadMedida] = useState<IUnidadMedidaPost[]>([]);
+
   const unidadMedidaService = new UnidadMedidaService(
     `${API_URL}/UnidadMedida`
   );
+
+  const categoriaService = new CategoriaService(`${API_URL}/categoria`)
 
   const handleClose = () => {
     setOpenModal(false);
@@ -94,6 +99,12 @@ export const ModalArticuloInsumo = ({
     idUnidadMedida: Yup.number().required("Campo requerido"),
   });
 
+  const [selectedCategoriaId, setSelectedCategoriaId] = useState<number>(1);
+  const handleChangeCategoriaValues = async (e: SelectChangeEvent<number>) => {
+    const categoriaId = e.target.value as number;
+    setSelectedCategoriaId(categoriaId);
+  };
+
   return (
     <Modal
       open={openModal}
@@ -117,16 +128,25 @@ export const ModalArticuloInsumo = ({
           validationSchema={validationSchema}
           enableReinitialize={true}
           onSubmit={async (values: InsumoPost) => {
-            if (elementActive) {
-              await insumoService.put(values.id, values);
-            } else {
-              await insumoService.post(
-                "http://localhost:8080/ArticuloInsumo",
-                values
-              );
+            try {
+              let insumo;
+              if (elementActive) {
+                await insumoService.put(values.id, values);
+                insumo = values;
+              } else {
+                const response = await insumoService.post(
+                  "http://localhost:8080/ArticuloInsumo",
+                  values
+                );
+                insumo = response; 
+              }
+        
+              await categoriaService.addInsumoToCategoria(selectedCategoriaId, insumo.id);
+              getInsumos();
+              handleClose();
+            } catch (error) {
+              console.error("Error al guardar el insumo:", error);
             }
-            getInsumos();
-            handleClose();
           }}
         >
           {({ handleChange, values }) => (
@@ -166,8 +186,8 @@ export const ModalArticuloInsumo = ({
                     labelId="categoria-label"
                     label="Categoría"
                     name="id"
-                    value={values.id} // Utiliza values.categoriaId en lugar de values.id
-                    onChange={handleChange}
+                    value={selectedCategoriaId ?? ""}
+                    onChange={handleChangeCategoriaValues}
                   >
                     {categorias.map((categoria) => (
                       <MenuItem key={categoria.id} value={categoria.id}>
