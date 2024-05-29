@@ -133,7 +133,7 @@ getDataTable(dispatch);
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      await Promise.all([fetchCategorias(), getDataTable()]);
+      await Promise.all([fetchCategorias(), getDataTable(dispatch)]);
       setLoading(false);
     };
     fetchData();
@@ -142,7 +142,7 @@ getDataTable(dispatch);
   // Funcion para recargar datos (categorías y productos)
   const reloadData = async () => {
     setLoading(true);
-    await Promise.all([fetchCategorias(), getDataTable()]);
+    await Promise.all([fetchCategorias(), getDataTable(dispatch)]);
     setLoading(false);
   };
 
