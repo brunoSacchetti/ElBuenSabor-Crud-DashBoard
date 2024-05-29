@@ -60,7 +60,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
 }) => {
   const [itemValue, setItemValue] = useState<ProductoPost>(initialValues);
   const [selectedUnidadMedidaId, setSelectedUnidadMedidaId] =
-    useState<number>(1);
+    useState<number>();
   const [selectedDetalle, setSelectedDetalle] = useState<any[]>([]);
   const [unidadMedida, setUnidadMedida] = useState<IUnidadMedida[]>([]);
   const [categoria, setCategoria] = useState<ICategoria[]>([]);
@@ -190,6 +190,8 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
         idUnidadMedida: productoData.idUnidadMedida,
       });
       setSelectedUnidadMedidaId(productoData.idUnidadMedida);
+      console.log(productoData.idUnidadMedida);
+      
 
       // Fetch and set the insumos related to the product
       getProductoDetalles(productoData.id); // Esta función se encargará de realizar la llamada a la API y actualizar los detalles de los insumos
@@ -366,9 +368,6 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
         );
         productoId = newProducto.id;
       }
-
-      console.log(selectedCategoriaId);
-      
 
       await categoriaService.addArticuloManufacturado(
         selectedCategoriaId,

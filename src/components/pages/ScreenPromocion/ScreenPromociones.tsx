@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { TableGeneric } from "../../ui/TableGeneric/TableGeneric";
 import { Button, CircularProgress } from "@mui/material";
-import { useAppDispatch } from "../../../hooks/redux";
+import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
 
 import { setDataTable } from "../../../redux/slices/TablaReducer";
 import Swal from "sweetalert2";
@@ -11,24 +11,31 @@ import Swal from "sweetalert2";
 import IPromocion from "../../../types/Promocion";
 import { PromocionService } from "../../../services/PromocionService";
 import { ModalPromocion } from "../../ui/modals/ModalPromocion/ModalPromocion";   //*cambiar al final*/
+import { SucursalService } from "../../../services/SucursalService";
 
 
 // Definición de la URL base de la API
 const API_URL = import.meta.env.VITE_API_URL;
 
-export const ScreenPromocion = () => {                                        
+export const ScreenPromociones = () => {                                        
   // Estado para controlar la carga de datos
   const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
 
   const promocionService = new PromocionService(API_URL + "/promociones");
+  const sucursalService = new SucursalService(API_URL + "/sucursal");
+
+  //obtenemos la sucursal actual
+  const sucursalActual = useAppSelector((state) => state.sucursal.sucursalActual);
+
+
   const dispatch = useAppDispatch();
   // Columnas de la tabla de personas
-  const ColumnsTableEmpresa = [                                                                           
+  const ColumnsTablePromocion= [                                                                           
     {
       label: "ID",
       key: "id",
-      render: (usuario: IPromocion) => (usuario?.id ? usuario.id : 0),
+      render: (promocion: IPromocion) => (promocion?.id ? promocion.id : 0),
     },
     { label: "Denominacion", key: "denominacion" },
     { label: "FechaDesde", key: "fechaDesde" },
@@ -46,7 +53,6 @@ export const ScreenPromocion = () => {
       key: "sucursalEmpresa", //OJITO  ABIERTO O CERRADO 
     }, */
     { label: "Acciones", key: "acciones" },
- 
   ];
 
   // Función para manejar el borrado de una persona
@@ -72,17 +78,32 @@ export const ScreenPromocion = () => {
   };
   // Función para obtener las promociones
   const getPromocion = async () => {                              
-    await promocionService.getAll().then((promocionData) => {
-      dispatch(setDataTable(promocionData));
-      setLoading(false);
-    });
+    if (sucursalActual) {
+      await sucursalService.getPromociones(sucursalActual.id).then((promocionData) => {
+        dispatch(setDataTable(promocionData));
+        setLoading(false);
+      });
+    }
   };
+  
 
   // Efecto para cargar los datos al inicio
-  useEffect(() => {
+
+  /* useEffect(() => {
     setLoading(true);
     getPromocion();                                               
-  }, []);
+  }, []); */
+
+  useEffect(() => {
+    if (sucursalActual) {
+      setLoading(true);
+      getPromocion();
+    }
+  }, [sucursalActual]);
+
+  const handleClose = () => {
+    setOpenModal(false);
+  };
 
   return (
     <>
@@ -125,7 +146,7 @@ export const ScreenPromocion = () => {
           // Mostrar la tabla de personas una vez que los datos se han cargado
           <TableGeneric<IPromocion>                                              
             handleDelete={handleDelete}
-            columns={ColumnsTableEmpresa}
+            columns={ColumnsTablePromocion}
             setOpenModal={setOpenModal}
           />
         )}
@@ -133,9 +154,10 @@ export const ScreenPromocion = () => {
 
       {/* Modal para agregar o editar una persona */}
       <ModalPromocion
-        getPromocion={getPromocion}
-        openModal={openModal}
-        setOpenModal={setOpenModal}
+        getData={getPromocion}
+        open={openModal}
+        //setOpenModal={setOpenModal}
+        handleClose={handleClose}
       />
     </>
   );
