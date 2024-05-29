@@ -60,7 +60,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
 }) => {
   const [itemValue, setItemValue] = useState<ProductoPost>(initialValues);
   const [selectedUnidadMedidaId, setSelectedUnidadMedidaId] =
-    useState<number>(1);
+    useState<number>();
   const [selectedDetalle, setSelectedDetalle] = useState<any[]>([]);
   const [unidadMedida, setUnidadMedida] = useState<IUnidadMedida[]>([]);
   const [categoria, setCategoria] = useState<ICategoria[]>([]);
@@ -137,7 +137,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
     }
   };
 
-  const getProductoDetalles = async (productoId: number) => {
+  /* const getProductoDetalles = async (productoId: number) => {
     try {
       const detallesResponse = await fetch(
         `http://localhost:8080/ArticuloManufacturado/allDetalles/${productoId}`
@@ -153,7 +153,27 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
     } catch (error) {
       console.error("Error al obtener los detalles de los insumos:", error);
     }
+  }; */
+
+  const getProductoDetalles = async (productoId: number) => {
+    try {
+      const response = await fetch(`${API_URL}/ArticuloManufacturado/allDetalles/${productoId}`);
+      if (!response.ok) {
+        throw new Error("Error al obtener los detalles de los insumos");
+      }
+      const detallesData = await response.json();
+      // Formatear los detalles obtenidos para que coincidan con la estructura esperada
+      const formattedDetalles = detallesData.map((detalle: any) => ({
+        id: detalle.id, // Asegúrate de que cada detalle tenga un id definido
+        cantidad: detalle.cantidad,
+        denominacion: detalle.articuloInsumo.denominacion,
+      }));
+      setSelectedDetalle(formattedDetalles);
+    } catch (error) {
+      console.error("Error al obtener los detalles de los insumos:", error);
+    }
   };
+  
 
   useEffect(() => {
     if (data) {
@@ -170,6 +190,8 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
         idUnidadMedida: productoData.idUnidadMedida,
       });
       setSelectedUnidadMedidaId(productoData.idUnidadMedida);
+      console.log(productoData.idUnidadMedida);
+      
 
       // Fetch and set the insumos related to the product
       getProductoDetalles(productoData.id); // Esta función se encargará de realizar la llamada a la API y actualizar los detalles de los insumos
@@ -347,9 +369,6 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
         productoId = newProducto.id;
       }
 
-      console.log(selectedCategoriaId);
-      
-
       await categoriaService.addArticuloManufacturado(
         selectedCategoriaId,
         productoId
@@ -429,6 +448,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
     const updatedDetalle = selectedDetalle.filter(
       (detalle) => detalle.id !== id
     );
+    console.log(updatedDetalle);
     setSelectedDetalle(updatedDetalle);
   };
 

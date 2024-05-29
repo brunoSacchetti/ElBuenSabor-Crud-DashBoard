@@ -7,7 +7,6 @@ import { Home } from "../components/pages/Home/Home";
 import { ScreenSucursales } from "../components/pages/ScreenSucursales/ScreenSucursales";
 import { InicioDashboard } from "../components/pages/InicioDashboard/InicioDashboard";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
-import { ScreenPromocion } from "../components/pages/ScreenPromocion/ScreenPromociones";
 import { ScreenUnidadMedida } from "../components/pages/ScreenUnidadMedida/ScreenUnidadMedida";
 import { ScreenInsumos } from "../components/pages/ScreenInsumos/ScreenInsumos";
 import { ArticuloManufacturadoScreen } from "../components/pages/ScreenProducto/ArticuloManufacturadoScreen";
@@ -15,6 +14,7 @@ import { useEffect } from "react";
 import { setEmpresaActual, setEmpresaId } from "../redux/slices/EmpresaReducer";
 import { ScreenCategorias } from "../components/pages/ScreenCategorias/ScreenCategorias";
 import { setDataSucursales, setSucursalActual } from "../redux/slices/SucursalReducer";
+import { ScreenPromociones } from "../components/pages/ScreenPromocion/ScreenPromociones";
 
 export const AppRouter = () => {
   const location = useLocation();
@@ -83,7 +83,7 @@ export const AppRouter = () => {
             />
             <Route path="/usuarios" element={<ScreenUsuario />} />
             <Route path="/categorias" element={<ScreenCategorias />} />
-            <Route path="/promociones" element={<ScreenPromocion />} />
+            <Route path="/promociones" element={<ScreenPromociones />} />
             <Route
               path="/sucursales"
               element={<ScreenSucursales />}
