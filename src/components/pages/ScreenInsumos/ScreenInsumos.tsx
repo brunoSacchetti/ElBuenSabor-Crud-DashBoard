@@ -10,6 +10,7 @@ import { ModalArticuloInsumo } from "../../ui/modals/ModalArticuloInsumo/ModalAr
 import { SucursalService } from "../../../services/SucursalService";
 import { setCategoriaData } from "../../../redux/slices/CategoriaReducer";
 import { ICategoria } from "../../../types/Categoria";
+import { CategoriaService } from "../../../services/CategoriaService";
 
 // Definición de la URL base de la API
 const API_URL = import.meta.env.VITE_API_URL;
@@ -23,7 +24,7 @@ export const ScreenInsumos = () => {
   const dispatch = useAppDispatch();
   const [categorias, setCategorias] = useState<ICategoria[]>([]);
   const sucursalActual = useAppSelector((state) => state.sucursal.sucursalActual);
-
+  const categoriasService = new CategoriaService(API_URL + "/categoria");
   const ColumnsTableEmpresa = [
     {
       label: "ID",
@@ -77,31 +78,47 @@ export const ScreenInsumos = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         insumosService.delete(id).then(() => {
-          getInsumos();
+          // Filtra el insumo eliminado del estado local
+          setInsumoXCategoria((prevInsumos) => prevInsumos.filter(insumo => insumo.id !== id));
+          dispatch(setDataTable(insumosXCategoria.filter(insumo => insumo.id !== id)));
         });
       }
     });
   };
 
-  const getInsumos = async () => {
-    await insumosService.getAll().then((insumosData) => {
-      dispatch(setDataTable(insumosData));
-      setLoading(false);
-    });
-  };
 
-  useEffect(() => {
-    setLoading(true);
-    getInsumos();
-  }, []);
+  const [insumosXCategoria, setInsumoXCategoria] = useState<IArticuloInsumo[]>([]);
+
+
+const getInsumosCategoria = async () => {
+  if (!sucursalActual) {
+    console.error("Error al obtener categorias: sucursalActual es null");
+    setLoading(false);
+    return;
+  }
+
+  try {
+    const categoriasData = await sucursalService.getCategoriasPorSucursal(sucursalActual.id);
+    const allInsumos = categoriasData.flatMap(categoria => categoria.insumos);
+    setInsumoXCategoria(allInsumos)
+    dispatch(setDataTable(allInsumos));
+  } catch (error) {
+    console.error("Error al obtener categorias:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
 
   useEffect(() => {
     if (sucursalActual) {
       setLoading(true);
       getCategorias();
+      getInsumosCategoria()
+
     }
-  }, [sucursalActual]);
+  }, [,sucursalActual]);
 
   return (
     <>
@@ -144,7 +161,7 @@ export const ScreenInsumos = () => {
 
       <ModalArticuloInsumo
         categorias={categorias}
-        getInsumos={getInsumos}
+
         openModal={openModal}
         setOpenModal={setOpenModal}
       />

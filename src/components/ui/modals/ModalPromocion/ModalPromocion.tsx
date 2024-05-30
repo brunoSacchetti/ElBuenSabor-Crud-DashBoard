@@ -303,6 +303,8 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
         await promocionService.put(itemValue.id, itemValue); 
         promocionId = itemValue.id;
       } else {
+        console.log(itemValue);
+        
         const newPromocion = await promocionService.postOnlyData(
           itemValue
         );
