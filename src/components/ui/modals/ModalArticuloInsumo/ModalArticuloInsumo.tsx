@@ -25,7 +25,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 // Interfaz para los props del componente ModalPersona
 interface IModalInsumos {
-  getInsumos: () => void; // Función para obtener las personas
+
   categorias: ICategoria[];
   openModal: boolean;
   setOpenModal: (state: boolean) => void;
@@ -44,7 +44,7 @@ const initialValues: InsumoPost & { categoriaId: number } = {
   categoriaId: 0, // Nuevo campo para el id de la categoría
 };
 export const ModalArticuloInsumo = ({
-  getInsumos,
+
   openModal,
   categorias,
   setOpenModal,
@@ -142,7 +142,7 @@ export const ModalArticuloInsumo = ({
               }
         
               await categoriaService.addInsumoToCategoria(selectedCategoriaId, insumo.id);
-              getInsumos();
+
               handleClose();
             } catch (error) {
               console.error("Error al guardar el insumo:", error);
