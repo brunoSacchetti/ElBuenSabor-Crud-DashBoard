@@ -36,6 +36,9 @@ import PromocionPostDto from "../../../../types/Dtos/PromocionDto/PromocionPostD
 import TextFieldValue from "../../TextFildValue/TextFildValue";
 import { PromocionService } from "../../../../services/PromocionService";
 import { ArticulosPromoModal } from "./ArticulosPromoModal";
+import { PromocionDetalleService } from "../../../../services/PromocionDetalleService";
+import IPromocionDetalle from "../../../../types/PromocionDetalle";
+import PromocionDetallePost from "../../../../types/Dtos/PromocionDto/PromocionDetallePost";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -51,11 +54,11 @@ const initialValues: PromocionPostDto = {
   descripcionDescuento: "",
   precioPromocional: 0,
   tipoPromocion: "",
-  idSucursales: [1], // Depende de cómo quieras inicializarlo
+  idSucursales: [], // Depende de cómo quieras inicializarlo
   detalles: [
     {
-      cantidad: 4,
-      idArticulo: 1,
+      cantidad: 0,
+      idArticulo: 0,
     },
   ],
 };
@@ -84,7 +87,7 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
   // #region STATES - Promociones
   const [itemValue, setItemValue] = useState<PromocionPostDto>(initialValues);
   const [openInsumosModal, setOpenInsumosModal] = useState<boolean>(false);
-  const [selectedDetalle, setSelectedDetalle] = useState<any[]>([]);
+  const [selectedDetalle, setSelectedDetalle] = useState<PromocionDetallePost[]>([]);
 
   const sucursales = useAppSelector((state) => state.sucursal.data);
   const [selectedSucursales, setSelectedSucursales] = useState<number[]>([]);
@@ -104,6 +107,7 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
   //#region SERVICE - Promociones
   const sucursalService = new SucursalService(`${API_URL}/sucursal`);
   const promocionService = new PromocionService(`${API_URL}/promocion`);
+  const promocionDetalleService = new PromocionDetalleService(`${API_URL}/promocionDetalle`);
 
   //obtenemos la sucursal actual
 
@@ -112,14 +116,6 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
   const sucursalActual = useAppSelector(
     (state) => state.sucursal.sucursalActual
   );
-  const getUnidadMedida = async () => {
-    try {
-      const data = await unidadMedidaService.getAll();
-      setUnidadMedida(data);
-    } catch (error) {
-      console.error("Error al obtener unidades de medida:", error);
-    }
-  };
 
   /* const getCategorias = async () => {
     try {
@@ -224,7 +220,7 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
         precioPromocional: promocionData.precioPromocional,
         tipoPromocion: promocionData.tipoPromocion,
         idSucursales: promocionData.idSucursales,
-        detalles: [], // Puedes ajustar esto según sea necesario
+        detalles: selectedDetalle, // Puedes ajustar esto según sea necesario
       });
       setSelectedSucursales(promocionData.idSucursales);
     } else {
@@ -236,7 +232,6 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
   useEffect(() => {
     if (open && sucursalActual) {
       getInsumos();
-      getUnidadMedida();
       getCategorias();
     }
   }, [open, sucursalActual]);
@@ -320,22 +315,22 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
         promocionId
       ); */
 
-      /* await Promise.all(
+      await Promise.all(
         selectedDetalle.map(async (detalle) => {
-          const newDetalle = {
+          const newDetalle: PromocionDetallePost = {
             id: 0,
+            eliminado: false,
             cantidad: detalle.cantidad,
-            idArticuloInsumo: detalle.id,
-            idArticuloManufacturado: productoId,
+            idArticulo: detalle.id,
           };
-          const createdDetalle = await productoDetalleService.postOnlyData(
+          const createdDetalle = await promocionDetalleService.postOnlyData(
             newDetalle
           );
           detallesIds.push(createdDetalle.id);
         })
       );
 
-      await productoManufacturadoService.put(productoId, {
+      /* await productoManufacturadoService.put(productoId, {
         ...itemValue,
         idsArticuloManufacturadoDetalles: detallesIds,
       }); */
@@ -344,7 +339,6 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
       handleClose();
       resetValues();
       getData();
-      getUnidadMedida();
       getInsumos();
       dispatch(removeElementActive());
     } catch (error) {
@@ -396,6 +390,9 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
     );
     console.log(updatedDetalle);
     setSelectedDetalle(updatedDetalle);
+
+    console.log("SELECTED DETALLE: "+selectedDetalle);
+    
   };
 
   /* const handleCheckboxChange = (sucursalId: number) => {

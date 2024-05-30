@@ -110,7 +110,7 @@ export const ArticulosPromoModal: React.FC<InsumosModalProps> = ({
   
     const combinedItems: IUnifiedArticulo[] = [...filteredItems, ...filteredArticulosManufacturados];
   
-    /* console.log(combinedItems);  */// Añade este console.log para verificar
+    console.log(combinedItems);  /// Añade este console.log para verificar
     
  /*  useEffect(() => {
 

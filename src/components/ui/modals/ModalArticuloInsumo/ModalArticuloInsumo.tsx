@@ -96,6 +96,9 @@ export const ModalArticuloInsumo = ({
     stockMaximo: Yup.number()
       .required("Campo requerido")
       .min(0, "El stock debe ser mayor o igual a 0"),
+      stockMinimo: Yup.number()
+      .required("Campo requerido")
+      .min(0, "El stock debe ser mayor o igual a 0"),
     idUnidadMedida: Yup.number().required("Campo requerido"),
   });
 
