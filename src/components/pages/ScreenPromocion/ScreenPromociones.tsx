@@ -124,6 +124,7 @@ export const ScreenPromociones = () => {
             variant="contained"
           >
             <span className="material-symbols-outlined">add</span>
+            Agregar Promocion
           </Button>
         </div>
         {/* Mostrar indicador de carga mientras se cargan los datos */}

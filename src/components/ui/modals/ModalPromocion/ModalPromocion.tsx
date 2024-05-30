@@ -25,7 +25,6 @@ import { UnidadMedidaService } from "../../../../services/UnidadMedidaService";
 import IUnidadMedida from "../../../../types/UnidadMedida";
 import { ICategoria } from "../../../../types/Categoria";
 import { CategoriaService } from "../../../../services/CategoriaService";
-import { InsumosModal } from "../PruebaManufacturadoModal2/InsumosModal";
 import { TablePruebaModal2 } from "../../TablePruebaModal2/TablePruebaModal2";
 import IArticuloInsumo from "../../../../types/ArticuloInsumo";
 import { UnidadMedidaGetService } from "../../../../services/UnidadMedidaGetService";
@@ -36,13 +35,14 @@ import { SucursalService } from "../../../../services/SucursalService";
 import PromocionPostDto from "../../../../types/Dtos/PromocionDto/PromocionPostDto";
 import TextFieldValue from "../../TextFildValue/TextFildValue";
 import { PromocionService } from "../../../../services/PromocionService";
+import { ArticulosPromoModal } from "./ArticulosPromoModal";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 // #region ARREGLAR ID SUCURSAL, PROMOCION DETALLE SIN DETALLE NO SE AGREGA, EL ID NO SE MANDA Y QUEDA EN 0
 
 const initialValues: PromocionPostDto = {
-  id: 2,
+  id: 0,
   denominacion: "",
   fechaDesde: "",
   fechaHasta: "",
@@ -312,6 +312,7 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
           itemValue
         );
         promocionId = newPromocion.id;
+        console.log(promocionId);
       }
 
       /* await categoriaService.addArticuloManufacturado(
@@ -408,7 +409,7 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
   }; */
 
 
-  const handleCheckboxChange = (sucursalId: number) => {
+  /* const handleCheckboxChange = (sucursalId: number) => {
     setSelectedSucursales((prevSelected) => {
       const updatedSelected = prevSelected.includes(sucursalId)
         ? prevSelected.filter((id) => id !== sucursalId)
@@ -417,8 +418,25 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
       console.log("SUCURSAL MARCADA: ", updatedSelected);
       return updatedSelected;
     });
-  };
+  }; */
 
+  const handleCheckboxChange = (sucursalId: number) => {
+    setSelectedSucursales((prevSelected) => {
+      const updatedSelected = prevSelected.includes(sucursalId)
+        ? prevSelected.filter((id) => id !== sucursalId)
+        : [...prevSelected, sucursalId];
+  
+      // Actualizar itemValue con los ids de las sucursales seleccionadas
+      setItemValue((prevItemValue) => ({
+        ...prevItemValue,
+        idSucursales: updatedSelected,
+      }));
+  
+      console.log("SUCURSAL MARCADA: ", updatedSelected);
+      return updatedSelected;
+    });
+  };
+  
   const handleTipoPromocionChange = (e: SelectChangeEvent<string>) => {
     const { value } = e.target;
     setItemValue({
@@ -632,7 +650,7 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
           </div>
         </div>
       </Modal>
-      <InsumosModal
+      <ArticulosPromoModal
         open={openInsumosModal}
         handleClose={handleCloseInsumosModal}
         handleAddInsumos={handleAddInsumos} // Cambiar 'onConfirm' a 'handleAddInsumos'
