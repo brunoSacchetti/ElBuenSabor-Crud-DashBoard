@@ -11,11 +11,12 @@ import { MenuItem, Select } from "@mui/material";
 import Checkbox from "@mui/material/Checkbox";
 import IArticuloInsumo from "../../../../types/ArticuloInsumo";
 import { CategoriaService } from "../../../../services/CategoriaService";
+import IArticuloManufacturado from "../../../../types/ArticuloManufacturado";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 interface ITableIngredientsProps {
-  dataIngredients: IArticuloInsumo[] | any[];
+  dataIngredients: IArticuloInsumo[];
   onSelect: (selectedData: IArticuloInsumo[]) => void;
 }
 
@@ -86,14 +87,18 @@ export const TableArticulo: React.FC<ITableIngredientsProps> = ({
     const checked = event.target.checked;
     let updatedSelectedRows;
     if (checked) {
+      // Si el checkbox está marcado, agregar la fila a las filas seleccionadas
       updatedSelectedRows = [...selectedRows, rowData];
     } else {
+      // Si el checkbox está desmarcado, quitar la fila de las filas seleccionadas
       updatedSelectedRows = selectedRows.filter(
         (row) => row.id !== rowData.id
       );
     }
     setSelectedRows(updatedSelectedRows);
-    onSelect(updatedSelectedRows);
+    onSelect(updatedSelectedRows); // Asegúrate de llamar a onSelect aquí para actualizar el estado seleccionado
+    console.log();
+    
   };
 
   const handleCantidadChange = (
@@ -108,7 +113,7 @@ export const TableArticulo: React.FC<ITableIngredientsProps> = ({
       return row;
     });
     setDisplayedRows(updatedDisplayedRows);
-
+  
     const updatedOriginalRows = originalRows.map((row) => {
       if (row.id === rowData.id) {
         return { ...row, cantidad: newCantidad };
@@ -116,7 +121,7 @@ export const TableArticulo: React.FC<ITableIngredientsProps> = ({
       return row;
     });
     setOriginalRows(updatedOriginalRows);
-
+  
     const updatedSelectedRows = selectedRows.map((row) => {
       if (row.id === rowData.id) {
         return { ...row, cantidad: newCantidad };
@@ -124,7 +129,9 @@ export const TableArticulo: React.FC<ITableIngredientsProps> = ({
       return row;
     });
     setSelectedRows(updatedSelectedRows);
-    onSelect(updatedSelectedRows);
+    onSelect(updatedSelectedRows); // Asegúrate de llamar a onSelect aquí para actualizar el estado seleccionado
+    
+    console.log(selectedRows);
   };
 
   const onSelectCategory = async (categoryId: number) => {
@@ -141,7 +148,7 @@ export const TableArticulo: React.FC<ITableIngredientsProps> = ({
   return (
     <div>
       <TextField
-        label="Buscar ingrediente"
+        label="Buscar articulo"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         style={{ marginBottom: 20, width: "30%" }}

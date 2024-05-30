@@ -34,6 +34,7 @@ export const ArticulosPromoModal: React.FC<InsumosModalProps> = ({
   const [articulosManufacturados, setArticulosManufacturados] = useState<IArticuloManufacturado[]>([]);
 
   const [filteredItems, setFilteredItems] = useState<any[]>([]);
+  const [filteredArticulosManufacturados, setFilteredArticulosManufacturados] = useState<IArticuloManufacturado[]>([]);
 
   const categoriaService = new CategoriaService(API_URL + "/categoria");
   const insumosServices = new InsumoGetService(API_URL + "/ArticuloInsumo");
@@ -61,7 +62,8 @@ export const ArticulosPromoModal: React.FC<InsumosModalProps> = ({
 
   const fetchData = async () => {
     await getCategorias();
-    await filterInsumosAndArticulos();
+    await filterArticulosManufacturados();
+    await filterInsumos();
   };
 
   const getCategorias = async () => {
@@ -71,37 +73,45 @@ export const ArticulosPromoModal: React.FC<InsumosModalProps> = ({
     }
     try {
       console.log(sucursalActual);
-      const data = await sucursalService.getCategoriasPorSucursal(sucursalActual?.id);
+      const data = await sucursalService.getCategoriasPorSucursal(sucursalActual.id);
       setCategoria(data);
     } catch (error) {
       console.error("Error al obtener categorias:", error);
     }
   };
 
-  const filterInsumosAndArticulos = () => {
+/*   console.log(categoria); */
+
+  const filterInsumos = () => {
     const allInsumos: IArticuloInsumo[] = [];
-    const allArticulos: IArticuloManufacturado[] = [];
   
     categoria.forEach((cat) => {
+      console.log("Categoria:", cat); // Añade este console.log para verificar la estructura de las categorías
+      // Filtrar insumos y guardar solo los que no son para elaborar
       const insumosNoElaborar = cat.insumos.filter((insumo: any) => !insumo.esParaElaborar);
       allInsumos.push(...insumosNoElaborar);
-      allArticulos.push(...cat.articulosManufacturados);
     });
   
-    console.log("Insumos:", allInsumos);
-    console.log("Artículos manufacturados:", allArticulos);
-  
-    // Combinar insumos y artículos manufacturados
-    const combinedItems = [
-      ...allInsumos.map(item => ({ ...item, tipo: 'insumo' })),
-      ...allArticulos.map(item => ({ ...item, tipo: 'articulo' })),
-    ];
-    setFilteredItems(combinedItems);
-  
-    console.log("Items combinados:", combinedItems);
+    console.log("Insumos filtrados:", allInsumos); // Añade este console.log para verificar los insumos filtrados
+    setFilteredItems(allInsumos);
   };
   
-
+  const filterArticulosManufacturados = () => {
+    const allArticulosManufacturados: IArticuloManufacturado[] = [];
+  
+    categoria.forEach((cat) => {
+      // Filtrar artículos manufacturados y guardar todos los productos de cada categoría
+      allArticulosManufacturados.push(...cat.articulosManufacturados);
+    });
+  
+    console.log("Artículos manufacturados:", allArticulosManufacturados); // Añade este console.log para verificar los artículos manufacturados
+    setFilteredArticulosManufacturados(allArticulosManufacturados);
+  };
+  
+    const combinedItems: IUnifiedArticulo[] = [...filteredItems, ...filteredArticulosManufacturados];
+  
+    /* console.log(combinedItems);  */// Añade este console.log para verificar
+    
  /*  useEffect(() => {
 
     getCategorias();
@@ -152,7 +162,7 @@ export const ArticulosPromoModal: React.FC<InsumosModalProps> = ({
           ))}
         </Select>
         <TableArticulo
-          dataIngredients={filteredItems}
+          dataIngredients={combinedItems}
           onSelect={(selectedData) => setSelectedInsumos(selectedData)}
         />
         <div style={{ marginTop: 20, textAlign: "center" }}>
