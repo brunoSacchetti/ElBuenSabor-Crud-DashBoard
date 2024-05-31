@@ -76,16 +76,26 @@ export const ScreenPromociones = () => {
       }
     });
   };
+
   // Función para obtener las promociones
-  const getPromocion = async () => {                              
+  const getPromocion = async () => {
     if (sucursalActual) {
-      await sucursalService.getPromociones(sucursalActual.id).then((promocionData) => {
-        dispatch(setDataTable(promocionData));
+      try {
+        const promocionData = await sucursalService.getPromociones(sucursalActual.id);
+
+  
+        if (Array.isArray(promocionData)) {
+          dispatch(setDataTable(promocionData));
+        } else {
+          console.error("La respuesta de getPromociones no es un array:", promocionData);   
+         }
+      } catch (error) {
+        console.error("Error al obtener las promociones:", error);
+      } finally {
         setLoading(false);
-      });
+      }
     }
   };
-  
 
   // Efecto para cargar los datos al inicio
 

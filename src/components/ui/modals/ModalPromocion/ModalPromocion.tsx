@@ -36,6 +36,8 @@ import PromocionPostDto from "../../../../types/Dtos/PromocionDto/PromocionPostD
 import TextFieldValue from "../../TextFildValue/TextFildValue";
 import { PromocionService } from "../../../../services/PromocionService";
 import { ArticulosPromoModal } from "./ArticulosPromoModal";
+import IArticuloGenerico from "../../../../types/ArticuloGenerico/IArticuloGenerico";
+import { PromocionDetalleService } from "../../../../services/PromocionDetalleService";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -54,8 +56,8 @@ const initialValues: PromocionPostDto = {
   idSucursales: [1], // Depende de cómo quieras inicializarlo
   detalles: [
     {
-      cantidad: 4,
-      idArticulo: 1,
+      cantidad: 0,
+      idArticulo: 0,
     },
   ],
 };
@@ -71,16 +73,14 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
   open,
   getData,
 }) => {
-  const [selectedUnidadMedidaId, setSelectedUnidadMedidaId] =
-    useState<number>();
-  //const [selectedDetalle, setSelectedDetalle] = useState<any[]>([]);
+
+
   const [unidadMedida, setUnidadMedida] = useState<IUnidadMedida[]>([]);
   const [categoria, setCategoria] = useState<ICategoria[]>([]);
-  const [selectedCategoriaId, setSelectedCategoriaId] = useState<number>(1);
-  //const [openInsumosModal, setOpenInsumosModal] = useState<boolean>(false);
+
   const [dataIngredients, setDataIngredients] = useState<any[]>([]);
 
-  // --------------
+
   // #region STATES - Promociones
   const [itemValue, setItemValue] = useState<PromocionPostDto>(initialValues);
   const [openInsumosModal, setOpenInsumosModal] = useState<boolean>(false);
@@ -136,7 +136,6 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
       return;
     }
     try {
-      console.log(sucursalActual);
       const data = await sucursalService.getCategoriasPorSucursal(
         sucursalActual?.id
       );
@@ -224,7 +223,7 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
         precioPromocional: promocionData.precioPromocional,
         tipoPromocion: promocionData.tipoPromocion,
         idSucursales: promocionData.idSucursales,
-        detalles: [], // Puedes ajustar esto según sea necesario
+        detalles: promocionData.detalles,
       });
       setSelectedSucursales(promocionData.idSucursales);
     } else {
@@ -266,16 +265,6 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
 
   const handleConfirmModal = async () => {
     try {
-      // Verifica si hay al menos un detalle agregado
-      /* if (selectedDetalle.length === 0) {
-        // Muestra un mensaje de error con SweetAlert
-        await Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Debes agregar al menos un detalle antes de confirmar.",
-        });
-        return;
-      } */
 
       // Verifica que todos los campos obligatorios estén completos
       if (
@@ -298,23 +287,18 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
         return;
       }
 
-      let productoId: number;
-      let detallesIds: number[] = [];
-
       let promocionId: number;
+      let detallesIds: number[] = [];
 
       if (data) {
         //await productoManufacturadoService.put(itemValue.id, itemValue);
         await promocionService.put(itemValue.id, itemValue); 
         promocionId = itemValue.id;
       } else {
-        console.log(itemValue);
-        
         const newPromocion = await promocionService.postOnlyData(
           itemValue
         );
         promocionId = newPromocion.id;
-        console.log(promocionId);
       }
 
       /* await categoriaService.addArticuloManufacturado(
@@ -322,22 +306,26 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
         promocionId
       ); */
 
-      /* await Promise.all(
+      const promocionDetalleService = new PromocionDetalleService(API_URL + "/promocionDetalle");
+
+      await Promise.all(
         selectedDetalle.map(async (detalle) => {
+
           const newDetalle = {
-            id: 0,
+
             cantidad: detalle.cantidad,
-            idArticuloInsumo: detalle.id,
-            idArticuloManufacturado: productoId,
+            idArticulo: detalle.id,
           };
-          const createdDetalle = await productoDetalleService.postOnlyData(
+          console.log(newDetalle,"DETALLES");
+          
+          const createdDetalle = await promocionDetalleService.postOnlyData(
             newDetalle
           );
-          detallesIds.push(createdDetalle.id);
+          detallesIds.push(createdDetalle.idArticulo);
         })
       );
 
-      await productoManufacturadoService.put(productoId, {
+     /*  await productoManufacturadoService.put(productoId, {
         ...itemValue,
         idsArticuloManufacturadoDetalles: detallesIds,
       }); */
@@ -392,35 +380,18 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
     handleCloseInsumosModal();
   };
 
+    console.log(selectedDetalle);
+    
+ 
+ 
   const handleRemoveInsumo = (id: number) => {
     const updatedDetalle = selectedDetalle.filter(
       (detalle) => detalle.id !== id
     );
-    console.log(updatedDetalle);
+   
     setSelectedDetalle(updatedDetalle);
   };
 
-  /* const handleCheckboxChange = (sucursalId: number) => {
-    setSelectedSucursales((prevSelected) =>
-      prevSelected.includes(sucursalId)
-        ? prevSelected.filter((id) => id !== sucursalId)
-        : [...prevSelected, sucursalId]
-    );
-    console.log("SUCURSAL MARCADA: " + selectedSucursales);
-    
-  }; */
-
-
-  /* const handleCheckboxChange = (sucursalId: number) => {
-    setSelectedSucursales((prevSelected) => {
-      const updatedSelected = prevSelected.includes(sucursalId)
-        ? prevSelected.filter((id) => id !== sucursalId)
-        : [...prevSelected, sucursalId];
-
-      console.log("SUCURSAL MARCADA: ", updatedSelected);
-      return updatedSelected;
-    });
-  }; */
 
   const handleCheckboxChange = (sucursalId: number) => {
     setSelectedSucursales((prevSelected) => {

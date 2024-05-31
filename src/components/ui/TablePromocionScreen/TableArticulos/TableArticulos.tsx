@@ -9,32 +9,28 @@ import TableRow from "@mui/material/TableRow";
 import TextField from "@mui/material/TextField";
 import { MenuItem, Select } from "@mui/material";
 import Checkbox from "@mui/material/Checkbox";
-import IArticuloInsumo from "../../../../types/ArticuloInsumo";
+import IArticuloGenerico from "../../../../types/ArticuloGenerico/IArticuloGenerico";
 import { CategoriaService } from "../../../../services/CategoriaService";
-import IArticuloManufacturado from "../../../../types/ArticuloManufacturado";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 interface ITableIngredientsProps {
-  dataIngredients: IArticuloInsumo[];
-  onSelect: (selectedData: IArticuloInsumo[]) => void;
-}
-
-interface ITableRow extends IArticuloInsumo {
-  id: number;
+  dataIngredients: IArticuloGenerico[];
+  onSelect: (selectedData: IArticuloGenerico[]) => void;
 }
 
 export const TableArticulo: React.FC<ITableIngredientsProps> = ({
   dataIngredients,
   onSelect,
 }) => {
-  const [originalRows, setOriginalRows] = useState<ITableRow[]>([]);
-  const [displayedRows, setDisplayedRows] = useState<ITableRow[]>([]);
-  const [selectedRows, setSelectedRows] = useState<ITableRow[]>([]);
+  const [originalRows, setOriginalRows] = useState<IArticuloGenerico[]>([]);
+  const [displayedRows, setDisplayedRows] = useState<IArticuloGenerico[]>([]);
+  const [selectedRows, setSelectedRows] = useState<IArticuloGenerico[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedCategoriaId, setSelectedCategoriaId] = useState<number>(-1);
   const [categoria, setCategoria] = useState<any[]>([]);
-  const [selectedCategoryInsumos, setSelectedCategoryInsumos] = useState<any[]>([]);
+  const [selectedCategoryItems, setSelectedCategoryItems] = useState<IArticuloGenerico[]>([]);
+  const [cantidadMap, setCantidadMap] = useState<{ [key: string]: number }>({});
 
   useEffect(() => {
     const categoriaService = new CategoriaService(API_URL + "/categoria");
@@ -43,85 +39,57 @@ export const TableArticulo: React.FC<ITableIngredientsProps> = ({
     });
   }, []);
 
-  /* useEffect(() => {
-    setOriginalRows(
-      dataIngredients.map((ingredient, index) => ({
-        ...ingredient,
-        id: index + 1,
-        cantidad: ingredient.cantidad || 0,
-      }))
-    );
-  }, [dataIngredients]); */
-
   useEffect(() => {
-    setOriginalRows(
-      dataIngredients.map((ingredient) => ({
-        ...ingredient,
-        cantidad: ingredient.cantidad || 0,
-      }))
-    );
+    setOriginalRows(dataIngredients);
+    setDisplayedRows(dataIngredients);
   }, [dataIngredients]);
-  
 
   useEffect(() => {
-    let results: ITableRow[] = [];
+    let results: IArticuloGenerico[] = [];
 
-    if (selectedCategoryInsumos.length === 0) {
+    if (selectedCategoryItems.length === 0) {
       results = originalRows;
     } else {
-      results = selectedCategoryInsumos;
+      results = selectedCategoryItems;
     }
 
-    // Filtrar por término de búsqueda
-    results = results.filter((ingredient) =>
-      ingredient.denominacion.toLowerCase().includes(searchTerm.toLowerCase())
+    results = results.filter((item) =>
+      item.denominacion.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     setDisplayedRows(results);
-  }, [searchTerm, selectedCategoryInsumos, originalRows]);
+  }, [searchTerm, selectedCategoryItems, originalRows]);
 
   const handleCheckboxChange = (
     event: React.ChangeEvent<HTMLInputElement>,
-    rowData: ITableRow
+    rowData: IArticuloGenerico
   ) => {
     const checked = event.target.checked;
     let updatedSelectedRows;
     if (checked) {
-      // Si el checkbox está marcado, agregar la fila a las filas seleccionadas
       updatedSelectedRows = [...selectedRows, rowData];
     } else {
-      // Si el checkbox está desmarcado, quitar la fila de las filas seleccionadas
       updatedSelectedRows = selectedRows.filter(
         (row) => row.id !== rowData.id
       );
     }
     setSelectedRows(updatedSelectedRows);
-    onSelect(updatedSelectedRows); // Asegúrate de llamar a onSelect aquí para actualizar el estado seleccionado
-    console.log();
-    
+    onSelect(updatedSelectedRows.map(row => ({
+      ...row,
+      cantidad: cantidadMap[row.id] || 0,
+    })));
   };
 
   const handleCantidadChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    rowData: ITableRow
+    rowData: IArticuloGenerico
   ) => {
-    const newCantidad = parseFloat(event.target.value);
-    const updatedDisplayedRows = displayedRows.map((row) => {
-      if (row.id === rowData.id) {
-        return { ...row, cantidad: newCantidad };
-      }
-      return row;
-    });
-    setDisplayedRows(updatedDisplayedRows);
-  
-    const updatedOriginalRows = originalRows.map((row) => {
-      if (row.id === rowData.id) {
-        return { ...row, cantidad: newCantidad };
-      }
-      return row;
-    });
-    setOriginalRows(updatedOriginalRows);
-  
+    const newCantidad = parseFloat(event.target.value) || 0;
+    setCantidadMap(prev => ({
+      ...prev,
+      [rowData.id]: newCantidad,
+    }));
+
     const updatedSelectedRows = selectedRows.map((row) => {
       if (row.id === rowData.id) {
         return { ...row, cantidad: newCantidad };
@@ -129,26 +97,24 @@ export const TableArticulo: React.FC<ITableIngredientsProps> = ({
       return row;
     });
     setSelectedRows(updatedSelectedRows);
-    onSelect(updatedSelectedRows); // Asegúrate de llamar a onSelect aquí para actualizar el estado seleccionado
-    
-    console.log(selectedRows);
+    onSelect(updatedSelectedRows);
   };
 
   const onSelectCategory = async (categoryId: number) => {
     setSelectedCategoriaId(categoryId);
     if (categoryId === -1) {
-      setSelectedCategoryInsumos([]);
+      setSelectedCategoryItems([]);
     } else {
       const categoriaService = new CategoriaService(API_URL + "/categoria");
       const selectedCategory = await categoriaService.getById(categoryId);
-      setSelectedCategoryInsumos(selectedCategory?.insumos || []);
+      setSelectedCategoryItems(selectedCategory?.items || []);
     }
   };
 
   return (
     <div>
       <TextField
-        label="Buscar articulo"
+        label="Buscar artículo"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         style={{ marginBottom: 20, width: "30%" }}
@@ -160,7 +126,7 @@ export const TableArticulo: React.FC<ITableIngredientsProps> = ({
         value={selectedCategoriaId}
         onChange={(e) => onSelectCategory(e.target.value as number)}
       >
-        <MenuItem value={-1}>Todas las Categorias</MenuItem>
+        <MenuItem value={-1}>Todas las Categorías</MenuItem>
         {categoria.map((cat) => (
           <MenuItem key={cat.id} value={cat.id}>
             {cat.denominacion}
@@ -175,7 +141,7 @@ export const TableArticulo: React.FC<ITableIngredientsProps> = ({
           <TableHead>
             <TableRow>
               <TableCell align="center">Id</TableCell>
-              <TableCell align="center">Ingrediente</TableCell>
+              <TableCell align="center">Artículo</TableCell>
               <TableCell align="center">Unidad de medida</TableCell>
               <TableCell align="center">Cantidad</TableCell>
               <TableCell align="center">Seleccionar</TableCell>
@@ -186,11 +152,10 @@ export const TableArticulo: React.FC<ITableIngredientsProps> = ({
               <TableRow key={row.id}>
                 <TableCell align="center">{row.id}</TableCell>
                 <TableCell align="center">{row.denominacion}</TableCell>
-                <TableCell align="center">{row.unidadMedida?.denominacion ?? "N/A"}</TableCell>
                 <TableCell align="center">
                   <TextField
                     type="number"
-                    value={row.cantidad}
+                    value={cantidadMap[row.id] || 0}
                     onChange={(event) => handleCantidadChange(event, row)}
                     variant="filled"
                   />
