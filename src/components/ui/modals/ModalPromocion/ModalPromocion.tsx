@@ -53,7 +53,7 @@ const initialValues: PromocionPostDto = {
   descripcionDescuento: "",
   precioPromocional: 0,
   tipoPromocion: "",
-  idSucursales: [1], // Depende de cómo quieras inicializarlo
+  idSucursales: [], // Depende de cómo quieras inicializarlo
   detalles: [
     {
       cantidad: 0,
@@ -104,6 +104,7 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
   //#region SERVICE - Promociones
   const sucursalService = new SucursalService(`${API_URL}/sucursal`);
   const promocionService = new PromocionService(`${API_URL}/promocion`);
+  const promocionDetalleService = new PromocionDetalleService(`${API_URL}/promocionDetalle`);
 
   //obtenemos la sucursal actual
 
@@ -112,14 +113,6 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
   const sucursalActual = useAppSelector(
     (state) => state.sucursal.sucursalActual
   );
-  const getUnidadMedida = async () => {
-    try {
-      const data = await unidadMedidaService.getAll();
-      setUnidadMedida(data);
-    } catch (error) {
-      console.error("Error al obtener unidades de medida:", error);
-    }
-  };
 
   /* const getCategorias = async () => {
     try {
@@ -235,7 +228,6 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
   useEffect(() => {
     if (open && sucursalActual) {
       getInsumos();
-      getUnidadMedida();
       getCategorias();
     }
   }, [open, sucursalActual]);
@@ -334,7 +326,6 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
       handleClose();
       resetValues();
       getData();
-      getUnidadMedida();
       getInsumos();
       dispatch(removeElementActive());
     } catch (error) {
@@ -390,6 +381,9 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
     );
    
     setSelectedDetalle(updatedDetalle);
+
+    console.log("SELECTED DETALLE: "+selectedDetalle);
+    
   };
 
 
