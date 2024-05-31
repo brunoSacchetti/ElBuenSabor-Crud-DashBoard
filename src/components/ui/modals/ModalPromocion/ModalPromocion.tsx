@@ -114,14 +114,6 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
     (state) => state.sucursal.sucursalActual
   );
 
-  /* const getCategorias = async () => {
-    try {
-      const data = await categoriaService.getAll();
-      setCategoria(data);
-    } catch (error) {
-      console.error("Error al obtener las categorías:", error);
-    }
-  };} */
 
   const getCategorias = async () => {
     if (!sucursalActual) {
@@ -176,31 +168,6 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
       console.error("Error al obtener los detalles de los insumos:", error);
     }
   };
-
-   /* useEffect(() => {
-    if (data) {
-      const productoData: ProductoPost = data as ProductoPost;
-      setItemValue({
-        id: productoData.id,
-        denominacion: productoData.denominacion,
-        precioVenta: productoData.precioVenta,
-        tiempoEstimadoMinutos: productoData.tiempoEstimadoMinutos,
-        descripcion: productoData.descripcion,
-        preparacion: productoData.preparacion,
-        idsArticuloManufacturadoDetalles:
-          productoData.idsArticuloManufacturadoDetalles,
-        idUnidadMedida: productoData.idUnidadMedida,
-      });
-      setSelectedUnidadMedidaId(productoData.idUnidadMedida);
-      console.log(productoData.idUnidadMedida);
-      
-
-      // Fetch and set the insumos related to the product
-      getProductoDetalles(productoData.id); // Esta función se encargará de realizar la llamada a la API y actualizar los detalles de los insumos
-    } else {
-      resetValues();
-    }
-  }, [data]); */
 
   useEffect(() => {
     if (data) {
@@ -257,8 +224,6 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
 
   const handleConfirmModal = async () => {
     try {
-
-      // Verifica que todos los campos obligatorios estén completos
       if (
         itemValue.denominacion.trim() === "" ||
         itemValue.fechaDesde.trim() === "" ||
@@ -270,7 +235,6 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
         itemValue.tipoPromocion.trim() === "" ||
         selectedSucursales.length === 0
       ) {
-        // Muestra un mensaje de error con SweetAlert
         await Swal.fire({
           icon: "error",
           title: "Oops...",
@@ -278,50 +242,37 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
         });
         return;
       }
-
+  
       let promocionId: number;
       let detallesIds: number[] = [];
-
+  
       if (data) {
-        //await productoManufacturadoService.put(itemValue.id, itemValue);
-        await promocionService.put(itemValue.id, itemValue); 
+        await promocionService.put(itemValue.id, itemValue);
         promocionId = itemValue.id;
       } else {
-        const newPromocion = await promocionService.postOnlyData(
-          itemValue
-        );
+        const newPromocion = await promocionService.postOnlyData(itemValue);
         promocionId = newPromocion.id;
+        setItemValue(prevItemValue => ({
+          ...prevItemValue,
+          id: promocionId,
+        }));
       }
-
-      /* await categoriaService.addArticuloManufacturado(
-        selectedCategoriaId,
-        promocionId
-      ); */
-
-      const promocionDetalleService = new PromocionDetalleService(API_URL + "/promocionDetalle");
-
+  
+      const promocionDetalleService = new PromocionDetalleService(`${API_URL}/promocionDetalle`);
+  
       await Promise.all(
         selectedDetalle.map(async (detalle) => {
-
           const newDetalle = {
-
+            id: 0,
             cantidad: detalle.cantidad,
             idArticulo: detalle.id,
+            promocionId: promocionId,
           };
-          console.log(newDetalle,"DETALLES");
-          
-          const createdDetalle = await promocionDetalleService.postOnlyData(
-            newDetalle
-          );
-          detallesIds.push(createdDetalle.idArticulo);
+          const createdDetalle = await promocionDetalleService.postOnlyData(newDetalle);
+          detallesIds.push(createdDetalle.id);
         })
       );
-
-     /*  await productoManufacturadoService.put(productoId, {
-        ...itemValue,
-        idsArticuloManufacturadoDetalles: detallesIds,
-      }); */
-
+  
       handleSuccess("Elemento guardado correctamente");
       handleClose();
       resetValues();
@@ -332,31 +283,7 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
       console.error("Error al confirmar modal:", error);
     }
   };
-
-  /* const handleTableIngredientSelect = (selectedData: any) => {
-    const filteredData = selectedData.map((item: any) => ({
-      id: item.id,
-      cantidad: item.cantidad,
-      denominacion: item.denominacion,
-    }));
-    setSelectedDetalle(filteredData);
-  }; */
-
-  /* const handleChangeUnidadMedidaValues = async (
-    e: SelectChangeEvent<number>
-  ) => {
-    const unidadMedidaId = e.target.value as number;
-    setSelectedUnidadMedidaId(unidadMedidaId);
-    setItemValue({
-      ...itemValue,
-      idUnidadMedida: unidadMedidaId,
-    });
-  }; */
-
-  /* const handleChangeCategoriaValues = async (e: SelectChangeEvent<number>) => {
-    const categoriaId = e.target.value as number;
-    setSelectedCategoriaId(categoriaId);
-  }; */
+  
 
   const handleOpenInsumosModal = () => {
     setOpenInsumosModal(true);
@@ -379,10 +306,9 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
     const updatedDetalle = selectedDetalle.filter(
       (detalle) => detalle.id !== id
     );
-   
+  
     setSelectedDetalle(updatedDetalle);
 
-    console.log("SELECTED DETALLE: "+selectedDetalle);
     
   };
 
