@@ -213,7 +213,7 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
       [name]: value,
     });
   };
-  console.log(itemValue);
+
 
   const handleDateChange = (name: string, value: string) => {
     setItemValue((prevState) => ({
@@ -223,67 +223,107 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
   };
 
   const handleConfirmModal = async () => {
-    try {
-      if (
-        itemValue.denominacion.trim() === "" ||
-        itemValue.fechaDesde.trim() === "" ||
-        itemValue.fechaHasta.trim() === "" ||
-        itemValue.horaDesde.trim() === "" ||
-        itemValue.horaHasta.trim() === "" ||
-        itemValue.precioPromocional === 0 ||
-        itemValue.descripcionDescuento.trim() === "" ||
-        itemValue.tipoPromocion.trim() === "" ||
-        selectedSucursales.length === 0
-      ) {
-        await Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Por favor completa todos los campos obligatorios antes de confirmar.",
-        });
-        return;
-      }
-  
-      let promocionId: number;
-      let detallesIds: number[] = [];
-  
-      if (data) {
-        await promocionService.put(itemValue.id, itemValue);
-        promocionId = itemValue.id;
-      } else {
-        const newPromocion = await promocionService.postOnlyData(itemValue);
-        promocionId = newPromocion.id;
-        setItemValue(prevItemValue => ({
-          ...prevItemValue,
-          id: promocionId,
-        }));
-      }
-  
-      const promocionDetalleService = new PromocionDetalleService(`${API_URL}/promocionDetalle`);
-  
-      await Promise.all(
-        selectedDetalle.map(async (detalle) => {
-          const newDetalle = {
-            id: 0,
-            cantidad: detalle.cantidad,
-            idArticulo: detalle.id,
-            promocionId: promocionId,
-          };
-          const createdDetalle = await promocionDetalleService.postOnlyData(newDetalle);
-          detallesIds.push(createdDetalle.id);
-        })
-      );
-  
-      handleSuccess("Elemento guardado correctamente");
-      handleClose();
-      resetValues();
-      getData();
-      getInsumos();
-      dispatch(removeElementActive());
-    } catch (error) {
-      console.error("Error al confirmar modal:", error);
+  try {
+    // Verifica que todos los campos obligatorios estén completos
+    if (
+      itemValue.denominacion.trim() === "" ||
+      itemValue.fechaDesde.trim() === "" ||
+      itemValue.fechaHasta.trim() === "" ||
+      itemValue.horaDesde.trim() === "" ||
+      itemValue.horaHasta.trim() === "" ||
+      itemValue.precioPromocional === 0 ||
+      itemValue.descripcionDescuento.trim() === "" ||
+      itemValue.tipoPromocion.trim() === "" ||
+      selectedSucursales.length === 0
+    ) {
+      // Muestra un mensaje de error con SweetAlert
+      await Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Por favor completa todos los campos obligatorios antes de confirmar.",
+      });
+      return;
     }
-  };
-  
+
+    let promocionId: number;
+    let detallesIds: number[] = [];
+
+    if (data) {
+      // Edita la promoción existente
+      await promocionService.put(itemValue.id, itemValue);
+      promocionId = itemValue.id;
+    } else {
+        // Crea una nueva promoción
+        const newDetalleArray = selectedDetalle.map((detalle) => ({
+          cantidad: detalle.cantidad,
+          idArticulo: detalle.id,
+        }));
+      
+        const newItemValue = { ...itemValue, detalles: newDetalleArray };
+        console.log(newItemValue);
+      
+        const newPromocion = await promocionService.postOnlyData(newItemValue);
+        promocionId = newPromocion.id;
+      }
+
+    // Guarda los detalles de la promoción
+    await Promise.all(
+      selectedDetalle.map(async (detalle) => {
+        const newDetalle = {
+          cantidad: detalle.cantidad,
+          idArticulo: detalle.id,
+          promocionId: promocionId,
+        };
+        const createdDetalle = await promocionDetalleService.postOnlyData(
+          newDetalle
+        );
+        detallesIds.push(createdDetalle.id);
+      })
+    );
+
+    // Muestra un mensaje de éxito con SweetAlert
+    await Swal.fire({
+      icon: "success",
+      title: "Éxito",
+      text: "Promoción guardada correctamente.",
+    });
+
+    // Cierra el modal y actualiza los datos
+    handleClose();
+    resetValues();
+    getData();
+    dispatch(removeElementActive());
+  } catch (error) {
+    console.error("Error al confirmar modal:", error);
+  }
+};
+
+
+
+
+
+
+  /* const handleConfirmModal = async () => {
+  try {
+    // Otras operaciones
+    let productoId: number;
+    let detallesIds: number[] = [];
+
+    if (data) {
+      await productoManufacturadoService.put(itemValue.id, itemValue); // Aquí se utiliza itemValue.id
+      productoId = itemValue.id;
+    } else {
+      const newProducto = await productoManufacturadoService.postOnlyData(
+        itemValue
+      );
+      productoId = newProducto.id;
+    }
+    // Otras operaciones
+  } catch (error) {
+    console.error("Error al confirmar modal:", error);
+  }
+}; */
+
 
   const handleOpenInsumosModal = () => {
     setOpenInsumosModal(true);
@@ -298,7 +338,7 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
     handleCloseInsumosModal();
   };
 
-    console.log(selectedDetalle);
+
     
  
  
@@ -546,7 +586,7 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
       <ArticulosPromoModal
         open={openInsumosModal}
         handleClose={handleCloseInsumosModal}
-        handleAddInsumos={handleAddInsumos} // Cambiar 'onConfirm' a 'handleAddInsumos'
+        handleAddInsumos={handleAddInsumos}
       />
     </div>
   );

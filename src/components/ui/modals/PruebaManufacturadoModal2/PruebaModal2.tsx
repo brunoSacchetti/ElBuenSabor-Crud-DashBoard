@@ -190,8 +190,6 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
         idUnidadMedida: productoData.idUnidadMedida,
       });
       setSelectedUnidadMedidaId(productoData.idUnidadMedida);
-      console.log(productoData.idUnidadMedida);
-      
 
       // Fetch and set the insumos related to the product
       getProductoDetalles(productoData.id); // Esta función se encargará de realizar la llamada a la API y actualizar los detalles de los insumos
