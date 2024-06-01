@@ -15,30 +15,19 @@ import {
 } from "@mui/material";
 import styles from "./MasterDetailModal.module.css";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/redux";
-import { ArticuloManufacturadoService } from "../../../../services/ArticuloManufacturadoService";
 import { InsumoGetService } from "../../../../services/InsumoGetService";
-import { handleSuccess } from "../../../../helpers/alerts";
-import ProductoPost from "../../../../types/post/ProductoPost";
-import { ProductoDetalleService } from "../../../../services/ProductoDetalleService";
 import { removeElementActive } from "../../../../redux/slices/TablaReducer";
-import { UnidadMedidaService } from "../../../../services/UnidadMedidaService";
-import IUnidadMedida from "../../../../types/UnidadMedida";
 import { ICategoria } from "../../../../types/Categoria";
-import { CategoriaService } from "../../../../services/CategoriaService";
-import { TablePruebaModal2 } from "../../TablePruebaModal2/TablePruebaModal2";
 import IArticuloInsumo from "../../../../types/ArticuloInsumo";
-import { UnidadMedidaGetService } from "../../../../services/UnidadMedidaGetService";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Swal from "sweetalert2";
 import { Table } from "react-bootstrap";
 import { SucursalService } from "../../../../services/SucursalService";
 import PromocionPostDto from "../../../../types/Dtos/PromocionDto/PromocionPostDto";
-import TextFieldValue from "../../TextFildValue/TextFildValue";
 import { PromocionService } from "../../../../services/PromocionService";
 import { ArticulosPromoModal } from "./ArticulosPromoModal";
-import IArticuloGenerico from "../../../../types/ArticuloGenerico/IArticuloGenerico";
 import { PromocionDetalleService } from "../../../../services/PromocionDetalleService";
-
+import ISucursales from "../../../../types/Sucursales";
 const API_URL = import.meta.env.VITE_API_URL;
 
 // #region ARREGLAR ID SUCURSAL, PROMOCION DETALLE SIN DETALLE NO SE AGREGA, EL ID NO SE MANDA Y QUEDA EN 0
@@ -75,45 +64,33 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
 }) => {
 
 
-  const [unidadMedida, setUnidadMedida] = useState<IUnidadMedida[]>([]);
   const [categoria, setCategoria] = useState<ICategoria[]>([]);
 
   const [dataIngredients, setDataIngredients] = useState<any[]>([]);
-
+ 
 
   // #region STATES - Promociones
   const [itemValue, setItemValue] = useState<PromocionPostDto>(initialValues);
   const [openInsumosModal, setOpenInsumosModal] = useState<boolean>(false);
   const [selectedDetalle, setSelectedDetalle] = useState<any[]>([]);
-
-  const sucursales = useAppSelector((state) => state.sucursal.data);
+ 
   const [selectedSucursales, setSelectedSucursales] = useState<number[]>([]);
 
-  const unidadMedidaService = new UnidadMedidaGetService(
-    `${API_URL}/UnidadMedida`
-  );
-  const productoManufacturadoService = new ArticuloManufacturadoService(
-    `${API_URL}/ArticuloManufacturado`
-  );
-  const productoDetalleService = new ProductoDetalleService(
-    `${API_URL}/ArticuloManufacturadoDetalle`
-  );
-  const insumosServices = new InsumoGetService(`${API_URL}/ArticuloInsumo`);
-  const categoriaService = new CategoriaService(`${API_URL}/categoria`);
+  
 
   //#region SERVICE - Promociones
   const sucursalService = new SucursalService(`${API_URL}/sucursal`);
   const promocionService = new PromocionService(`${API_URL}/promocion`);
   const promocionDetalleService = new PromocionDetalleService(`${API_URL}/promocionDetalle`);
-
+  const insumosServices = new InsumoGetService(`${API_URL}/ArticuloInsumo`);
   //obtenemos la sucursal actual
 
   const dispatch = useAppDispatch();
   const data = useAppSelector((state) => state.tablaReducer.elementActive);
+  const sucursales = useAppSelector((state) => state.sucursal.data);
   const sucursalActual = useAppSelector(
     (state) => state.sucursal.sucursalActual
   );
-
 
   const getCategorias = async () => {
     if (!sucursalActual) {
@@ -148,27 +125,42 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
     }
   };
 
-  const getProductoDetalles = async (productoId: number) => {
+  const getPromocionDetalles = async (promocionId: number) => {
     try {
       const response = await fetch(
-        `${API_URL}/ArticuloManufacturado/allDetalles/${productoId}`
+        `${API_URL}/promocion/getDetallesByid/${promocionId}`
       );
       if (!response.ok) {
         throw new Error("Error al obtener los detalles de los insumos");
       }
       const detallesData = await response.json();
-      // Formatear los detalles obtenidos para que coincidan con la estructura esperada
-      const formattedDetalles = detallesData.map((detalle: any) => ({
-        id: detalle.id, // Asegúrate de que cada detalle tenga un id definido
-        cantidad: detalle.cantidad,
-        denominacion: detalle.articuloInsumo.denominacion,
-      }));
+      const formattedDetalles = detallesData.map((detalle: any) => {
+        let idArticulo;
+        let denominacion;
+
+        if (detalle.manufacturado) {
+          idArticulo = detalle.manufacturado.id;
+          denominacion = detalle.manufacturado.denominacion;
+        } else if (detalle.insumo) {
+          idArticulo = detalle.insumo.id;
+          denominacion = detalle.insumo.denominacion;
+        } 
+        return {
+          id: detalle.id,
+          cantidad: detalle.cantidad,
+          denominacion: denominacion,
+          idArticulo: idArticulo,
+          eliminado: detalle.eliminado  
+        };
+      });
+
       setSelectedDetalle(formattedDetalles);
+
+
     } catch (error) {
       console.error("Error al obtener los detalles de los insumos:", error);
     }
   };
-
   useEffect(() => {
     if (data) {
       const promocionData: PromocionPostDto = data as PromocionPostDto;
@@ -186,6 +178,7 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
         detalles: promocionData.detalles,
       });
       setSelectedSucursales(promocionData.idSucursales);
+      console.log("Promoción en modo edición:", promocionData);
     } else {
       resetValues();
     }
@@ -196,8 +189,12 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
     if (open && sucursalActual) {
       getInsumos();
       getCategorias();
+      if (data) {
+        // Si hay datos de promoción, establecer las sucursales asociadas
+        setSelectedSucursales(data.sucursales.map((sucursal:ISucursales) => sucursal.id));
+      }
     }
-  }, [open, sucursalActual]);
+  }, [open, sucursalActual,]);
 
   const resetValues = () => {
     setItemValue(initialValues);
@@ -249,7 +246,8 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
     let detallesIds: number[] = [];
 
     if (data) {
-      // Edita la promoción existente
+console.log(itemValue);
+
       await promocionService.put(itemValue.id, itemValue);
       promocionId = itemValue.id;
     } else {
@@ -257,10 +255,12 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
         const newDetalleArray = selectedDetalle.map((detalle) => ({
           cantidad: detalle.cantidad,
           idArticulo: detalle.id,
-        }));
+        }))
+
+        
       
         const newItemValue = { ...itemValue, detalles: newDetalleArray };
-        console.log(newItemValue);
+
       
         const newPromocion = await promocionService.postOnlyData(newItemValue);
         promocionId = newPromocion.id;
@@ -300,29 +300,6 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
 
 
 
-
-
-
-  /* const handleConfirmModal = async () => {
-  try {
-    // Otras operaciones
-    let productoId: number;
-    let detallesIds: number[] = [];
-
-    if (data) {
-      await productoManufacturadoService.put(itemValue.id, itemValue); // Aquí se utiliza itemValue.id
-      productoId = itemValue.id;
-    } else {
-      const newProducto = await productoManufacturadoService.postOnlyData(
-        itemValue
-      );
-      productoId = newProducto.id;
-    }
-    // Otras operaciones
-  } catch (error) {
-    console.error("Error al confirmar modal:", error);
-  }
-}; */
 
 
   const handleOpenInsumosModal = () => {
@@ -365,7 +342,7 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
         idSucursales: updatedSelected,
       }));
   
-      console.log("SUCURSAL MARCADA: ", updatedSelected);
+  
       return updatedSelected;
     });
   };
@@ -377,7 +354,10 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
       tipoPromocion: value,
     });
   };
-  
+
+  const elementActive = useAppSelector(
+    (state) => state.tablaReducer.elementActive
+  );
 
   return (
     <div>
@@ -402,6 +382,7 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
                   onChange={handlePropsElementsInputs}
                   value={itemValue.denominacion}
                   variant="filled"
+                  style={{ display: !elementActive ? "block" : "none" }}
                 />
                 <TextField
                   type="number"
@@ -419,6 +400,8 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
                   name="fechaDesde"
                   label="Fecha Desde"
                   variant="filled"
+                  
+
                 />
                 <TextField
                   type="date"
@@ -460,6 +443,7 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
                   onChange={handleTipoPromocionChange}
                   name="tipoPromocion"
                   variant="filled"
+                  style={{ display: !elementActive ? "block" : "none" }}
                 >
                   <MenuItem value="HAPPY_HOUR">Happy Hour</MenuItem>
                   <MenuItem value="PROMOCION">Promoción</MenuItem>
@@ -485,8 +469,9 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
                       id={`sucursal-${sucursal.id}`}
                       checked={selectedSucursales.includes(sucursal.id)}
                       onChange={() => handleCheckboxChange(sucursal.id)}
+                      
                     />
-                    <label style={{paddingLeft: "5px"}} htmlFor={`sucursal-${sucursal.id}`}>
+                    <label  htmlFor={`sucursal-${sucursal.id}`}>
                       {sucursal.nombre}
                     </label>
                   </div>
@@ -506,15 +491,17 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
                 }}
               >
                 <TextField
-                  style={{ width: "90%" }}
+                  style={{ display: !elementActive ? "block" : "none" , width: "90%" }}
                   label="Descripcion"
                   type="text"
                   value={itemValue.descripcionDescuento}
                   onChange={handlePropsElementsInputs}
                   name="descripcionDescuento"
                   variant="filled"
+                  
                   multiline
                   rows={4}
+                  
                 />
               </div>
               <div style={{ textAlign: "center" }}>
