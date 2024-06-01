@@ -60,7 +60,7 @@ export const ArticulosPromoModal: React.FC<InsumosModalProps> = ({
     const allInsumos: IArticuloGenerico[] = [];
     categoria.forEach((cat) => {
       const insumosNoElaborar = cat.insumos
-        .filter((insumo: any) => insumo.esParaElaborar)
+        .filter((insumo: any) => !(insumo.esParaElaborar))
         .map((insumo: any) => ({
           id: insumo.id,
           denominacion: insumo.denominacion,

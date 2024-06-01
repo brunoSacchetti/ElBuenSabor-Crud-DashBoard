@@ -7,10 +7,11 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TextField from "@mui/material/TextField";
-import { MenuItem, Select } from "@mui/material";
-import Checkbox from "@mui/material/Checkbox";
+import { MenuItem, Select, Checkbox } from "@mui/material";
 import IArticuloGenerico from "../../../../types/ArticuloGenerico/IArticuloGenerico";
 import { CategoriaService } from "../../../../services/CategoriaService";
+import { useAppSelector } from "../../../../hooks/redux";
+import { SucursalService } from "../../../../services/SucursalService";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -32,17 +33,30 @@ export const TableArticulo: React.FC<ITableIngredientsProps> = ({
   const [selectedCategoryItems, setSelectedCategoryItems] = useState<IArticuloGenerico[]>([]);
   const [cantidadMap, setCantidadMap] = useState<{ [key: string]: number }>({});
 
-  useEffect(() => {
-    const categoriaService = new CategoriaService(API_URL + "/categoria");
-    categoriaService.getAll().then((data) => {
+  const sucursalActual = useAppSelector((state) => state.sucursal.sucursalActual);
+  const sucursalService = new SucursalService(API_URL + "/sucursal");
+
+  const getCategorias = async () => {
+    if (!sucursalActual) {
+      console.error("Error al obtener categorias: sucursalActual es null");
+      return;
+    }
+    try {
+      const data = await sucursalService.getCategoriasPorSucursal(sucursalActual?.id);
       setCategoria(data);
-    });
-  }, []);
+    } catch (error) {
+      console.error("Error al obtener categorias:", error);
+    }
+  };
+
+  useEffect(() => {
+    getCategorias();
+  }, [sucursalActual]);
 
   useEffect(() => {
     setOriginalRows(dataIngredients);
     setDisplayedRows(dataIngredients);
-  }, [dataIngredients]);
+  }, [,dataIngredients]);
 
   useEffect(() => {
     let results: IArticuloGenerico[] = [];
@@ -69,9 +83,7 @@ export const TableArticulo: React.FC<ITableIngredientsProps> = ({
     if (checked) {
       updatedSelectedRows = [...selectedRows, rowData];
     } else {
-      updatedSelectedRows = selectedRows.filter(
-        (row) => row.id !== rowData.id
-      );
+      updatedSelectedRows = selectedRows.filter((row) => row.id !== rowData.id);
     }
     setSelectedRows(updatedSelectedRows);
     onSelect(updatedSelectedRows.map(row => ({
