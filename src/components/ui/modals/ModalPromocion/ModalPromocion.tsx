@@ -460,6 +460,7 @@ console.log(itemValue);
                   flexDirection: "column",
                   alignItems: "center",
                   paddingBottom: "10px",
+                  fontSize: "20px"
                 }}
               >
                 {sucursales.map((sucursal) => (
@@ -505,13 +506,13 @@ console.log(itemValue);
                 />
               </div>
               <div style={{ textAlign: "center" }}>
-                <h1>Insumos</h1>
+                <h1>Articulos</h1>
                 <Button
                   variant="contained"
                   color="primary"
                   onClick={handleOpenInsumosModal}
                 >
-                  Agregar Insumos
+                  Agregar Articulos
                 </Button>
               </div>
             </div>
