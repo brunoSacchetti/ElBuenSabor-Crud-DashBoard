@@ -33,6 +33,10 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import Swal from "sweetalert2";
 import { Table } from "react-bootstrap";
 import { SucursalService } from "../../../../services/SucursalService";
+import { ImageModal } from "../ImagenModal/ImagenModal";
+import { ImagenService } from "../../../../services/ImagenService";
+import IImagenes from "../../../../types/Imagenes";
+import { setLoading } from "../../../../redux/slices/EmpresaReducer";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -68,6 +72,8 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
   const [openInsumosModal, setOpenInsumosModal] = useState<boolean>(false);
   const [dataIngredients, setDataIngredients] = useState<any[]>([]);
 
+  const [openImageModal, setOpenImageModal] = useState<boolean>(false);
+
   const unidadMedidaService = new UnidadMedidaGetService(
     `${API_URL}/UnidadMedida`
   );
@@ -87,6 +93,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
   const dispatch = useAppDispatch();
   const data = useAppSelector((state) => state.tablaReducer.elementActive);
   const sucursalActual = useAppSelector((state) => state.sucursal.sucursalActual);
+  
   const getUnidadMedida = async () => {
     try {
       const data = await unidadMedidaService.getAll();
@@ -193,6 +200,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
 
       // Fetch and set the insumos related to the product
       getProductoDetalles(productoData.id); // Esta función se encargará de realizar la llamada a la API y actualizar los detalles de los insumos
+      //getImages(productoData.id); // Esta función se encarga de traer las imagenes del producto
     } else {
       resetValues();
     }
@@ -392,6 +400,17 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
         idsArticuloManufacturadoDetalles: detallesIds,
       });
 
+      if(selectedFiles){
+        uploadFiles(productoId);
+      } else {
+        await Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Por favor, selecciona al menos una imagen",
+        });
+        return;
+      }
+      
       handleSuccess("Elemento guardado correctamente");
       handleClose();
       resetValues();
@@ -449,6 +468,76 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
     console.log(updatedDetalle);
     setSelectedDetalle(updatedDetalle);
   };
+
+  //#region  IMAGENES PRODUCTO
+  const [images, setImages] = useState<IImagenes[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+  const imageService = new ImagenService(API_URL + "/ArticuloManufacturado");
+
+  /* useEffect(() => {
+    if (productoData.id) {
+      fetchImages();
+    }
+  }, [elementActive.id]);
+
+  const fetchImages = async () => {
+    try {
+      const data = await imageService.getImagesByArticuloId(elementActive.id);
+      setImages(data);
+    } catch (error) {
+      Swal.fire("Error", "Error al obtener las imágenes", "error");
+    } 
+  }; */
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedFiles(event.target.files);
+  };
+
+  const uploadFiles = async (id: number) => {
+    if (!selectedFiles) {
+      return Swal.fire("No hay imágenes seleccionadas", "Selecciona al menos una imagen", "warning");
+    }
+
+    try {
+      Swal.fire({
+        title: "Subiendo imágenes...",
+        text: "Espere mientras se suben los archivos.",
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      const formData = new FormData();
+        Array.from(selectedFiles).forEach((file) => {
+      formData.append("uploads", file);
+     });
+
+      await imageService.uploadImages(`${API_URL}/ArticuloManufacturado/uploads?id=${id}`, formData);
+      Swal.fire("Éxito", "Imágenes subidas correctamente", "success");
+      //fetchImages();
+    } catch (error) {
+      Swal.fire("Error", "Algo falló al subir las imágenes, inténtalo de nuevo.", "error");
+    } finally {
+      setSelectedFiles(null);
+      Swal.close();
+    }
+  };
+
+  const getImages = async (id: number) => {
+    try {
+      setLoading(true);
+      const data = await imageService.getImagesByArticuloId(id);
+      setImages(data);
+    } catch (error) {
+      Swal.fire("Error", "Error al obtener las imágenes", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+
 
   return (
     <div>
@@ -552,6 +641,15 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
                   variant="filled"
                   multiline
                   rows={4}
+                />
+              </div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "2vh", padding: ".4rem" }}>
+                <TextField
+                  id="outlined-basic"
+                  variant="outlined"
+                  type="file"
+                  onChange={handleFileChange}
+                  inputProps={{ multiple: true }}
                 />
               </div>
               <div style={{ textAlign: "center" }}>
@@ -673,6 +771,8 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
         handleClose={handleCloseInsumosModal}
         handleAddInsumos={handleAddInsumos} // Cambiar 'onConfirm' a 'handleAddInsumos'
       />
+      <div>
+    </div>
     </div>
   );
 };

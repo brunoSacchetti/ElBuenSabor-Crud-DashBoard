@@ -28,6 +28,10 @@ import { PromocionService } from "../../../../services/PromocionService";
 import { ArticulosPromoModal } from "./ArticulosPromoModal";
 import { PromocionDetalleService } from "../../../../services/PromocionDetalleService";
 import ISucursales from "../../../../types/Sucursales";
+import PromocionEditDto from "../../../../types/Dtos/PromocionDto/PromocionEditDto";
+import { PromocionPutService } from "../../../../services/PromocionPutService";
+import IImagenes from "../../../../types/Imagenes";
+import { ImagenService } from "../../../../services/ImagenService";
 const API_URL = import.meta.env.VITE_API_URL;
 
 // #region ARREGLAR ID SUCURSAL, PROMOCION DETALLE SIN DETALLE NO SE AGREGA, EL ID NO SE MANDA Y QUEDA EN 0
@@ -83,6 +87,7 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
   const promocionService = new PromocionService(`${API_URL}/promocion`);
   const promocionDetalleService = new PromocionDetalleService(`${API_URL}/promocionDetalle`);
   const insumosServices = new InsumoGetService(`${API_URL}/ArticuloInsumo`);
+  const promocionPutService = new PromocionPutService(`${API_URL}/promocion`);
   //obtenemos la sucursal actual
 
   const dispatch = useAppDispatch();
@@ -297,6 +302,77 @@ console.log(itemValue);
     console.error("Error al confirmar modal:", error);
   }
 };
+
+/* const handleConfirmModal = async () => {
+  try {
+    // Verifica que todos los campos obligatorios estén completos
+    if (
+      itemValue.denominacion.trim() === "" ||
+      itemValue.fechaDesde.trim() === "" ||
+      itemValue.fechaHasta.trim() === "" ||
+      itemValue.horaDesde.trim() === "" ||
+      itemValue.horaHasta.trim() === "" ||
+      itemValue.precioPromocional === 0 ||
+      itemValue.descripcionDescuento.trim() === "" ||
+      itemValue.tipoPromocion.trim() === "" ||
+      selectedSucursales.length === 0
+    ) {
+      // Muestra un mensaje de error con SweetAlert
+      await Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Por favor completa todos los campos obligatorios antes de confirmar.",
+      });
+      return;
+    }
+
+    let promocionId: number;
+    let detallesIds: number[] = [];
+
+    if (data) {
+      // Modo edición
+      const updatedFields: PromocionEditDto = {
+        fechaDesde: itemValue.fechaDesde,
+        fechaHasta: itemValue.fechaHasta,
+        horaDesde: itemValue.horaDesde,
+        horaHasta: itemValue.horaHasta,
+        precioPromocional: itemValue.precioPromocional,
+        detalles: itemValue.detalles,
+      };
+
+      await promocionPutService.put(itemValue.id, updatedFields);
+      promocionId = itemValue.id;
+    } else {
+      // Modo creación
+      // Aquí creas el objeto de datos reducido con los campos necesarios
+      const newData = {
+        id: itemValue.id,
+        denominacion: itemValue.denominacion,
+        fechaDesde: itemValue.fechaDesde,
+        fechaHasta: itemValue.fechaHasta,
+        horaDesde: itemValue.horaDesde,
+        horaHasta: itemValue.horaHasta,
+        descripcionDescuento: itemValue.descripcionDescuento,
+        precioPromocional: itemValue.precioPromocional,
+        tipoPromocion: itemValue.tipoPromocion,
+        idSucursales: selectedSucursales,
+        detalles: selectedDetalle.map(detalle => ({
+          cantidad: detalle.cantidad,
+          idArticulo: detalle.id,
+        })),
+      };
+
+      // Luego lo envías al servicio como lo haces actualmente
+      const newPromocion = await promocionService.postOnlyData(newData);
+      promocionId = newPromocion.id;
+    }
+
+    // Resto del código para guardar los detalles de la promoción y mostrar mensajes
+
+  } catch (error) {
+    console.error("Error al confirmar modal:", error);
+  }
+}; */
 
 
 

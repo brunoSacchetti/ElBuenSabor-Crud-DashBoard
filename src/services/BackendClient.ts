@@ -1,3 +1,4 @@
+import IImagen from "../types/IImagen";
 import { AbstractBackendClient } from "./AbstractBackendClient";
 
 export abstract class BackendClient<T> extends AbstractBackendClient<T> {

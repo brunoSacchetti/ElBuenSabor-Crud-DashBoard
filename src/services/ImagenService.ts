@@ -23,6 +23,20 @@ export class ImagenService extends BackendClient<IImagen> {
       }
     }
 
-    
+    async getImagesByArticuloId(id: number): Promise<IImagen[]> {
+      const response = await fetch(`${this.baseUrl}/getImagesByArticuloId/${id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Error al obtener las imágenes del artículo con ID ${id}`);
+      }
+  
+      const data = await response.json();
+      return data as IImagen[];
+    }
 
 }
