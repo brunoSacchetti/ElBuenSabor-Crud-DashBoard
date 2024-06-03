@@ -37,18 +37,27 @@ import { ImageModal } from "../ImagenModal/ImagenModal";
 import { ImagenService } from "../../../../services/ImagenService";
 import IImagenes from "../../../../types/Imagenes";
 import { setLoading } from "../../../../redux/slices/EmpresaReducer";
+import { ProductoPostService } from "../../../../services/ProductoPostService";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 const initialValues: ProductoPost = {
-  id: 0,
+  id: 7,
   denominacion: "",
   descripcion: "",
   tiempoEstimadoMinutos: 10,
   precioVenta: 100,
   preparacion: "",
   idUnidadMedida: 1,
-  idsArticuloManufacturadoDetalles: [],
+  //idsArticuloManufacturadoDetalles: [],
+  articuloManufacturadoDetalles: [
+    {
+      cantidad: 0,
+      idArticulo: 0,
+    },
+  ],
+  idCategoria: 0,
+  //imagenes: [],
 };
 
 interface IMasterDetailModal {
@@ -93,7 +102,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
   const dispatch = useAppDispatch();
   const data = useAppSelector((state) => state.tablaReducer.elementActive);
   const sucursalActual = useAppSelector((state) => state.sucursal.sucursalActual);
-  
+
   const getUnidadMedida = async () => {
     try {
       const data = await unidadMedidaService.getAll();
@@ -103,16 +112,16 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
     }
   };
 
-  /* const getCategorias = async () => {
+  const getCategorias = async () => {
     try {
       const data = await categoriaService.getAll();
       setCategoria(data);
     } catch (error) {
       console.error("Error al obtener las categorías:", error);
     }
-  };} */
+  };
 
-  const getCategorias = async () => {
+  /* const getCategorias = async () => {
     if (!sucursalActual) {
       console.error("Error al obtener categorias: sucursalActual es null");
       return;
@@ -125,6 +134,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
       console.error("Error al obtener categorias:", error);
     }
   };
+   */
 
   const getInsumos = async () => {
     try {
@@ -192,11 +202,14 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
         tiempoEstimadoMinutos: productoData.tiempoEstimadoMinutos,
         descripcion: productoData.descripcion,
         preparacion: productoData.preparacion,
-        idsArticuloManufacturadoDetalles:
-          productoData.idsArticuloManufacturadoDetalles,
+        /* idsArticuloManufacturadoDetalles:
+          productoData.idsArticuloManufacturadoDetalles, */
+        articuloManufacturadoDetalles: productoData.articuloManufacturadoDetalles,
         idUnidadMedida: productoData.idUnidadMedida,
+        idCategoria: productoData.idCategoria,
       });
       setSelectedUnidadMedidaId(productoData.idUnidadMedida);
+      setSelectedCategoriaId(productoData.idCategoria); 
 
       // Fetch and set the insumos related to the product
       getProductoDetalles(productoData.id); // Esta función se encargará de realizar la llamada a la API y actualizar los detalles de los insumos
@@ -362,7 +375,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
         return;
       }
 
-      let productoId: number;
+      /* let productoId: number;
       let detallesIds: number[] = [];
 
       if (data) {
@@ -398,10 +411,37 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
       await productoManufacturadoService.put(productoId, {
         ...itemValue,
         idsArticuloManufacturadoDetalles: detallesIds,
-      });
+      }); */
 
-      if(selectedFiles){
-        uploadFiles(productoId);
+      console.log(selectedDetalle);
+      
+
+      /* const updatedItemValue = {
+        ...itemValue,
+        articuloManufacturadoDetalles: selectedDetalle,
+      }; */
+
+      const updatedItemValue = {
+        ...itemValue,
+        articuloManufacturadoDetalles: selectedDetalle.map((detalle) => ({
+          cantidad: detalle.cantidad,
+          idArticulo: detalle.id // Ajusta esto según la estructura de tu objeto detalle
+        }))
+      };
+      
+      const productoPostService = new ProductoPostService(`${API_URL}/ArticuloManufacturado`);
+
+      // Realiza el post del producto con los detalles asignados
+      //const newProducto = await productoManufacturadoService.postOnlyData(updatedItemValue);
+
+      const newProducto = await productoPostService.postOnlyData(updatedItemValue);
+      
+      const productoId = newProducto.id;
+      console.log(productoId);
+      
+
+      /* if(selectedFiles){
+        await uploadFiles(productoId);
       } else {
         await Swal.fire({
           icon: "error",
@@ -409,7 +449,36 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
           text: "Por favor, selecciona al menos una imagen",
         });
         return;
+      } */
+
+      /* if (!selectedFiles) {
+        return Swal.fire("No hay imágenes seleccionadas", "Selecciona al menos una imagen", "warning");
       }
+  
+      try {
+        Swal.fire({
+          title: "Subiendo imágenes...",
+          text: "Espere mientras se suben los archivos.",
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+  
+        const formData = new FormData();
+          Array.from(selectedFiles).forEach((file) => {
+        formData.append("uploads", file);
+       });
+  
+        await imageService.uploadImages(`${API_URL}/ArticuloManufacturado/uploads?id=${productoId}`, formData);
+        Swal.fire("Éxito", "Imágenes subidas correctamente", "success");
+        //fetchImages();
+      } catch (error) {
+        Swal.fire("Error", "Algo falló al subir las imágenes, inténtalo de nuevo.", "error");
+      } finally {
+        setSelectedFiles(null);
+        Swal.close();
+      } */
       
       handleSuccess("Elemento guardado correctamente");
       handleClose();
@@ -443,10 +512,20 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
     });
   };
 
+  /* const handleChangeCategoriaValues = async (e: SelectChangeEvent<number>) => {
+    const categoriaId = e.target.value as number;
+    setSelectedCategoriaId(categoriaId);
+  }; */
+
   const handleChangeCategoriaValues = async (e: SelectChangeEvent<number>) => {
     const categoriaId = e.target.value as number;
     setSelectedCategoriaId(categoriaId);
+    setItemValue({
+      ...itemValue,
+      idCategoria: categoriaId,
+    });
   };
+
 
   const handleOpenInsumosModal = () => {
     setOpenInsumosModal(true);
@@ -460,6 +539,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
     setSelectedDetalle([...selectedDetalle, ...selectedInsumos]);
     handleCloseInsumosModal();
   };
+  
 
   const handleRemoveInsumo = (id: number) => {
     const updatedDetalle = selectedDetalle.filter(
@@ -493,7 +573,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
     setSelectedFiles(event.target.files);
   };
 
-  const uploadFiles = async (id: number) => {
+  /* const uploadFiles = async (id: number) => {
     if (!selectedFiles) {
       return Swal.fire("No hay imágenes seleccionadas", "Selecciona al menos una imagen", "warning");
     }
@@ -522,7 +602,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
       setSelectedFiles(null);
       Swal.close();
     }
-  };
+  }; */
 
   const getImages = async (id: number) => {
     try {

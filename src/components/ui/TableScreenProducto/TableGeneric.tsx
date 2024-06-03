@@ -92,15 +92,15 @@ export const TableGeneric = <T extends { id: any }>({
   }, [,sucursalActual]);
   
 
-  /* const getCategorias = async () => {
+  const getCategorias = async () => {
     try {
       const data = await categoriaService.getAll();
       setCategoria(data);
     } catch (error) {
       console.error("Error al obtener categorías:", error);
     }
-  }; */
-
+  };
+/* 
   const getCategorias = async () => {
     if (!sucursalActual) {
       console.error("Error al obtener categorias: sucursalActual es null");
@@ -113,7 +113,7 @@ export const TableGeneric = <T extends { id: any }>({
     } catch (error) {
       console.error("Error al obtener categorias:", error);
     }
-  };
+  }; */
 
   /* const handleChangeCategorias = async (
     e: SelectChangeEvent<number>

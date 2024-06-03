@@ -94,7 +94,7 @@ export const ArticuloManufacturadoScreen = () => {
   const sucursalService = new SucursalService(`${API_URL}/sucursal`);
 
   // Función para obtener las categorías
-  const fetchCategorias = async () => {
+  /* const fetchCategorias = async () => {
     if (!sucursalActual) {
       console.error("Error: sucursalActual is null");
       return; // Return early if sucursalActual is null
@@ -109,6 +109,15 @@ export const ArticuloManufacturadoScreen = () => {
       // Handle the error, display a message, or retry fetching categories
     } finally {
       setLoading(false);
+    }
+  }; */
+
+  const fetchCategorias = async () => {
+    try {
+      const data = await categoriaService.getAll();
+      setCategorias(data);
+    } catch (error) {
+      console.error("Error al obtener las categorías:", error);
     }
   };
 

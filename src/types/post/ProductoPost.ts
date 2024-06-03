@@ -1,3 +1,6 @@
+import IImagen from "../IImagen";
+import ProductoDetallePost from "./ProductoDetallePost";
+
 export default interface ProductoPost {
   id:number,
   denominacion: string;
@@ -6,5 +9,8 @@ export default interface ProductoPost {
   precioVenta: number
   preparacion: string;
   idUnidadMedida: number;
-  idsArticuloManufacturadoDetalles: number[];
+  //idsArticuloManufacturadoDetalles: number[];
+  articuloManufacturadoDetalles: ProductoDetallePost[];
+  idCategoria: number;
+  imagenes?: IImagen[];
 }
