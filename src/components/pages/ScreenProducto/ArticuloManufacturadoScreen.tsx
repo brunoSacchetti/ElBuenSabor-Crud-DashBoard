@@ -16,6 +16,7 @@ import ProductoPost from "../../../types/post/ProductoPost";
 
 
 import { useDispatch } from "react-redux";
+import { ProductoGet } from "../../../services/ProductoGet";
 // Definición de la URL base de la API
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -34,7 +35,7 @@ const StyledButton = styled(Button)({
 const ColumnsProductosManufacturados = (categorias: ICategoria[]) => [
   { label: "Id", key: "id" },
   { label: "Nombre", key: "denominacion" },
-  { 
+  /* { 
     label: "Categoria", 
     key: "categoria",
     render: (element: IArticuloManufacturado) => {
@@ -44,6 +45,11 @@ const ColumnsProductosManufacturados = (categorias: ICategoria[]) => [
       );
       return categoria ? categoria.denominacion : 'Categoría no encontrada';
     },
+    
+  }, */
+  { 
+    label: "Categoria", 
+    key: "categoriaNombre",
   },
   {
     label: "Tiempo de cocina",
@@ -122,7 +128,7 @@ export const ArticuloManufacturadoScreen = () => {
   };
 
   // Función para obtener los productos manufacturados
-  const getDataTable = (dispatch: any) => {
+  /* const getDataTable = (dispatch: any) => {
   productoManufacturadoService.getAll().then(dataTable => {
     const filteredArticulos = dataTable.filter((item) =>
       categorias.some(cat =>
@@ -132,8 +138,15 @@ export const ArticuloManufacturadoScreen = () => {
     const productoPosts = filteredArticulos.map((item) => item as IArticuloManufacturado);
     dispatch(setDataTable(productoPosts));
   });
-};
+}; */
 
+const productoGet = new ProductoGet(`${API_URL}/ArticuloManufacturado`);
+
+const getDataTable = (dispatch: any) => {
+  productoGet.getAll().then(dataTable => {
+    dispatch(setDataTable(dataTable));
+  });
+};
 
 const dispatch = useDispatch();
 

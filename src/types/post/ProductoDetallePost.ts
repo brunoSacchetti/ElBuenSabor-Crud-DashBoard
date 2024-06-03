@@ -3,5 +3,5 @@ export default interface ProductoDetallePost {
   cantidad: number | any,
   /* idArticuloInsumo: number;
   idArticuloManufacturado: number; */
-  idArticulo: number | any;
+  idArticuloInsumo: number | any;
 }

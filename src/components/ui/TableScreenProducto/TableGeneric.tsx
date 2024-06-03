@@ -151,7 +151,7 @@ export const TableGeneric = <T extends { id: any }>({
       
     }
   };
-  
+   
   return (
     <>
       <div
@@ -169,14 +169,14 @@ export const TableGeneric = <T extends { id: any }>({
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{ marginRight: 20 }}
           />
-          {/* <label>Filtrar por categoría</label> */}
+
           <Select
             label="Categorías"
             value={selectedCategoriaId ?? ""}
             onChange={handleChangeCategorias}
             variant="filled"
           >
-            <MenuItem value={-1}>Todas las Categorias</MenuItem> {/* Opción para mostrar todas las categorías */}
+            <MenuItem value={-1}>Todas las Categorias</MenuItem> 
             {categoria.map((cat) => (
               <MenuItem key={cat.id} value={cat.id}>
                 {cat.denominacion}

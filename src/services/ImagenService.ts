@@ -16,7 +16,7 @@ export class ImagenService extends BackendClient<IImagen> {
         }
   
         const data = await response.json();
-        return data;
+        return data as IImagen[];
       } catch (error) {
         console.error('Error al subir las imágenes:', error);
         throw error;
@@ -39,4 +39,18 @@ export class ImagenService extends BackendClient<IImagen> {
       return data as IImagen[];
     }
 
-}
+    async deleteImage(publicId: string, id: number) {
+      const response = await fetch(`${this.baseUrl}/${publicId}/imagenes/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          // Aquí puedes agregar cualquier encabezado necesario, como tokens de autenticación, etc.
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete image');
+      }
+      return response.json(); // Podrías devolver algún tipo de mensaje de confirmación si lo deseas
+    }
+  }
+

@@ -66,7 +66,7 @@ export const ModalEmpresa = ({
       formData.append("id", String(idEmpresa)); // Adjuntar el ID de la empresa
       
       // Enviar las imágenes al backend
-      await imagenService.uploadImages(`http://localhost:8080/empresa/uploads?id=${idEmpresa}`, formData);
+      await imagenService.uploadImages(`http://localhost:8080/empresa/uploads?id=${idEmpresa}`,formData);
       console.log("Imágenes subidas correctamente.");
     } catch (error) {
       console.error("Error al subir imágenes:", error);

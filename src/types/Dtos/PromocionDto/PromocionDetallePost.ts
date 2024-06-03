@@ -1,7 +1,7 @@
 import { Base } from "../../Base";
 
 export default interface PromocionDetallePost{
-    id:number;
+    //id:number;
     cantidad: number;
-    idArticulo: number;
+    idArticuloInsumo: number;
 }

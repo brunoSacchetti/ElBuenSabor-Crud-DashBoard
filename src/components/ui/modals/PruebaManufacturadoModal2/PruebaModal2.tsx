@@ -33,16 +33,17 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import Swal from "sweetalert2";
 import { Table } from "react-bootstrap";
 import { SucursalService } from "../../../../services/SucursalService";
-import { ImageModal } from "../ImagenModal/ImagenModal";
 import { ImagenService } from "../../../../services/ImagenService";
 import IImagenes from "../../../../types/Imagenes";
 import { setLoading } from "../../../../redux/slices/EmpresaReducer";
 import { ProductoPostService } from "../../../../services/ProductoPostService";
+import ProductoDetallePost from "../../../../types/post/ProductoDetallePost";
+import { ImageCarrousel } from "../../ImageCarrousel/ImageCarrousel";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 const initialValues: ProductoPost = {
-  id: 7,
+  id: 0,
   denominacion: "",
   descripcion: "",
   tiempoEstimadoMinutos: 10,
@@ -53,7 +54,7 @@ const initialValues: ProductoPost = {
   articuloManufacturadoDetalles: [
     {
       cantidad: 0,
-      idArticulo: 0,
+      idArticuloInsumo: 0,
     },
   ],
   idCategoria: 0,
@@ -213,7 +214,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
 
       // Fetch and set the insumos related to the product
       getProductoDetalles(productoData.id); // Esta función se encargará de realizar la llamada a la API y actualizar los detalles de los insumos
-      //getImages(productoData.id); // Esta función se encarga de traer las imagenes del producto
+      getImages(productoData.id); // Esta función se encarga de traer las imagenes del producto
     } else {
       resetValues();
     }
@@ -343,6 +344,11 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
     }
   }; */
 
+   //#region  IMAGENES PRODUCTO
+   const [images, setImages] = useState<IImagenes[]>([]);
+   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+   const imageService = new ImagenService(API_URL + "/ArticuloManufacturado");
+   
   const handleConfirmModal = async () => {
     try {
       // Verifica si hay al menos un detalle agregado
@@ -425,7 +431,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
         ...itemValue,
         articuloManufacturadoDetalles: selectedDetalle.map((detalle) => ({
           cantidad: detalle.cantidad,
-          idArticulo: detalle.id // Ajusta esto según la estructura de tu objeto detalle
+          idArticuloInsumo: detalle.id // Ajusta esto según la estructura de tu objeto detalle
         }))
       };
       
@@ -439,9 +445,9 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
       const productoId = newProducto.id;
       console.log(productoId);
       
-
+      
       /* if(selectedFiles){
-        await uploadFiles(productoId);
+          await uploadFiles(productoId);
       } else {
         await Swal.fire({
           icon: "error",
@@ -450,11 +456,11 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
         });
         return;
       } */
-
-      /* if (!selectedFiles) {
-        return Swal.fire("No hay imágenes seleccionadas", "Selecciona al menos una imagen", "warning");
-      }
-  
+        
+      if (!selectedFiles) {
+          return Swal.fire("No hay imágenes seleccionadas", "Selecciona al menos una imagen", "warning");
+      } 
+      
       try {
         Swal.fire({
           title: "Subiendo imágenes...",
@@ -464,13 +470,13 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
             Swal.showLoading();
           },
         });
-  
+        
         const formData = new FormData();
           Array.from(selectedFiles).forEach((file) => {
         formData.append("uploads", file);
        });
   
-        await imageService.uploadImages(`${API_URL}/ArticuloManufacturado/uploads?id=${productoId}`, formData);
+        await imageService.uploadImages(`${API_URL}/ArticuloManufacturado/uploads?id=${productoId}`,formData);
         Swal.fire("Éxito", "Imágenes subidas correctamente", "success");
         //fetchImages();
       } catch (error) {
@@ -478,7 +484,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
       } finally {
         setSelectedFiles(null);
         Swal.close();
-      } */
+      }
       
       handleSuccess("Elemento guardado correctamente");
       handleClose();
@@ -549,10 +555,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
     setSelectedDetalle(updatedDetalle);
   };
 
-  //#region  IMAGENES PRODUCTO
-  const [images, setImages] = useState<IImagenes[]>([]);
-  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
-  const imageService = new ImagenService(API_URL + "/ArticuloManufacturado");
+ 
 
   /* useEffect(() => {
     if (productoData.id) {
@@ -571,6 +574,8 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedFiles(event.target.files);
+    console.log(event.target.files);
+    
   };
 
   /* const uploadFiles = async (id: number) => {
@@ -616,8 +621,38 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
     }
   };
 
+  /* const handleDeleteImage = async (publicId: string, id: number) => {
+    try {
+      // Realiza la llamada al servicio para eliminar la imagen
+      await imageService.deleteImage(publicId, id);
+      // Muestra un mensaje de éxito si la eliminación fue exitosa
+      Swal.fire('Imagen eliminada', 'La imagen se eliminó correctamente', 'success');
+      // Aquí podrías actualizar la lista de imágenes en tu estado o recargar las imágenes del producto
+    } catch (error) {
+      // Muestra un mensaje de error si la eliminación falla
+      Swal.fire('Error', 'No se pudo eliminar la imagen', 'error');
+      console.error('Error deleting image:', error);
+    }
+  }; */
 
+  const handleDeleteImage = async (publicId: string, id: number) => {
+    try {
+      // Realiza la llamada al servicio para eliminar la imagen
+      await imageService.deleteImage(publicId, id);
+      // Actualiza la lista de imágenes en el estado local eliminando la imagen eliminada
+      setImages(images.filter(image => image.id !== id));
+      // Muestra un mensaje de éxito si la eliminación fue exitosa
+      Swal.fire('Imagen eliminada', 'La imagen se eliminó correctamente', 'success');
+      // Aquí podrías actualizar la lista de imágenes en tu estado o recargar las imágenes del producto
+    } catch (error) {
+      // Muestra un mensaje de error si la eliminación falla
+      Swal.fire('Error', 'No se pudo eliminar la imagen', 'error');
+      console.error('Error deleting image:', error);
+    }
+  };
+  
 
+  
 
   return (
     <div>
@@ -630,6 +665,14 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
       >
         <div className={styles.modalContainer}>
           <div className={styles.modalContainerContent}>
+          {data && (
+              <div>
+                <ImageCarrousel
+                  images={images} // Pass the images array as prop
+                  handleDeleteImage={(publicId: string, id: number) => handleDeleteImage(publicId, id)} // Pass the handleDeleteImage function as prop
+                />
+              </div>
+          )}
             <div style={{ textAlign: "center" }}>
               <h1>{data ? "Editar" : "Crear"} un producto manufacturado</h1>
             </div>
@@ -731,6 +774,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
                   onChange={handleFileChange}
                   inputProps={{ multiple: true }}
                 />
+                
               </div>
               <div style={{ textAlign: "center" }}>
                 <h1>Insumos</h1>
