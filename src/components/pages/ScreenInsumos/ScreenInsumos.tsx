@@ -161,7 +161,6 @@ const getInsumosCategoria = async () => {
 
       <ModalArticuloInsumo
         categorias={categorias}
-
         openModal={openModal}
         setOpenModal={setOpenModal}
       />

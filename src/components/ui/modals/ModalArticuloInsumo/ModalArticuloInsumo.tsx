@@ -31,18 +31,20 @@ interface IModalInsumos {
   setOpenModal: (state: boolean) => void;
 }
 
-const initialValues: InsumoPost & { categoriaId: number } = {
+const initialValues: InsumoPost & { idCategoria: number } = {
   id: 0,
   denominacion: "",
   precioVenta: 0,
-  idUnidadMedida: 3,
+  idUnidadMedida: 0,
   precioCompra: 0,
   stockActual: 0,
   stockMaximo: 0,
   stockMinimo: 0,
   esParaElaborar: false,
-  categoriaId: 0, // Nuevo campo para el id de la categoría
+  idCategoria: 0, 
 };
+
+
 export const ModalArticuloInsumo = ({
 
   openModal,
@@ -103,9 +105,14 @@ export const ModalArticuloInsumo = ({
   });
 
   const [selectedCategoriaId, setSelectedCategoriaId] = useState<number>(1);
+
   const handleChangeCategoriaValues = async (e: SelectChangeEvent<number>) => {
-    const categoriaId = e.target.value as number;
-    setSelectedCategoriaId(categoriaId);
+
+    const idCategoria = e.target.value as number;
+
+    
+    
+    setSelectedCategoriaId(idCategoria);
   };
 
   return (
@@ -137,14 +144,15 @@ export const ModalArticuloInsumo = ({
                 await insumoService.put(values.id, values);
                 insumo = values;
               } else {
+                const newItemValue = { ...values, idCategoria: selectedCategoriaId };
+
                 const response = await insumoService.post(
                   "http://localhost:8080/ArticuloInsumo",
-                  values
+                  newItemValue
                 );
                 insumo = response; 
               }
         
-              await categoriaService.addInsumoToCategoria(selectedCategoriaId, insumo.id);
 
               handleClose();
             } catch (error) {
@@ -198,7 +206,7 @@ export const ModalArticuloInsumo = ({
                       </MenuItem>
                     ))}
                   </Select>
-                  <ErrorMessage name="categoriaId" component={FormHelperText} />
+                  <ErrorMessage name="idCategoria" component={FormHelperText} />
                 </FormControl>
                 <FormControl>
                   <InputLabel id="unidad-medida-label">
