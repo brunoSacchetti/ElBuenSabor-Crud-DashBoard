@@ -20,6 +20,11 @@ import { useEffect, useState } from "react";
 import { UnidadMedidaService } from "../../../../services/UnidadMedidaService";
 import IUnidadMedidaPost from "../../../../types/Dtos/UnidadMedidaDto/UnidadMedidaPost";
 import { ICategoria } from "../../../../types/Categoria";
+import { ImagenService } from "../../../../services/ImagenService";
+import IImagenes from "../../../../types/Imagenes";
+import { setLoading } from "../../../../redux/slices/EmpresaReducer";
+import Swal from "sweetalert2";
+import { ImageCarrousel } from "../../ImageCarrousel/ImageCarrousel";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -107,13 +112,56 @@ export const ModalArticuloInsumo = ({
   const [selectedCategoriaId, setSelectedCategoriaId] = useState<number>(1);
 
   const handleChangeCategoriaValues = async (e: SelectChangeEvent<number>) => {
-
     const idCategoria = e.target.value as number;
-
-    
-    
     setSelectedCategoriaId(idCategoria);
   };
+
+   //#region  IMAGENES PRODUCTO
+   const [images, setImages] = useState<IImagenes[]>([]);
+   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+   const imageService = new ImagenService(API_URL + "/ArticuloInsumo");
+
+   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedFiles(event.target.files);
+    console.log(event.target.files);
+    
+  };
+
+  const getImages = async (id: number) => {
+    try {
+      setLoading(true);
+      const data = await imageService.getImagesByArticuloId(id);
+      setImages(data);
+    } catch (error) {
+      Swal.fire("Error", "Error al obtener las imágenes", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteImage = async (publicId: string, id: number) => {
+    try {
+      // Realiza la llamada al servicio para eliminar la imagen
+      await imageService.deleteImage(publicId, id);
+      // Actualiza la lista de imágenes en el estado local eliminando la imagen eliminada
+      setImages(images.filter(image => image.id !== id));
+      // Muestra un mensaje de éxito si la eliminación fue exitosa
+      Swal.fire('Imagen eliminada', 'La imagen se eliminó correctamente', 'success');
+      // Aquí podrías actualizar la lista de imágenes en tu estado o recargar las imágenes del producto
+    } catch (error) {
+      // Muestra un mensaje de error si la eliminación falla
+      Swal.fire('Error', 'No se pudo eliminar la imagen', 'error');
+      console.error('Error deleting image:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (openModal && elementActive) {
+      getUnidadMedida();
+      getImages(elementActive.id); // Load images when editing
+    }
+  }, [openModal, elementActive]);
+
 
   return (
     <Modal
@@ -130,6 +178,7 @@ export const ModalArticuloInsumo = ({
           margin: "auto",
           marginTop: "5rem",
           maxWidth: "600px",
+          height: "1000px"
         }}
       >
         <h2>{elementActive ? "Editar" : "Añadir"} un Insumo</h2>
@@ -145,12 +194,45 @@ export const ModalArticuloInsumo = ({
                 insumo = values;
               } else {
                 const newItemValue = { ...values, idCategoria: selectedCategoriaId };
-
+                
                 const response = await insumoService.post(
                   "http://localhost:8080/ArticuloInsumo",
                   newItemValue
                 );
-                insumo = response; 
+                insumo = response;
+                
+                if (!selectedFiles || selectedFiles.length === 0) {
+                  Swal.fire("No hay imágenes seleccionadas", "Selecciona al menos una imagen", "warning");
+                  return; // Detener el envío del formulario si no hay imágenes seleccionadas
+                }
+              
+              try {
+                Swal.fire({
+                  title: "Subiendo imágenes...",
+                  text: "Espere mientras se suben los archivos.",
+                  allowOutsideClick: false,
+                  showConfirmButton: false, // Oculta el botón de confirmar para evitar que el usuario cierre la alerta manualmente
+                  didOpen: () => {
+                    Swal.showLoading();
+                  },
+                });
+                
+                const formData = new FormData();
+                  Array.from(selectedFiles).forEach((file) => {
+                formData.append("uploads", file);
+               });
+          
+                await imageService.uploadImages(`${API_URL}/ArticuloInsumo/uploads?id=${insumo.id}`,formData);
+                Swal.fire("Éxito", "Imágenes subidas correctamente", "success");
+                //fetchImages();
+              } catch (error) {
+                Swal.fire("Error", "Algo falló al subir las imágenes, inténtalo de nuevo.", "error");
+              } finally {
+                setSelectedFiles(null);
+                Swal.close();
+              }
+
+
               }
         
 
@@ -283,6 +365,24 @@ export const ModalArticuloInsumo = ({
                     Es Para Elaborar?
                   </label>
                 </FormControl>
+
+                <FormControl>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "2vh", padding: ".4rem" }}>
+                  <TextField
+                    id="outlined-basic"
+                    variant="outlined"
+                    type="file"
+                    onChange={handleFileChange}
+                    inputProps={{ multiple: true }}
+                  />
+                </div>
+                </FormControl>
+                {elementActive && (
+                    <ImageCarrousel
+                      images={images} // Pasas las imágenes como prop al carousel
+                      handleDeleteImage={(publicId: string, id: number) => handleDeleteImage(publicId, id)} // Pasas la función para eliminar imágenes como prop
+                    />
+                  )}
               </div>
               <div
                 style={{

@@ -458,7 +458,8 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
       } */
         
       if (!selectedFiles) {
-          return Swal.fire("No hay imágenes seleccionadas", "Selecciona al menos una imagen", "warning");
+          Swal.fire("No hay imágenes seleccionadas", "Selecciona al menos una imagen", "warning");
+          return;
       } 
       
       try {
