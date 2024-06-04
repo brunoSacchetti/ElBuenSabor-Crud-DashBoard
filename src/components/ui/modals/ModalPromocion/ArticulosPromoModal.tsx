@@ -47,12 +47,15 @@ export const ArticulosPromoModal: React.FC<InsumosModalProps> = ({
     }
     try {
       const data = await sucursalService.getCategoriasPorSucursal(sucursalActual.id);
+
+      
       setCategoria(data);
     } catch (error) {
       console.error("Error al obtener categorias:", error);
     }
   };
 
+  
   const [insumosGenericos, setInsumosGenericos] = useState<IArticuloGenerico[]>([]);
   const [articulosManufacturadosGenericos, setArticulosManufacturadosGenericos] = useState<IArticuloGenerico[]>([]);
 
@@ -72,6 +75,9 @@ export const ArticulosPromoModal: React.FC<InsumosModalProps> = ({
 
   const filterArticulosManufacturados = async () => {
     const allArticulosManufacturados: IArticuloGenerico[] = [];
+    console.log(categoria);
+    
+    
     categoria.forEach((cat) => {
       const articulosManufacturados = cat.articulosManufacturados.map(
         (articulo: any) => ({
@@ -88,6 +94,7 @@ export const ArticulosPromoModal: React.FC<InsumosModalProps> = ({
     setArticuloGenerico([...insumosGenericos, ...articulosManufacturadosGenericos]);
   }, [insumosGenericos, articulosManufacturadosGenericos]);
 
+  
   const handleAdd = () => {
     handleAddInsumos(selectedInsumos);
     handleClose();

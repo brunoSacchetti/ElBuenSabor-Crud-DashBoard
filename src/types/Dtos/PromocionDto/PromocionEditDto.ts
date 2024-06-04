@@ -1,4 +1,5 @@
 export default interface PromocionEditDto{
+    
     fechaDesde: string;
     fechaHasta: string;
     horaDesde:string;

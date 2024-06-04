@@ -251,10 +251,35 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
     let detallesIds: number[] = [];
 
     if (data) {
-console.log(itemValue);
+      const { fechaDesde, fechaHasta, horaDesde, horaHasta, precioPromocional, detalles } = itemValue;
+      
+      const editedData:PromocionEditDto = {
+        fechaDesde,
+        fechaHasta,
+        horaDesde,
+        horaHasta,
+        precioPromocional,
+        detalles
+      };
+      
+      await promocionService.put(itemValue.id, editedData);
 
-      await promocionService.put(itemValue.id, itemValue);
-      promocionId = itemValue.id;
+
+      await Promise.all(
+        selectedDetalle.map(async (detalle) => {
+          const newDetalle:any = {
+            cantidad: detalle.cantidad,
+          };
+          const createdDetalle = await promocionDetalleService.put(
+            newDetalle, detalle.id
+          );
+          detallesIds.push(createdDetalle.idArticuloInsumo);
+        })
+      );
+
+
+
+
     } else {
         // Crea una nueva promoción
         const newDetalleArray = selectedDetalle.map((detalle) => ({
@@ -262,27 +287,24 @@ console.log(itemValue);
           idArticulo: detalle.id,
         }))
 
-        
-      
         const newItemValue = { ...itemValue, detalles: newDetalleArray };
 
       
-        const newPromocion = await promocionService.postOnlyData(newItemValue);
+        const newPromocion:any = await promocionService.postOnlyData(newItemValue);
         promocionId = newPromocion.id;
       }
 
     // Guarda los detalles de la promoción
     await Promise.all(
       selectedDetalle.map(async (detalle) => {
-        const newDetalle = {
+        const newDetalle:any = {
           cantidad: detalle.cantidad,
           idArticulo: detalle.id,
-          promocionId: promocionId,
         };
         const createdDetalle = await promocionDetalleService.postOnlyData(
           newDetalle
         );
-        detallesIds.push(createdDetalle.id);
+        detallesIds.push(createdDetalle.idArticuloInsumo);
       })
     );
 
@@ -302,6 +324,7 @@ console.log(itemValue);
     console.error("Error al confirmar modal:", error);
   }
 };
+
 
 /* const handleConfirmModal = async () => {
   try {
@@ -377,7 +400,6 @@ console.log(itemValue);
 
 
 
-
   const handleOpenInsumosModal = () => {
     setOpenInsumosModal(true);
   };
@@ -391,10 +413,6 @@ console.log(itemValue);
     handleCloseInsumosModal();
   };
 
-
-    
- 
- 
   const handleRemoveInsumo = (id: number) => {
     const updatedDetalle = selectedDetalle.filter(
       (detalle) => detalle.id !== id
@@ -404,7 +422,6 @@ console.log(itemValue);
 
     
   };
-
 
   const handleCheckboxChange = (sucursalId: number) => {
     setSelectedSucursales((prevSelected) => {
@@ -527,7 +544,7 @@ console.log(itemValue);
               </div>
             </div>
             <div>
-              <div style={{ textAlign: "center", marginBottom: "20px", marginTop: "20px" }}>
+              <div style={{ textAlign: "center", marginBottom: "20px", marginTop: "20px",display: !elementActive ? "block" : "none" }} >
                 <h4>Selecciona las Sucursales</h4>
               </div>
               <div
@@ -546,9 +563,9 @@ console.log(itemValue);
                       id={`sucursal-${sucursal.id}`}
                       checked={selectedSucursales.includes(sucursal.id)}
                       onChange={() => handleCheckboxChange(sucursal.id)}
-                      
+                      style={{ display: !elementActive ? "block" : "none" }}
                     />
-                    <label  htmlFor={`sucursal-${sucursal.id}`}>
+                    <label style={{ display: !elementActive ? "block" : "none" }} htmlFor={`sucursal-${sucursal.id}`}>
                       {sucursal.nombre}
                     </label>
                   </div>
