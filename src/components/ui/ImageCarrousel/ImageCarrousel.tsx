@@ -3,6 +3,7 @@ import Carousel from "react-bootstrap/Carousel";
 import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IImagenes from "../../../types/Imagenes";
+import { IconButton } from "@mui/material";
 
 
 interface Props {
@@ -31,19 +32,17 @@ export const ImageCarrousel: React.FC<Props> = ({ images, handleDeleteImage }) =
                 <Carousel.Item key={image.id}>
                     <img
                         className="d-block mx-auto"
-                        style={{ maxHeight: "300px", maxWidth: "80%", margin: "0 auto" }}
+                        style={{ maxHeight: "300px", maxWidth: "100%", margin: "0 auto" }}
                         src={image.url}
                         alt={`Slide ${image.id}`}
                     />
                     <Carousel.Caption>
-                        <Button
-                            variant="contained"
-                            color="secondary"
-                            startIcon={<DeleteIcon />}
+                        <IconButton
+                            color="error"
                             onClick={() => handleDelete(extractPublicIdFromUrl(image.url), image.id)} // Pasa el idArticulo a la función handleDelete
                         >
-                            Borrar
-                        </Button>
+                            <DeleteIcon />
+                        </IconButton>
                     </Carousel.Caption>
                 </Carousel.Item>
             ))}

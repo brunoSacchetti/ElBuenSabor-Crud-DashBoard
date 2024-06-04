@@ -25,6 +25,8 @@ import IImagenes from "../../../../types/Imagenes";
 import { setLoading } from "../../../../redux/slices/EmpresaReducer";
 import Swal from "sweetalert2";
 import { ImageCarrousel } from "../../ImageCarrousel/ImageCarrousel";
+import InsumoEditDto from "../../../../types/Dtos/InsumosDto/InsumoEditDto";
+import { InsumoEditService } from "../../../../services/InsumoEditService";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -57,6 +59,7 @@ export const ModalArticuloInsumo = ({
   setOpenModal,
 }: IModalInsumos) => {
   const insumoService = new ArticuloInsumoService(`${API_URL}/ArticuloInsumo`);
+  const insumoEditService = new InsumoEditService(`${API_URL}/ArticuloInsumo`)
   const dispatch = useAppDispatch();
   const elementActive = useAppSelector(
     (state) => state.tablaReducer.elementActive
@@ -159,9 +162,10 @@ export const ModalArticuloInsumo = ({
     if (openModal && elementActive) {
       getUnidadMedida();
       getImages(elementActive.id); // Load images when editing
+      console.log(elementActive);
+      
     }
   }, [openModal, elementActive]);
-
 
   return (
     <Modal
@@ -169,6 +173,7 @@ export const ModalArticuloInsumo = ({
       onClose={handleClose}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
+      style={{ zIndex: 999 }}
     >
       <div
         style={{
@@ -178,10 +183,11 @@ export const ModalArticuloInsumo = ({
           margin: "auto",
           marginTop: "5rem",
           maxWidth: "600px",
-          height: "1000px"
+          overflowY: "auto",
+          maxHeight: "900px"
         }}
       >
-        <h2>{elementActive ? "Editar" : "Añadir"} un Insumo</h2>
+        <h2 style={{fontSize: "30px", marginBottom: "25px"}}>{elementActive ? "Editar" : "Añadir"} un Insumo</h2>
         <Formik
           initialValues={elementActive ? elementActive : initialValues}
           validationSchema={validationSchema}
@@ -189,14 +195,35 @@ export const ModalArticuloInsumo = ({
           onSubmit={async (values: InsumoPost) => {
             try {
               let insumo;
+              
+
+              //#region ARREGLAR - NO SE HACE EL PUT
               if (elementActive) {
-                await insumoService.put(values.id, values);
-                insumo = values;
+                
+                console.log(values);
+                
+                try{
+                  const { precioVenta, precioCompra, stockActual, stockMaximo, stockMinimo } = values;
+
+                  const editedData : InsumoEditDto = {
+                    precioVenta,
+                    precioCompra,
+                    stockActual,
+                    stockMaximo,
+                    stockMinimo,
+                  };
+                  await insumoEditService.put(values.id, editedData);
+                  insumo = values;
+                } catch (error) {
+                  console.error("Error al editar insumo:", error);
+                  Swal.fire("Error", "Error al editar insumo", "error");
+                  return;
+                }
               } else {
                 const newItemValue = { ...values, idCategoria: selectedCategoriaId };
                 
                 const response = await insumoService.post(
-                  "http://localhost:8080/ArticuloInsumo",
+                  `${API_URL}/ArticuloInsumo`,
                   newItemValue
                 );
                 insumo = response;
@@ -246,9 +273,9 @@ export const ModalArticuloInsumo = ({
             <Form>
               <div
                 style={{
-                  display: "flex",
-                  flexDirection: "column",
+                  display: "grid",
                   gap: "1rem",
+                  gridTemplateColumns: "1fr 1fr",
                 }}
               >
                 <FormControl>
@@ -257,6 +284,7 @@ export const ModalArticuloInsumo = ({
                     name="denominacion"
                     value={values.denominacion}
                     onChange={handleChange}
+                    style={{ display: !elementActive ? "block" : "none" , width: "90%" }}
                   />
                   <ErrorMessage
                     name="denominacion"
@@ -274,13 +302,14 @@ export const ModalArticuloInsumo = ({
                   <ErrorMessage name="precioVenta" component={FormHelperText} />
                 </FormControl>
                 <FormControl>
-                  <InputLabel id="categoria-label">Categoría</InputLabel>
+                  <InputLabel id="categoria-label" style={{ display: !elementActive ? "block" : "none" , width: "90%" }}>Categoría</InputLabel>
                   <Select
                     labelId="categoria-label"
                     label="Categoría"
                     name="id"
                     value={selectedCategoriaId ?? ""}
                     onChange={handleChangeCategoriaValues}
+                    style={{ display: !elementActive ? "block" : "none" , width: "90%" }}
                   >
                     {categorias.map((categoria) => (
                       <MenuItem key={categoria.id} value={categoria.id}>
@@ -291,7 +320,7 @@ export const ModalArticuloInsumo = ({
                   <ErrorMessage name="idCategoria" component={FormHelperText} />
                 </FormControl>
                 <FormControl>
-                  <InputLabel id="unidad-medida-label">
+                  <InputLabel id="unidad-medida-label" style={{ display: !elementActive ? "block" : "none" , width: "90%" }}>
                     Unidad de Medida
                   </InputLabel>
                   <Select
@@ -300,6 +329,7 @@ export const ModalArticuloInsumo = ({
                     name="idUnidadMedida"
                     value={values.idUnidadMedida}
                     onChange={handleChange}
+                    style={{ display: !elementActive ? "block" : "none" , width: "90%" }}
                   >
                     {unidadMedida.map((unidad) => (
                       <MenuItem key={unidad.id} value={unidad.id}>
@@ -356,33 +386,33 @@ export const ModalArticuloInsumo = ({
                   <ErrorMessage name="stockMinimo" component={FormHelperText} />
                 </FormControl>
                 <FormControl>
-                  <label>
+                  <label style={{ display: !elementActive ? "block" : "none" , width: "90%" }}>
                     <Field
                       type="checkbox"
                       name="esParaElaborar"
                       as={Checkbox}
+                      style={{ display: !elementActive ? "block" : "none" , width: "90%" }}
                     />
                     Es Para Elaborar?
                   </label>
                 </FormControl>
-
                 <FormControl>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "2vh", padding: ".4rem" }}>
-                  <TextField
-                    id="outlined-basic"
-                    variant="outlined"
-                    type="file"
-                    onChange={handleFileChange}
-                    inputProps={{ multiple: true }}
-                  />
-                </div>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "2vh", padding: ".4rem" }}>
+                    <TextField
+                      id="outlined-basic"
+                      variant="outlined"
+                      type="file"
+                      onChange={handleFileChange}
+                      inputProps={{ multiple: true }}
+                    />
+                  </div>
                 </FormControl>
                 {elementActive && (
-                    <ImageCarrousel
-                      images={images} // Pasas las imágenes como prop al carousel
-                      handleDeleteImage={(publicId: string, id: number) => handleDeleteImage(publicId, id)} // Pasas la función para eliminar imágenes como prop
-                    />
-                  )}
+                  <ImageCarrousel
+                    images={images} // Pasas las imágenes como prop al carousel
+                    handleDeleteImage={(publicId: string, id: number) => handleDeleteImage(publicId, id)} // Pasas la función para eliminar imágenes como prop
+                  />
+                )}
               </div>
               <div
                 style={{
@@ -393,6 +423,9 @@ export const ModalArticuloInsumo = ({
               >
                 <Button variant="contained" color="primary" type="submit">
                   Enviar
+                </Button>
+                <Button variant="contained" color="error" onClick={handleClose}>
+                  Cerrar
                 </Button>
               </div>
             </Form>
