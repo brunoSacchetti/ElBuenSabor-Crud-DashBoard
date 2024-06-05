@@ -57,7 +57,7 @@ const initialValues: ProductoPost = {
       idArticuloInsumo: 0,
     },
   ],
-  idCategoria: 0,
+  idCategoria: 1,
   //imagenes: [],
 };
 
