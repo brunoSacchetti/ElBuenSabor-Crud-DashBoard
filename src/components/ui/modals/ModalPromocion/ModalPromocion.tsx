@@ -251,9 +251,10 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
     let detallesIds: number[] = [];
 
     if (data) {
-      const { fechaDesde, fechaHasta, horaDesde, horaHasta, precioPromocional, detalles } = itemValue;
+      const {id, fechaDesde, fechaHasta, horaDesde, horaHasta, precioPromocional, detalles } = itemValue;
       
       const editedData:PromocionEditDto = {
+        id,
         fechaDesde,
         fechaHasta,
         horaDesde,

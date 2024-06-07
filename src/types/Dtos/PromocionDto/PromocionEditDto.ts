@@ -1,5 +1,5 @@
 export default interface PromocionEditDto{
-    
+    id:number;
     fechaDesde: string;
     fechaHasta: string;
     horaDesde:string;
