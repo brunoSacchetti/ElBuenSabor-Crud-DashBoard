@@ -44,6 +44,30 @@ export abstract class BackendClient<T> extends AbstractBackendClient<T> {
     }
   }
 
+
+  async changeHabilitado(id: number | string): Promise<void> {
+    const url = `${this.baseUrl}/changeHabilitado/${id}`;
+  
+    try {
+      const response = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Error al cambiar el estado del recurso con ID ${id}`);
+      }
+  
+      // Si necesitas manejar alguna respuesta desde el servidor, puedes hacerlo aquí.
+      // const responseData = await response.json();
+    } catch (error) {
+      console.error(`Error al cambiar el estado del recurso con ID ${id}:`, error);
+      throw error;
+    }
+  }
+
   async post(url: string, data: T): Promise<T> {
     const response = await fetch(`${this.baseUrl}`, {
       method: "POST",

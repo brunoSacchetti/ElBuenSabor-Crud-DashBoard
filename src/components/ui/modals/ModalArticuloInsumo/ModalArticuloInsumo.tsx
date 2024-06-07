@@ -200,12 +200,12 @@ export const ModalArticuloInsumo = ({
               //#region ARREGLAR - NO SE HACE EL PUT
               if (elementActive) {
                 
-                console.log(values);
                 
                 try{
-                  const { precioVenta, precioCompra, stockActual, stockMaximo, stockMinimo } = values;
+                  const {id, precioVenta, precioCompra, stockActual, stockMaximo, stockMinimo } = values;
 
                   const editedData : InsumoEditDto = {
+                    id,
                     precioVenta,
                     precioCompra,
                     stockActual,

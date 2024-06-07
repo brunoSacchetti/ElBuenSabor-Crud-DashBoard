@@ -23,6 +23,7 @@ export interface ITableProps<T> {
   setOpenModal: (state: boolean) => void;
 }
 
+
 export const TableGeneric = <T extends { id: any }>({
   columns,
   handleDelete,
@@ -50,10 +51,12 @@ export const TableGeneric = <T extends { id: any }>({
   // Obtener los datos de la tabla del estado global
   const dataTable = useAppSelector((state) => state.tablaReducer.dataTable);
 
-  // Actualizar las filas cuando cambien los datos de la tabla
+
   useEffect(() => {
+
     setRows(dataTable);
-  }, [dataTable]);
+  }, [dataTable]); // da
+  
 
   return (
     <div
