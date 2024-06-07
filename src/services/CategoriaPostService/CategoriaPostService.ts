@@ -1,8 +1,9 @@
+import { CategoriaEdit } from "../../types/Dtos/CategoriaDto/CategoriaEdit";
 import { CategoriaPost } from "../../types/Dtos/CategoriaDto/CateogoriaPost";
 import { BackendClient } from "../BackendClient";
 
 
-export class CategoriaPostService extends BackendClient<CategoriaPost> {
+export class CategoriaPostService extends BackendClient<CategoriaPost | CategoriaEdit> {
 
     constructor(baseUrl: string) {
         super(baseUrl);

@@ -65,22 +65,6 @@ export const ScreenCategorias = () => {
     });
   };
 
-  // Función para obtener las categorías
-  /* const getCategorias = async () => {
-    //await categoriaService.getAll().then((categoriaData) => {
-    console.log(sucursalActual);
-    
-    if(sucursalActual == null){
-      console.error("Error al obtener categorias")
-    } else { 
-    await sucursalService.getCategoriasPorSucursal(sucursalActual.id).then((categoriaData) => {
-      dispatch(setCategoriaData(categoriaData));
-      setCategorias(categoriaData);
-      setLoading(false);
-      });
-    };
-  }
- */
   const getCategorias = async () => {
     if (!sucursalActual) {
       console.error("Error al obtener categorias: sucursalActual es null");
@@ -106,12 +90,6 @@ export const ScreenCategorias = () => {
     }
   }, [sucursalActual]);
 
-  // Efecto para cargar los datos al inicio
-  /* useEffect(() => {
-    setLoading(true);
-    getCategorias();
-  }, []);  */
-
   const [isAddingSubcategoria, setIsAddingSubcategoria] = useState(false);
   const handleAddSubcategoria = (parentId: number | null) => {
     console.log(parentId);
@@ -129,6 +107,7 @@ export const ScreenCategorias = () => {
     setCategoriaEdit(categoria);
     setOpenEditModal(true);
   };
+
 
   return (
     <>
@@ -149,7 +128,7 @@ export const ScreenCategorias = () => {
         >
           Categorías
         </Typography>
-          {/* Botón para abrir el modal de agregar categoría */}
+
           <Button
             onClick={() => {
               setOpenModal(true);
@@ -159,8 +138,6 @@ export const ScreenCategorias = () => {
             Agregar
           </Button>
         </div>
-        {/* Mostrar indicador de carga mientras se cargan los datos */}
-        {/* Aquí utilizamos el componente de acordeón para mostrar las categorías */}
       {loading ? (
         <div
           style={{
@@ -178,22 +155,22 @@ export const ScreenCategorias = () => {
         </div>
       ) : (
         <AccordionCategoria 
-  categories={categorias}
-  onEdit={handleEditCategoria} 
-  onAddSubcategoria={(parentId) => handleAddSubcategoria(parentId)} 
-  onDelete={handleDelete} 
+          categories={categorias}
+          onEdit={handleEditCategoria} 
+          onAddSubcategoria={(parentId) => handleAddSubcategoria(parentId)} 
+          onDelete={handleDelete} 
 />
       )}
       </div>
 
       {/* Modal para agregar o editar una categoría */}
       <ModalCategoria
-  getCategorias={getCategorias}
-  openModal={openModal}
-  setOpenModal={setOpenModal}
-  isAddingSubcategoria={isAddingSubcategoria} // pasa el nuevo estado como prop
-  setIsAddingSubcategoria={setIsAddingSubcategoria}
-/>
+        getCategorias={getCategorias}
+        openModal={openModal}
+        setOpenModal={setOpenModal}
+        isAddingSubcategoria={isAddingSubcategoria} // pasa el nuevo estado como prop
+        setIsAddingSubcategoria={setIsAddingSubcategoria}
+      />
       {/* Modal de edición de categoría */}
       <ModalEditCategoria
         getCategorias={getCategorias}
