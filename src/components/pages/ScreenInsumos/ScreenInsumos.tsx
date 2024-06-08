@@ -131,9 +131,8 @@ export const ScreenInsumos = () => {
       const allInsumos = categoriasData.flatMap((categoria) => categoria.insumos);
       
       // Filtrar los insumos habilitados
-      const insumosHabilitados = allInsumos.filter((insumo) => insumo.esHabilitado);
+      const insumosHabilitados = allInsumos.filter((insumo) => insumo.habilitado);
       
-      console.log(insumosHabilitados);
       setInsumoXCategoria(insumosHabilitados);
       dispatch(setDataTable(insumosHabilitados));
     } catch (error) {

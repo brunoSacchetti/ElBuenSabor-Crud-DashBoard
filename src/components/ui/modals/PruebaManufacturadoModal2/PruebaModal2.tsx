@@ -51,7 +51,7 @@ const initialValues: ProductoPost = {
   preparacion: "",
   idUnidadMedida: 1,
   //idsArticuloManufacturadoDetalles: [],
-  articuloManufacturadoDetalles: [
+  detalles: [ //articuloManufacturadoDetalles
     {
       cantidad: 0,
       idArticuloInsumo: 0,
@@ -113,16 +113,16 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
     }
   };
 
-  const getCategorias = async () => {
+  /* const getCategorias = async () => {
     try {
       const data = await categoriaService.getAll();
       setCategoria(data);
     } catch (error) {
       console.error("Error al obtener las categorías:", error);
     }
-  };
+  }; */
 
-  /* const getCategorias = async () => {
+  const getCategorias = async () => {
     if (!sucursalActual) {
       console.error("Error al obtener categorias: sucursalActual es null");
       return;
@@ -135,7 +135,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
       console.error("Error al obtener categorias:", error);
     }
   };
-   */
+  
 
   const getInsumos = async () => {
     try {
@@ -155,24 +155,6 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
     }
   };
 
-  /* const getProductoDetalles = async (productoId: number) => {
-    try {
-      const detallesResponse = await fetch(
-        `http://localhost:8080/ArticuloManufacturado/allDetalles/${productoId}`
-      );
-      const detallesData = await detallesResponse.json();
-      // Ahora debes formatear los detalles obtenidos según la estructura esperada en selectedDetalle
-      const formattedDetalles = detallesData.map((detalle: any) => ({
-        id: detalle.idArticuloInsumo,
-        cantidad: detalle.cantidad,
-        denominacion: detalle.articuloInsumo.denominacion,
-      }));
-      setSelectedDetalle(formattedDetalles);
-    } catch (error) {
-      console.error("Error al obtener los detalles de los insumos:", error);
-    }
-  }; */
-
   const getProductoDetalles = async (productoId: number) => {
     try {
       const response = await fetch(`${API_URL}/ArticuloManufacturado/allDetalles/${productoId}`);
@@ -185,13 +167,13 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
         id: detalle.id, // Asegúrate de que cada detalle tenga un id definido
         cantidad: detalle.cantidad,
         denominacion: detalle.articuloInsumo.denominacion,
+        idArticuloInsumo: detalle.articuloInsumo.id,
       }));
       setSelectedDetalle(formattedDetalles);
     } catch (error) {
       console.error("Error al obtener los detalles de los insumos:", error);
     }
   };
-  
 
   useEffect(() => {
     if (data) {
@@ -205,7 +187,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
         preparacion: productoData.preparacion,
         /* idsArticuloManufacturadoDetalles:
           productoData.idsArticuloManufacturadoDetalles, */
-        articuloManufacturadoDetalles: productoData.articuloManufacturadoDetalles,
+        detalles: productoData.detalles,
         idUnidadMedida: productoData.idUnidadMedida,
         idCategoria: productoData.idCategoria,
       });
@@ -362,6 +344,8 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
         return;
       }
 
+      let productoId;
+
       // Verifica que todos los campos obligatorios estén completos
       if (
         itemValue.denominacion.trim() === "" ||
@@ -381,110 +365,113 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
         return;
       }
 
-      /* let productoId: number;
-      let detallesIds: number[] = [];
+      console.log(selectedDetalle);
 
       if (data) {
-        await productoManufacturadoService.put(itemValue.id, itemValue);
-        productoId = itemValue.id;
-      } else {
-        const newProducto = await productoManufacturadoService.postOnlyData(
-          itemValue
-        );
-        productoId = newProducto.id;
-      }
-
-      await categoriaService.addArticuloManufacturado(
-        selectedCategoriaId,
-        productoId
-      );
-
-      await Promise.all(
-        selectedDetalle.map(async (detalle) => {
-          const newDetalle = {
-            id: 0,
-            cantidad: detalle.cantidad,
-            idArticuloInsumo: detalle.id,
-            idArticuloManufacturado: productoId,
-          };
-          const createdDetalle = await productoDetalleService.postOnlyData(
-            newDetalle
-          );
-          detallesIds.push(createdDetalle.id);
-        })
-      );
-
-      await productoManufacturadoService.put(productoId, {
-        ...itemValue,
-        idsArticuloManufacturadoDetalles: detallesIds,
-      }); */
-
-      console.log(selectedDetalle);
-      
-
-      /* const updatedItemValue = {
-        ...itemValue,
-        articuloManufacturadoDetalles: selectedDetalle,
-      }; */
-
-      const updatedItemValue = {
-        ...itemValue,
-        articuloManufacturadoDetalles: selectedDetalle.map((detalle) => ({
-          cantidad: detalle.cantidad,
-          idArticuloInsumo: detalle.id // Ajusta esto según la estructura de tu objeto detalle
-        }))
-      };
-      
-      const productoPostService = new ProductoPostService(`${API_URL}/ArticuloManufacturado`);
-
-      // Realiza el post del producto con los detalles asignados
-      //const newProducto = await productoManufacturadoService.postOnlyData(updatedItemValue);
-
-      const newProducto = await productoPostService.postOnlyData(updatedItemValue);
-      
-      const productoId = newProducto.id;
-      console.log(productoId);
-      
-      
-      /* if(selectedFiles){
-          await uploadFiles(productoId);
-      } else {
-        await Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Por favor, selecciona al menos una imagen",
-        });
-        return;
-      } */
-        
-      if (!selectedFiles) {
-          Swal.fire("No hay imágenes seleccionadas", "Selecciona al menos una imagen", "warning");
-          return;
-      } 
-      
-      try {
-        Swal.fire({
-          title: "Subiendo imágenes...",
-          text: "Espere mientras se suben los archivos.",
-          allowOutsideClick: false,
-          didOpen: () => {
-            Swal.showLoading();
-          },
-        });
-        
-        const formData = new FormData();
-          Array.from(selectedFiles).forEach((file) => {
-        formData.append("uploads", file);
-       });
+        // Si hay datos, se trata de una edición, entonces realizamos la solicitud PUT
   
-        await imageService.uploadImages(`${API_URL}/ArticuloManufacturado/uploads?id=${productoId}`,formData);
-        Swal.fire("Éxito", "Imágenes subidas correctamente", "success");
-        //fetchImages();
-      } catch (error) {
-        Swal.fire("Error", "Algo falló al subir las imágenes, inténtalo de nuevo.", "error");
-      } finally {
-        setSelectedFiles(null);
-        Swal.close();
+        console.log(selectedDetalle);
+  
+        const productoEditado = {
+          id: itemValue.id,
+          descripcion: itemValue.descripcion,
+          preparacion: itemValue.preparacion,
+          precioVenta: itemValue.precioVenta,
+          tiempoEstimadoMinutos: itemValue.tiempoEstimadoMinutos,
+          detalles: selectedDetalle.map((detalle) => ({
+            cantidad: detalle.cantidad,
+            idArticuloInsumo: detalle.idArticuloInsumo || detalle.id // Ajusta esto según la estructura de tu objeto detalle
+          }))
+        }
+
+        /* const updatedItemValue = {
+          ...itemValue,
+          articuloManufacturadoDetalles: selectedDetalle.map((detalle) => ({
+            cantidad: detalle.cantidad,
+            idArticuloInsumo: detalle.id // Ajusta esto según la estructura de tu objeto detalle
+          }))
+        }; */
+
+        console.log("PRODUCTO EDITADO", productoEditado);
+        
+  
+        const productoPutService = new ProductoPostService(`${API_URL}/ArticuloManufacturado`);
+  
+        // Realizar el put del producto con los detalles asignados
+        await productoPutService.put(itemValue.id, productoEditado as ProductoPost);
+
+        if (selectedFiles) {
+          try {
+            Swal.fire({
+              title: "Subiendo imágenes...",
+              text: "Espere mientras se suben los archivos.",
+              allowOutsideClick: false,
+              didOpen: () => {
+                Swal.showLoading();
+              },
+            });
+            
+            const formData = new FormData();
+            Array.from(selectedFiles).forEach((file) => {
+              formData.append("uploads", file);
+            });
+      
+            // Subimos las imágenes solo si están seleccionadas
+            await imageService.uploadImages(`${API_URL}/ArticuloManufacturado/uploads?id=${itemValue.id}`,formData);
+            Swal.fire("Éxito", "Imágenes subidas correctamente", "success");
+            //fetchImages();
+          } catch (error) {
+            Swal.fire("Error", "Algo falló al subir las imágenes, inténtalo de nuevo.", "error");
+          } finally {
+            setSelectedFiles(null);
+            Swal.close();
+          }
+        }
+      
+      } else {
+        
+        const updatedItemValue = {
+          ...itemValue,
+          articuloManufacturadoDetalles: selectedDetalle.map((detalle) => ({
+            cantidad: detalle.cantidad,
+            idArticuloInsumo: detalle.id // Ajusta esto según la estructura de tu objeto detalle
+          }))
+        };
+        
+        const productoPostService = new ProductoPostService(`${API_URL}/ArticuloManufacturado`);
+      
+        // Realiza el post del producto con los detalles asignados
+        const newProducto = await productoPostService.postOnlyData(updatedItemValue);
+        
+        productoId = newProducto.id;
+      
+        if (selectedFiles) {
+          try {
+            Swal.fire({
+              title: "Subiendo imágenes...",
+              text: "Espere mientras se suben los archivos.",
+              allowOutsideClick: false,
+              didOpen: () => {
+                Swal.showLoading();
+              },
+            });
+            
+            const formData = new FormData();
+            Array.from(selectedFiles).forEach((file) => {
+              formData.append("uploads", file);
+            });
+      
+            // Subimos las imágenes solo si están seleccionadas
+            await imageService.uploadImages(`${API_URL}/ArticuloManufacturado/uploads?id=${productoId}`, formData);
+            Swal.fire("Éxito", "Imágenes subidas correctamente", "success");
+            //fetchImages();
+          } catch (error) {
+            Swal.fire("Error", "Algo falló al subir las imágenes, inténtalo de nuevo.", "error");
+          } finally {
+            setSelectedFiles(null);
+            Swal.close();
+          }
+        }
       }
       
       handleSuccess("Elemento guardado correctamente");
@@ -498,6 +485,36 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
       console.error("Error al confirmar modal:", error);
     }
   };
+
+  const handleChangeCantidad = (detalleId: number, cantidad: string) => {
+    // Convierte la cantidad a un número entero
+    const nuevaCantidad = parseInt(cantidad);
+    
+    // Verifica si el detalle ya existe en los detalles seleccionados
+    const detalleExistenteIndex = selectedDetalle.findIndex(detalle => detalle.id === detalleId);
+  
+    if (detalleExistenteIndex !== -1) {
+      // Si el detalle existe, actualiza la cantidad
+      const updatedDetalles = [...selectedDetalle]; // Crea una copia del arreglo de detalles
+      updatedDetalles[detalleExistenteIndex] = { ...updatedDetalles[detalleExistenteIndex], cantidad: nuevaCantidad }; // Actualiza la cantidad del detalle existente
+      setSelectedDetalle(updatedDetalles); // Establece el estado con los nuevos detalles
+    } else {
+      // Si el detalle no existe, agrega un nuevo detalle con la cantidad especificada
+      const nuevoDetalle = {
+        id: detalleId,
+        cantidad: nuevaCantidad
+      };
+  
+      // Agrega el nuevo detalle a los detalles seleccionados
+      const updatedDetalles = [...selectedDetalle, nuevoDetalle];
+  
+      // Actualiza el estado con los nuevos detalles
+      setSelectedDetalle(updatedDetalles);
+    }
+    console.log(selectedDetalle);
+  };
+  
+  
 
   const handleTableIngredientSelect = (selectedData: any) => {
     const filteredData = selectedData.map((item: any) => ({
@@ -579,37 +596,6 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
     
   };
 
-  /* const uploadFiles = async (id: number) => {
-    if (!selectedFiles) {
-      return Swal.fire("No hay imágenes seleccionadas", "Selecciona al menos una imagen", "warning");
-    }
-
-    try {
-      Swal.fire({
-        title: "Subiendo imágenes...",
-        text: "Espere mientras se suben los archivos.",
-        allowOutsideClick: false,
-        didOpen: () => {
-          Swal.showLoading();
-        },
-      });
-
-      const formData = new FormData();
-        Array.from(selectedFiles).forEach((file) => {
-      formData.append("uploads", file);
-     });
-
-      await imageService.uploadImages(`${API_URL}/ArticuloManufacturado/uploads?id=${id}`, formData);
-      Swal.fire("Éxito", "Imágenes subidas correctamente", "success");
-      //fetchImages();
-    } catch (error) {
-      Swal.fire("Error", "Algo falló al subir las imágenes, inténtalo de nuevo.", "error");
-    } finally {
-      setSelectedFiles(null);
-      Swal.close();
-    }
-  }; */
-
   const getImages = async (id: number) => {
     try {
       setLoading(true);
@@ -621,20 +607,6 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
       setLoading(false);
     }
   };
-
-  /* const handleDeleteImage = async (publicId: string, id: number) => {
-    try {
-      // Realiza la llamada al servicio para eliminar la imagen
-      await imageService.deleteImage(publicId, id);
-      // Muestra un mensaje de éxito si la eliminación fue exitosa
-      Swal.fire('Imagen eliminada', 'La imagen se eliminó correctamente', 'success');
-      // Aquí podrías actualizar la lista de imágenes en tu estado o recargar las imágenes del producto
-    } catch (error) {
-      // Muestra un mensaje de error si la eliminación falla
-      Swal.fire('Error', 'No se pudo eliminar la imagen', 'error');
-      console.error('Error deleting image:', error);
-    }
-  }; */
 
   const handleDeleteImage = async (publicId: string, id: number) => {
     try {
@@ -651,9 +623,6 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
       console.error('Error deleting image:', error);
     }
   };
-  
-
-  
 
   return (
     <div>
@@ -686,6 +655,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
                   onChange={handlePropsElementsInputs}
                   value={itemValue.denominacion}
                   variant="filled"
+                  disabled={data ? true : false}
                 />
                 <TextField
                   type="number"
@@ -722,6 +692,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
                 value={selectedUnidadMedidaId ?? ""}
                 onChange={handleChangeUnidadMedidaValues}
                 variant="filled"
+                disabled={data ? true : false}
               >
                 {unidadMedida.map((unidad) => (
                   <MenuItem key={unidad.id} value={unidad.id}>
@@ -735,6 +706,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
                 value={selectedCategoriaId ?? ""}
                 onChange={handleChangeCategoriaValues}
                 variant="filled"
+                disabled={data ? true : false}
               >
                 {categoria.map((cat) => (
                   <MenuItem key={cat.id} value={cat.id}>
@@ -833,43 +805,51 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
               </div>
             </div> */}
             <div className={styles.ingredientesTableContainer}>
-              {selectedDetalle.length > 0 ? (
-                <TableContainer component={Paper} style={{ maxWidth: "80%" }}>
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell align="center">Nombre</TableCell>
-                        <TableCell align="center">Cantidad</TableCell>
-                        <TableCell align="center">Acciones</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {selectedDetalle.map((detalle) => (
-                        <TableRow key={detalle.id}>
-                          <TableCell align="center">
-                            {detalle.denominacion}
-                          </TableCell>
-                          <TableCell align="center">
-                            {detalle.cantidad}
-                          </TableCell>
-                          <TableCell align="center">
-                            <Button
-                              variant="outlined"
-                              color="info"
-                              onClick={() => handleRemoveInsumo(detalle.id)}
-                              startIcon={<DeleteIcon />}
-                            >
-                              Quitar
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              ) : (
-                <div>No hay insumos agregados</div>
-              )}
+  {selectedDetalle.length > 0 ? (
+    <TableContainer component={Paper} style={{ maxWidth: "80%" }}>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell align="center">Nombre</TableCell>
+            <TableCell align="center">Cantidad</TableCell>
+            <TableCell align="center">Acciones</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {selectedDetalle.map((detalle) => (
+            <TableRow key={detalle.id}>
+              <TableCell align="center">
+                {detalle.denominacion}
+              </TableCell>
+              <TableCell align="center">
+                {data ? ( // Verifica si hay datos existentes (edición)
+                  <input
+                    type="number"
+                    value={detalle.cantidad}
+                    onChange={(e) => handleChangeCantidad(detalle.id, e.target.value)}
+                  />
+                ) : (
+                  detalle.cantidad // Si no hay datos, solo muestra la cantidad
+                )}
+              </TableCell>
+              <TableCell align="center">
+                <Button
+                  variant="outlined"
+                  color="info"
+                  onClick={() => handleRemoveInsumo(detalle.id)}
+                  startIcon={<DeleteIcon />}
+                >
+                  Quitar
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  ) : (
+    <div>No hay insumos agregados</div>
+  )}
               <div style={{ textAlign: "center", marginTop: "1rem" }}>
                 <Button
                   variant="contained"

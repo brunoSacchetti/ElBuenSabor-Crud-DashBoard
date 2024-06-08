@@ -10,7 +10,7 @@ export default interface ProductoPost {
   preparacion: string;
   idUnidadMedida: number;
   //idsArticuloManufacturadoDetalles: number[];
-  articuloManufacturadoDetalles: ProductoDetallePost[];
+  detalles: ProductoDetallePost[];
   idCategoria: number;
   imagenes?: IImagen[];
 }
