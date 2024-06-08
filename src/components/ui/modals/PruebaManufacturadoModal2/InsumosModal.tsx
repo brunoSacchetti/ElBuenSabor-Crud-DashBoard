@@ -56,11 +56,11 @@ export const InsumosModal: React.FC<InsumosModalProps> = ({
       const data: IArticuloInsumo[] = await insumosServices.getAll();
   
       // Filtrar los insumos que no son para elaborar
-      const insumosNoElaborar: IArticuloInsumo[] = data.filter(
-        (insumo) => insumo.esParaElaborar
+      const insumosElaborarHabilitados: IArticuloInsumo[] = data.filter(
+        (insumo) => insumo.esParaElaborar && insumo.habilitado
       );
   
-      return insumosNoElaborar;
+      return insumosElaborarHabilitados;
     } catch (error) {
       console.error("Error al obtener insumos:", error);
       return [];
