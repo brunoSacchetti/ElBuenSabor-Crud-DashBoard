@@ -57,7 +57,7 @@ export const ModalArticuloInsumoEdit = ({
         keyboard={false}
       >
         <Modal.Header closeButton>
-          <Modal.Title>Editar una empresa:</Modal.Title>
+          <Modal.Title>Editar un Insumo:</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Formik

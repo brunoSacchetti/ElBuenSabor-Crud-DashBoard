@@ -17,7 +17,7 @@ interface CardSucursalProps {
 
 export const CardSucursal: React.FC<CardSucursalProps> = ({ sucursal, onDelete, onEdit, onSelect }) => {
   return (
-    <Card sx={{ maxWidth: 345 }}>
+    <Card sx={{ maxWidth: 345, borderRadius: "20px", border: "1px solid lightgray"}}>
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
           {sucursal.nombre}
@@ -32,7 +32,10 @@ export const CardSucursal: React.FC<CardSucursalProps> = ({ sucursal, onDelete, 
           <strong>Dirección:</strong> {sucursal.domicilio.calle} {sucursal.domicilio.numero}, {sucursal.domicilio.localidad.nombre}, {sucursal.domicilio.localidad.provincia.nombre}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          <strong>Es Casa Matriz:</strong> {sucursal.esCasaMatriz ? "Sí" : "No"}
+          <strong>Es Casa Matriz:</strong> 
+          <span style={{ color: sucursal.esCasaMatriz ? "green" : "red", fontWeight: "bold", marginLeft: "0.5rem" }}>
+            {sucursal.esCasaMatriz ? "Sí" : "No"}
+          </span>
         </Typography>
       </CardContent>
       <CardActions>

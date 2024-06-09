@@ -31,11 +31,11 @@ export const ScreenInsumos = () => {
 
   
   const ColumnsTableInsumo = [
-    {
+    /* {
       label: "ID",
       key: "id",
       render: (insumos: IArticuloInsumo) => (insumos?.id ? insumos.id : 0),
-    },
+    }, */
     { label: "Nombre", key: "denominacion" },
     { label: "Precio Venta", key: "precioVenta" },
     {

@@ -24,11 +24,11 @@ export const ScreenUnidadMedida = () => {
   const dispatch = useAppDispatch();
   // Columnas de la tabla de personas
   const ColumnsTableUnidadMedida = [
-    {
+    /* {
       label: "ID",
       key: "id",
       render: (unidadMedida: IUnidadMedida) => (unidadMedida?.id ? unidadMedida.id : 0),
-    },
+    }, */
     { label: "Denominacion", key: "denominacion" },
     { label: "Acciones", key: "acciones" },
   ];

@@ -18,10 +18,10 @@ interface MediaCardProps {
 
 export const CardEmpresa: React.FC<MediaCardProps> = ({ empresa, onDelete, onEdit, onSelect, imageUrl }) => {
   
-  const defaultImageUrl = 'https://th.bing.com/th/id/OIP.85Afj-Uwn6gr70bOie8WFgHaHa?rs=1&pid=ImgDetMain';
+  const defaultImageUrl = './nohayfoto.jpg';
 
   return (
-    <Card sx={{ maxWidth: 345 }}>
+    <Card sx={{ maxWidth: 345, borderRadius: "20px", border: "1px solid lightgray"}}>
       <img src={imageUrl || defaultImageUrl} alt={`${empresa.nombre} logo`} style={{ width: '100%', height: 'auto' }} />
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
@@ -34,12 +34,12 @@ export const CardEmpresa: React.FC<MediaCardProps> = ({ empresa, onDelete, onEdi
           <strong>CUIL:</strong> {empresa.cuil}
         </Typography>
         {empresa.sucursales && empresa.sucursales.length > 0 ? (
-          <Button variant="contained" color="success" startIcon={<LocationOn />} onClick={() => onSelect(empresa.id, empresa)}>
-            Sucursales
+          <Button variant="contained" color="primary" startIcon={<LocationOn />}>
+            Sucursales Disponibles
           </Button>
         ) : (
-          <Button variant="contained" color="error" startIcon={<VisibilityOff />} onClick={() => alert("No hay sucursales en esta empresa")}>
-            Sucursales
+          <Button variant="contained" color="error" startIcon={<VisibilityOff />}>
+            No hay Sucursales
           </Button>
         )}
       </CardContent>
@@ -52,6 +52,7 @@ export const CardEmpresa: React.FC<MediaCardProps> = ({ empresa, onDelete, onEdi
         </IconButton>
         <IconButton onClick={() => onSelect(empresa.id, empresa)} aria-label="Seleccionar">
           <ChevronRight />
+          <label style={{fontSize: "18px", fontFamily: 'sans-serif'}}>Ver Sucursales</label>
         </IconButton>
       </CardActions>
     </Card>

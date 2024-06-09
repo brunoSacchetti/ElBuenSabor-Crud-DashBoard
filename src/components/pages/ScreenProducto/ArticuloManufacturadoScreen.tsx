@@ -33,7 +33,7 @@ const StyledButton = styled(Button)({
 });
 
 const ColumnsProductosManufacturados = (categorias: ICategoria[]) => [
-  { label: "Id", key: "id" },
+  /* { label: "Id", key: "id" }, */
   { label: "Nombre", key: "denominacion" },
   /* { 
     label: "Categoria", 

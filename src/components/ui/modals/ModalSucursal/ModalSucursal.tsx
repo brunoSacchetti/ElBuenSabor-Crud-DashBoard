@@ -1,13 +1,12 @@
+import React, { useEffect, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import * as Yup from "yup";
-
 import TextFieldValue from "../../TextFildValue/TextFildValue";
 import { Field, Form, Formik } from "formik";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/redux";
-import { removeElementActive } from "../../../../redux/slices/TablaReducer";
+import { removeSucursalActive } from "../../../../redux/slices/SucursalReducer";
 import ISucursales from "../../../../types/Sucursales";
 import { SucursalService } from "../../../../services/SucursalService";
-import { useEffect, useState } from "react";
 import IPais from "../../../../types/Pais";
 import IProvincia from "../../../../types/Provincia";
 import ILocalidad from "../../../../types/Localidad";
@@ -15,7 +14,7 @@ import { CFormSelect } from "@coreui/react";
 import SucursalPost from "../../../../types/Dtos/SucursalDto/SucursalPost";
 import SucursalPut from "../../../../types/Dtos/SucursalDto/SucursalPut";
 import { Checkbox } from "@mui/material";
-import { removeSucursalActive } from "../../../../redux/slices/SucursalReducer";
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 interface IModalSucursales {
@@ -25,12 +24,12 @@ interface IModalSucursales {
   setOpenModal: (state: boolean) => void;
 }
 
-export const ModalSucursal = ({
+export const ModalSucursal: React.FC<IModalSucursales> = ({
   empresaId,
   getSucursales,
   openModal,
   setOpenModal,
-}: IModalSucursales) => {
+}) => {
   const initialValues: SucursalPost = {
     id: 0,
     nombre: "",
@@ -93,20 +92,11 @@ export const ModalSucursal = ({
 
   const apiSucursales = new SucursalService(API_URL + "/sucursal");
 
-  /* const elementActive = useAppSelector(
-    (state) => state.tablaReducer.elementActive
-  ); */
-
   const elementActive = useAppSelector(
     (state) => state.sucursal.sucursalActual
   );
 
   const dispatch = useAppDispatch();
-
-  /* const handleClose = () => {
-    setOpenModal(false);
-    dispatch(removeElementActive());
-  }; */
 
   const handleClose = () => {
     setOpenModal(false);
@@ -143,6 +133,22 @@ export const ModalSucursal = ({
                 piso: Yup.number().required("Campo requerido"),
                 nroDpto: Yup.number().required("Campo requerido"),
               }),
+              // Validación personalizada para la casilla "Es Casa Matriz"
+              esCasaMatriz: Yup.boolean().test(
+                "esCasaMatriz",
+                "Ya existe una sucursal marcada como casa matriz",
+                async function (value, { parent }) {
+                  // Obtener las sucursales
+                  const sucursales = await apiSucursales.getAll(); // Reemplaza esto con tu método para obtener las sucursales
+
+                  // Si ya existe una sucursal marcada como casa matriz y se intenta marcar esta casilla, devuelve falso
+                  if (value && sucursales.some((sucursal) => sucursal.esCasaMatriz)) {
+                    return false;
+                  }
+
+                  return true;
+                }
+              ),
             })}
             initialValues={elementActive ? elementActive : initialValues}
             enableReinitialize={true}
@@ -167,29 +173,40 @@ export const ModalSucursal = ({
             {({ setFieldValue }) => (
               <Form autoComplete="off" className="form-sucursal">
                 <div className="container-form-sucursal">
-                  <TextFieldValue
-                    label="Nombre:"
-                    name="nombre"
-                    type="text"
-                    placeholder="Nombre"
-                  />
-                  <TextFieldValue
-                    label="Horario de apertura:"
-                    name="horarioApertura"
-                    type="time"
-                    placeholder="Horario de apertura"
-                  />
-                  <TextFieldValue
-                    label="Horario de cierre:"
-                    name="horarioCierre"
-                    type="time"
-                    placeholder="Horario de cierre"
-                  />
-
-                  <label>
-                    <Field type="checkbox" name="esCasaMatriz" as={Checkbox} />
-                    ¿Es Casa Matriz?
-                  </label>
+                  <div className="row">
+                    <div className="col-md-6">
+                      <TextFieldValue
+                        label="Nombre:"
+                        name="nombre"
+                        type="text"
+                        placeholder="Nombre"
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <TextFieldValue
+                        label="Horario de apertura:"
+                        name="horarioApertura"
+                        type="time"
+                        placeholder="Horario de apertura"
+                      />
+                    </div>
+                  </div>
+                  <div className="row">
+                  <div className="col-md-6">
+                      <TextFieldValue
+                        label="Horario de cierre:"
+                        name="horarioCierre"
+                        type="time"
+                        placeholder="Horario de cierre"
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <label>
+                        <Field type="checkbox" name="esCasaMatriz" as={Checkbox} />
+                        ¿Es Casa Matriz?
+                      </label>
+                    </div>
+                  </div>
 
                   {!elementActive && (
                     <>
@@ -199,95 +216,104 @@ export const ModalSucursal = ({
                         type="text"
                         placeholder="Calle"
                       />
-                      <TextFieldValue
-                        label="Número"
-                        name="domicilio.numero"
-                        type="number"
-                        placeholder="Número"
-                      />
-                      <TextFieldValue
-                        label="Código Postal"
-                        name="domicilio.cp"
-                        type="number"
-                        placeholder="Código Postal"
-                      />
-                      <TextFieldValue
-                        label="Piso"
-                        name="domicilio.piso"
-                        type="number"
-                        placeholder="Piso"
-                      />
-                      <TextFieldValue
-                        label="Número de Depto"
-                        name="domicilio.nroDpto"
-                        type="number"
-                        placeholder="Número de Depto"
-                      />
-                      <div>
-                        <label htmlFor="pais">País</label>
-                        <CFormSelect
-                          aria-label="País select example"
-                          onChange={(
-                            e: React.ChangeEvent<HTMLSelectElement>
-                          ) => {
-                            const paisId = e.target.value;
-                            setFieldValue(
-                              "domicilio.localidad.provincia.pais.id",
-                              paisId
-                            );
-                            handlePaisChange(paisId, setFieldValue);
-                          }}
-                        >
-                          <option value="">Seleccione un país</option>
-                          {paises.map((pais) => (
-                            <option key={pais.id} value={pais.id}>
-                              {pais.nombre}
-                            </option>
-                          ))}
-                        </CFormSelect>
+                      <div className="row">
+                        <div className="col-md-6">
+                          <TextFieldValue
+                            label="Número"
+                            name="domicilio.numero"
+                            type="number"
+                            placeholder="Número"
+                          />
+                        </div>
+                        <div className="col-md-6">
+                          <TextFieldValue
+                            label="Código Postal"
+                            name="domicilio.cp"
+                            type="number"
+                            placeholder="Código Postal"
+                          />
+                        </div>
                       </div>
-                      <div>
-                        <label htmlFor="provincia">Provincia</label>
-                        <CFormSelect
-                          aria-label="Provincia select example"
-                          onChange={(
-                            e: React.ChangeEvent<HTMLSelectElement>
-                          ) => {
-                            const provinciaId = e.target.value;
-                            setFieldValue(
-                              "domicilio.localidad.provincia.id",
-                              provinciaId
-                            );
-                            handleProvinciaChange(provinciaId, setFieldValue);
-                          }}
-                        >
-                          <option value="">Seleccione una provincia</option>
-                          {provincias.map((provincia) => (
-                            <option key={provincia.id} value={provincia.id}>
-                              {provincia.nombre}
-                            </option>
-                          ))}
-                        </CFormSelect>
+                      <div className="row">
+                        <div className="col-md-6">
+                          <TextFieldValue
+                            label="Piso"
+                            name="domicilio.piso"
+                            type="number"
+                            placeholder="Piso"
+                          />
+                        </div>
+                        <div className="col-md-6">
+                          <TextFieldValue
+                            label="Número de Depto"
+                            name="domicilio.nroDpto"
+                            type="number"
+                            placeholder="Número de Depto"
+                          />
+                        </div>
                       </div>
-
-                      <div>
-                        <label htmlFor="localidad">Localidad</label>
-                        <CFormSelect
-                          aria-label="Localidad select example"
-                          onChange={(
-                            e: React.ChangeEvent<HTMLSelectElement>
-                          ) => {
-                            const localidadId = e.target.value;
-                            handleLocalidadChange(localidadId, setFieldValue);
-                          }}
-                        >
-                          <option value="">Seleccione una localidad</option>
-                          {localidades.map((localidad) => (
-                            <option key={localidad.id} value={localidad.id}>
-                              {localidad.nombre}
-                            </option>
-                          ))}
-                        </CFormSelect>
+                      <div className="row">
+                        <div className="col-md-6">
+                          <div>
+                            <label htmlFor="pais">País</label>
+                            <CFormSelect
+                              aria-label="País select example"
+                              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                                const paisId = e.target.value;
+                                setFieldValue("domicilio.localidad.provincia.pais.id", paisId);
+                                handlePaisChange(paisId, setFieldValue);
+                              }}
+                            >
+                              <option value="">Seleccione un país</option>
+                              {paises.map((pais) => (
+                                <option key={pais.id} value={pais.id}>
+                                  {pais.nombre}
+                                </option>
+                              ))}
+                            </CFormSelect>
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div>
+                            <label htmlFor="provincia">Provincia</label>
+                            <CFormSelect
+                              aria-label="Provincia select example"
+                              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                                const provinciaId = e.target.value;
+                                setFieldValue("domicilio.localidad.provincia.id", provinciaId);
+                                handleProvinciaChange(provinciaId, setFieldValue);
+                              }}
+                            >
+                              <option value="">Seleccione una provincia</option>
+                              {provincias.map((provincia) => (
+                                <option key={provincia.id} value={provincia.id}>
+                                  {provincia.nombre}
+                                </option>
+                              ))}
+                            </CFormSelect>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-md-6">
+                          <div>
+                            <label htmlFor="localidad">Localidad</label>
+                            <CFormSelect
+                              aria-label="Localidad select example"
+                              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                                const localidadId = e.target.value;
+                                handleLocalidadChange(localidadId, setFieldValue);
+                              }}
+                            >
+                              <option value="">Seleccione una localidad</option>
+                              {localidades.map((localidad) => (
+                                <option key={localidad.id} value={localidad.id}>
+                                  {localidad.nombre}
+                                </option>
+                              ))}
+                            </CFormSelect>
+                          </div>
+                        </div>
                       </div>
                     </>
                   )}
@@ -306,3 +332,5 @@ export const ModalSucursal = ({
     </div>
   );
 };
+
+

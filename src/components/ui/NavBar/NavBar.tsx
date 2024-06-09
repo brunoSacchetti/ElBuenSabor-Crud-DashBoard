@@ -24,7 +24,6 @@ export const NavBar: React.FC<NavBarProps> = ({ selectedCompanyName }) => {
   const location = useLocation();  // Hook para obtener la ruta actual
 
   const selectedCompany = useAppSelector((state) => state.empresa.empresaActual);
-  //const selectedSucursal = useAppSelector((state) => state.sucursal.sucursalActual?.nombre);
   const selectedSucursal = useAppSelector((state) => state.sucursal.sucursalActual);
 
   const dispatch = useAppDispatch();
@@ -33,7 +32,7 @@ export const NavBar: React.FC<NavBarProps> = ({ selectedCompanyName }) => {
     navigate(route);
   };
 
-  /* useEffect(() => {
+  useEffect(() => {
     // Load company and branch names from localStorage or API
     const empresa = JSON.parse(localStorage.getItem("empresa") || "null");
     const sucursal = JSON.parse(localStorage.getItem("sucursal") || "null");
@@ -44,7 +43,7 @@ export const NavBar: React.FC<NavBarProps> = ({ selectedCompanyName }) => {
     if (sucursal) {
       dispatch(setSucursalActual(sucursal));
     }
-  }, [dispatch]); */
+  }, [dispatch]);
 
   return (
     <AppBar position="static" style={{ background: "#f09e2f" }}>
@@ -61,30 +60,19 @@ export const NavBar: React.FC<NavBarProps> = ({ selectedCompanyName }) => {
               </Button>
             ))}
           </Box>
-          {location.pathname === "/inicio" && selectedCompany && selectedSucursal && (
-            <Box component="span" sx={{ color: "white", mx: 2 }}>
-              {selectedCompany.nombre} - {selectedSucursal.nombre}
-            </Box>
-          )}
-          {selectedCompany && selectedSucursal && location.pathname !== "/" && location.pathname !== "/inicio" && (
-            <Box component="span" sx={{ color: "white", mx: 2 }}>
-              Empresa: {selectedCompany.nombre}
-            </Box>
-          )}
-          {/* {selectedCompany && selectedSucursal && location.pathname !== "/" && (
-            <Box component="span" sx={{ color: "white", mx: 2 }}>
-              {location.pathname !== "/sucursales" && (
-                <>
-                  Empresa: {selectedCompany.nombre} - {selectedSucursal.nombre}
-                </>
-              )}
-              {location.pathname === "/sucursales" && (
-                <>
-                  {selectedCompany.nombre} - {selectedSucursal.nombre}
-                </>
-              )}
-            </Box>
-          )} */}
+          <Box sx={{ flexGrow: 1, textAlign: "center" }}>
+            {location.pathname !== "/" && location.pathname !== "/sucursales" && selectedCompany && selectedSucursal && (
+              <Box component="span" sx={{ color: "white", mx: 2, fontSize: "20px"}}>
+                {selectedCompany.nombre} - {selectedSucursal.nombre}
+              </Box>
+            )}
+            {/* {selectedCompany && location.pathname !== "/" && (
+              <Box component="span" sx={{ color: "white", mx: 2 }}>
+                Empresa: {selectedCompany.nombre}
+              </Box>
+            )} */}
+          </Box>
+          <Box sx={{ flexGrow: 1 }} />
         </Toolbar>
       </Container>
     </AppBar>

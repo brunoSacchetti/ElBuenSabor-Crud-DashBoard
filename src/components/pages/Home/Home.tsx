@@ -98,12 +98,12 @@ export const Home = () => {
               flexGrow: 1,
               textAlign: "center",
               margin: 0,
-              fontSize: "2.5rem",
+              fontSize: "2.rem",
               color: "#333",
               fontWeight: "bold",
             }}
           >
-            Listado de Empresas
+            ¿Que Empresa desea elegir?
           </h2>
           <Button onClick={() => setOpenModal(true)} variant="contained">
             Agregar
