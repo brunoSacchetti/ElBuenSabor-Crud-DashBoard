@@ -28,10 +28,11 @@ import { PromocionService } from "../../../../services/PromocionService";
 import { ArticulosPromoModal } from "./ArticulosPromoModal";
 import { PromocionDetalleService } from "../../../../services/PromocionDetalleService";
 import ISucursales from "../../../../types/Sucursales";
-import PromocionEditDto from "../../../../types/Dtos/PromocionDto/PromocionEditDto";
 import { PromocionPutService } from "../../../../services/PromocionPutService";
 import IImagenes from "../../../../types/Imagenes";
 import { ImagenService } from "../../../../services/ImagenService";
+import { setLoading } from "../../../../redux/slices/EmpresaReducer";
+import { ImageCarrousel } from "../../ImageCarrousel/ImageCarrousel";
 const API_URL = import.meta.env.VITE_API_URL;
 
 // #region ARREGLAR ID SUCURSAL, PROMOCION DETALLE SIN DETALLE NO SE AGREGA, EL ID NO SE MANDA Y QUEDA EN 0
@@ -66,26 +67,23 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
   open,
   getData,
 }) => {
-
-
   const [categoria, setCategoria] = useState<ICategoria[]>([]);
 
   const [dataIngredients, setDataIngredients] = useState<any[]>([]);
- 
 
   // #region STATES - Promociones
   const [itemValue, setItemValue] = useState<PromocionPostDto>(initialValues);
   const [openInsumosModal, setOpenInsumosModal] = useState<boolean>(false);
   const [selectedDetalle, setSelectedDetalle] = useState<any[]>([]);
- 
-  const [selectedSucursales, setSelectedSucursales] = useState<number[]>([]);
 
-  
+  const [selectedSucursales, setSelectedSucursales] = useState<number[]>([]);
 
   //#region SERVICE - Promociones
   const sucursalService = new SucursalService(`${API_URL}/sucursal`);
   const promocionService = new PromocionService(`${API_URL}/promocion`);
-  const promocionDetalleService = new PromocionDetalleService(`${API_URL}/promocionDetalle`);
+  const promocionDetalleService = new PromocionDetalleService(
+    `${API_URL}/promocionDetalle`
+  );
   const insumosServices = new InsumoGetService(`${API_URL}/ArticuloInsumo`);
   const promocionPutService = new PromocionPutService(`${API_URL}/promocion`);
   //obtenemos la sucursal actual
@@ -149,19 +147,17 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
         } else if (detalle.insumo) {
           idArticulo = detalle.insumo.id;
           denominacion = detalle.insumo.denominacion;
-        } 
+        }
         return {
           id: detalle.id,
           cantidad: detalle.cantidad,
           denominacion: denominacion,
           idArticulo: idArticulo,
-          eliminado: detalle.eliminado  
+          eliminado: detalle.eliminado,
         };
       });
 
       setSelectedDetalle(formattedDetalles);
-
-
     } catch (error) {
       console.error("Error al obtener los detalles de los insumos:", error);
     }
@@ -183,12 +179,14 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
         detalles: promocionData.detalles,
       });
       setSelectedSucursales(promocionData.idSucursales);
+      getPromocionDetalles(promocionData.id);
+      getImages(promocionData.id);
       console.log("Promoción en modo edición:", promocionData);
     } else {
       resetValues();
     }
   }, [data]);
-  
+
   // #region USE EFFECT
   useEffect(() => {
     if (open && sucursalActual) {
@@ -196,10 +194,12 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
       getCategorias();
       if (data) {
         // Si hay datos de promoción, establecer las sucursales asociadas
-        setSelectedSucursales(data.sucursales.map((sucursal:ISucursales) => sucursal.id));
+        setSelectedSucursales(
+          data.sucursales.map((sucursal: ISucursales) => sucursal.id)
+        );
       }
     }
-  }, [open, sucursalActual,]);
+  }, [open, sucursalActual]);
 
   const resetValues = () => {
     setItemValue(initialValues);
@@ -216,7 +216,6 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
     });
   };
 
-
   const handleDateChange = (name: string, value: string) => {
     setItemValue((prevState) => ({
       ...prevState,
@@ -224,182 +223,197 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
     }));
   };
 
+  const [images, setImages] = useState<IImagenes[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+  const imageService = new ImagenService(API_URL + "/promocion");
+
   const handleConfirmModal = async () => {
-  try {
-    // Verifica que todos los campos obligatorios estén completos
-    if (
-      itemValue.denominacion.trim() === "" ||
-      itemValue.fechaDesde.trim() === "" ||
-      itemValue.fechaHasta.trim() === "" ||
-      itemValue.horaDesde.trim() === "" ||
-      itemValue.horaHasta.trim() === "" ||
-      itemValue.precioPromocional === 0 ||
-      itemValue.descripcionDescuento.trim() === "" ||
-      itemValue.tipoPromocion.trim() === "" ||
-      selectedSucursales.length === 0
-    ) {
-      // Muestra un mensaje de error con SweetAlert
-      await Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Por favor completa todos los campos obligatorios antes de confirmar.",
-      });
-      return;
-    }
+    try {
+      // Verifica que todos los campos obligatorios estén completos
+      if (
+        itemValue.denominacion.trim() === "" ||
+        itemValue.fechaDesde.trim() === "" ||
+        itemValue.fechaHasta.trim() === "" ||
+        itemValue.horaDesde.trim() === "" ||
+        itemValue.horaHasta.trim() === "" ||
+        itemValue.precioPromocional === 0 ||
+        itemValue.descripcionDescuento.trim() === "" ||
+        itemValue.tipoPromocion.trim() === "" ||
+        selectedSucursales.length === 0
+      ) {
+        // Muestra un mensaje de error con SweetAlert
+        await Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Por favor completa todos los campos obligatorios antes de confirmar.",
+        });
+        return;
+      }
 
-    let promocionId: number;
-    let detallesIds: number[] = [];
+      let promocionId: number;
 
-    if (data) {
-      const {id, fechaDesde, fechaHasta, horaDesde, horaHasta, precioPromocional, detalles } = itemValue;
-      
-      const editedData:PromocionEditDto = {
-        id,
-        fechaDesde,
-        fechaHasta,
-        horaDesde,
-        horaHasta,
-        precioPromocional,
-        detalles
-      };
-      
-      await promocionService.put(itemValue.id, editedData);
+      if (data) {
+        //const {id, fechaDesde, fechaHasta, horaDesde, horaHasta, precioPromocional, detalles } = itemValue;
 
+        console.log(selectedDetalle);
 
-      await Promise.all(
-        selectedDetalle.map(async (detalle) => {
-          const newDetalle:any = {
+        const promocionEditada = {
+          id: itemValue.id,
+          fechaDesde: itemValue.fechaDesde,
+          fechaHasta: itemValue.fechaHasta,
+          horaDesde: itemValue.horaDesde,
+          horaHasta: itemValue.horaHasta,
+          precioPromocional: itemValue.precioPromocional,
+          detalles: selectedDetalle.map((detalle) => ({
             cantidad: detalle.cantidad,
-          };
-          const createdDetalle = await promocionDetalleService.put(
-            newDetalle, detalle.id
-          );
-          detallesIds.push(createdDetalle.idArticuloInsumo);
-        })
-      );
+            idArticulo: detalle.idArticulo || detalle.id, // Ajusta esto según la estructura de tu objeto detalle
+          })),
+        };
 
+        console.log("PROMO EDITADA:", promocionEditada);
 
+        const promoPutService = new PromocionService(`${API_URL}/promocion`);
 
+        await promoPutService.put(
+          itemValue.id,
+          promocionEditada as PromocionPostDto
+        );
 
-    } else {
+        if (selectedFiles) {
+          try {
+            Swal.fire({
+              title: "Subiendo imágenes...",
+              text: "Espere mientras se suben los archivos.",
+              allowOutsideClick: false,
+              didOpen: () => {
+                Swal.showLoading();
+              },
+            });
+
+            const formData = new FormData();
+            Array.from(selectedFiles).forEach((file) => {
+              formData.append("uploads", file);
+            });
+
+            // Subimos las imágenes solo si están seleccionadas
+            await imageService.uploadImages(
+              `${API_URL}/promocion/uploads?id=${itemValue.id}`,
+              formData
+            );
+            Swal.fire("Éxito", "Imágenes subidas correctamente", "success");
+            //fetchImages();
+          } catch (error) {
+            Swal.fire(
+              "Error",
+              "Algo falló al subir las imágenes, inténtalo de nuevo.",
+              "error"
+            );
+          } finally {
+            setSelectedFiles(null);
+            Swal.close();
+          }
+        }
+
+      } else {
         // Crea una nueva promoción
         const newDetalleArray = selectedDetalle.map((detalle) => ({
           cantidad: detalle.cantidad,
           idArticulo: detalle.id,
-        }))
+        }));
 
         const newItemValue = { ...itemValue, detalles: newDetalleArray };
 
-      
-        const newPromocion:any = await promocionService.postOnlyData(newItemValue);
-        promocionId = newPromocion.id;
-      }
-
-    // Guarda los detalles de la promoción
-    await Promise.all(
-      selectedDetalle.map(async (detalle) => {
-        const newDetalle:any = {
-          cantidad: detalle.cantidad,
-          idArticulo: detalle.id,
-        };
-        const createdDetalle = await promocionDetalleService.postOnlyData(
-          newDetalle
+        const newPromocion: any = await promocionService.postOnlyData(
+          newItemValue
         );
-        detallesIds.push(createdDetalle.idArticuloInsumo);
-      })
+        
+        promocionId = newPromocion.id;
+      
+      if (selectedFiles) {
+        try {
+          Swal.fire({
+            title: "Subiendo imágenes...",
+            text: "Espere mientras se suben los archivos.",
+            allowOutsideClick: false,
+            didOpen: () => {
+              Swal.showLoading();
+            },
+          });
+
+          const formData = new FormData();
+          Array.from(selectedFiles).forEach((file) => {
+            formData.append("uploads", file);
+          });
+
+          // Subimos las imágenes solo si están seleccionadas
+          await imageService.uploadImages(
+            `${API_URL}/promocion/uploads?id=${promocionId}`,
+            formData
+          );
+          Swal.fire("Éxito", "Imágenes subidas correctamente", "success");
+          //fetchImages();
+        } catch (error) {
+          Swal.fire(
+            "Error",
+            "Algo falló al subir las imágenes, inténtalo de nuevo.",
+            "error"
+          );
+        } finally {
+          setSelectedFiles(null);
+          Swal.close();
+        }
+      }
+    }
+
+      // Muestra un mensaje de éxito con SweetAlert
+      await Swal.fire({
+        icon: "success",
+        title: "Éxito",
+        text: "Promoción guardada correctamente.",
+      });
+
+      // Cierra el modal y actualiza los datos
+      handleClose();
+      resetValues();
+      getData();
+      dispatch(removeElementActive());
+    } catch (error) {
+      console.error("Error al confirmar modal:", error);
+    }
+  };
+
+  const handleChangeCantidad = (detalleId: number, cantidad: string) => {
+    // Convierte la cantidad a un número entero
+    const nuevaCantidad = parseInt(cantidad);
+
+    // Verifica si el detalle ya existe en los detalles seleccionados
+    const detalleExistenteIndex = selectedDetalle.findIndex(
+      (detalle) => detalle.id === detalleId
     );
 
-    // Muestra un mensaje de éxito con SweetAlert
-    await Swal.fire({
-      icon: "success",
-      title: "Éxito",
-      text: "Promoción guardada correctamente.",
-    });
-
-    // Cierra el modal y actualiza los datos
-    handleClose();
-    resetValues();
-    getData();
-    dispatch(removeElementActive());
-  } catch (error) {
-    console.error("Error al confirmar modal:", error);
-  }
-};
-
-
-/* const handleConfirmModal = async () => {
-  try {
-    // Verifica que todos los campos obligatorios estén completos
-    if (
-      itemValue.denominacion.trim() === "" ||
-      itemValue.fechaDesde.trim() === "" ||
-      itemValue.fechaHasta.trim() === "" ||
-      itemValue.horaDesde.trim() === "" ||
-      itemValue.horaHasta.trim() === "" ||
-      itemValue.precioPromocional === 0 ||
-      itemValue.descripcionDescuento.trim() === "" ||
-      itemValue.tipoPromocion.trim() === "" ||
-      selectedSucursales.length === 0
-    ) {
-      // Muestra un mensaje de error con SweetAlert
-      await Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Por favor completa todos los campos obligatorios antes de confirmar.",
-      });
-      return;
-    }
-
-    let promocionId: number;
-    let detallesIds: number[] = [];
-
-    if (data) {
-      // Modo edición
-      const updatedFields: PromocionEditDto = {
-        fechaDesde: itemValue.fechaDesde,
-        fechaHasta: itemValue.fechaHasta,
-        horaDesde: itemValue.horaDesde,
-        horaHasta: itemValue.horaHasta,
-        precioPromocional: itemValue.precioPromocional,
-        detalles: itemValue.detalles,
-      };
-
-      await promocionPutService.put(itemValue.id, updatedFields);
-      promocionId = itemValue.id;
+    if (detalleExistenteIndex !== -1) {
+      // Si el detalle existe, actualiza la cantidad
+      const updatedDetalles = [...selectedDetalle]; // Crea una copia del arreglo de detalles
+      updatedDetalles[detalleExistenteIndex] = {
+        ...updatedDetalles[detalleExistenteIndex],
+        cantidad: nuevaCantidad,
+      }; // Actualiza la cantidad del detalle existente
+      setSelectedDetalle(updatedDetalles); // Establece el estado con los nuevos detalles
     } else {
-      // Modo creación
-      // Aquí creas el objeto de datos reducido con los campos necesarios
-      const newData = {
-        id: itemValue.id,
-        denominacion: itemValue.denominacion,
-        fechaDesde: itemValue.fechaDesde,
-        fechaHasta: itemValue.fechaHasta,
-        horaDesde: itemValue.horaDesde,
-        horaHasta: itemValue.horaHasta,
-        descripcionDescuento: itemValue.descripcionDescuento,
-        precioPromocional: itemValue.precioPromocional,
-        tipoPromocion: itemValue.tipoPromocion,
-        idSucursales: selectedSucursales,
-        detalles: selectedDetalle.map(detalle => ({
-          cantidad: detalle.cantidad,
-          idArticulo: detalle.id,
-        })),
+      // Si el detalle no existe, agrega un nuevo detalle con la cantidad especificada
+      const nuevoDetalle = {
+        id: detalleId,
+        cantidad: nuevaCantidad,
       };
 
-      // Luego lo envías al servicio como lo haces actualmente
-      const newPromocion = await promocionService.postOnlyData(newData);
-      promocionId = newPromocion.id;
+      // Agrega el nuevo detalle a los detalles seleccionados
+      const updatedDetalles = [...selectedDetalle, nuevoDetalle];
+
+      // Actualiza el estado con los nuevos detalles
+      setSelectedDetalle(updatedDetalles);
     }
-
-    // Resto del código para guardar los detalles de la promoción y mostrar mensajes
-
-  } catch (error) {
-    console.error("Error al confirmar modal:", error);
-  }
-}; */
-
-
-
+    console.log(selectedDetalle);
+  };
 
   const handleOpenInsumosModal = () => {
     setOpenInsumosModal(true);
@@ -418,10 +432,8 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
     const updatedDetalle = selectedDetalle.filter(
       (detalle) => detalle.id !== id
     );
-  
-    setSelectedDetalle(updatedDetalle);
 
-    
+    setSelectedDetalle(updatedDetalle);
   };
 
   const handleCheckboxChange = (sucursalId: number) => {
@@ -429,18 +441,17 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
       const updatedSelected = prevSelected.includes(sucursalId)
         ? prevSelected.filter((id) => id !== sucursalId)
         : [...prevSelected, sucursalId];
-  
+
       // Actualizar itemValue con los ids de las sucursales seleccionadas
       setItemValue((prevItemValue) => ({
         ...prevItemValue,
         idSucursales: updatedSelected,
       }));
-  
-  
+
       return updatedSelected;
     });
   };
-  
+
   const handleTipoPromocionChange = (e: SelectChangeEvent<string>) => {
     const { value } = e.target;
     setItemValue({
@@ -452,6 +463,45 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
   const elementActive = useAppSelector(
     (state) => state.tablaReducer.elementActive
   );
+
+  //#region IMAGENES
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedFiles(event.target.files);
+    console.log(event.target.files);
+  };
+
+  const getImages = async (id: number) => {
+    try {
+      setLoading(true);
+      const data = await imageService.getImagesByArticuloId(id);
+      setImages(data);
+    } catch (error) {
+      Swal.fire("Error", "Error al obtener las imágenes", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteImage = async (publicId: string, id: number) => {
+    try {
+      // Realiza la llamada al servicio para eliminar la imagen
+      await imageService.deleteImage(publicId, id);
+      // Actualiza la lista de imágenes en el estado local eliminando la imagen eliminada
+      setImages(images.filter((image) => image.id !== id));
+      // Muestra un mensaje de éxito si la eliminación fue exitosa
+      Swal.fire(
+        "Imagen eliminada",
+        "La imagen se eliminó correctamente",
+        "success"
+      );
+      // Aquí podrías actualizar la lista de imágenes en tu estado o recargar las imágenes del producto
+    } catch (error) {
+      // Muestra un mensaje de error si la eliminación falla
+      Swal.fire("Error", "No se pudo eliminar la imagen", "error");
+      console.error("Error deleting image:", error);
+    }
+  };
 
   return (
     <div>
@@ -476,7 +526,8 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
                   onChange={handlePropsElementsInputs}
                   value={itemValue.denominacion}
                   variant="filled"
-                  style={{ display: !elementActive ? "block" : "none" }}
+                  style={{ display: !elementActive ? "block" : "none" ,}}
+                  disabled={data ? true : false}
                 />
                 <TextField
                   type="number"
@@ -490,20 +541,34 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
                 <TextField
                   type="date"
                   value={itemValue.fechaDesde}
-                  onChange={(e) => handleDateChange('fechaDesde', e.target.value)}
+                  onChange={(e) =>
+                    handleDateChange("fechaDesde", e.target.value)
+                  }
                   name="fechaDesde"
                   label="Fecha Desde"
                   variant="filled"
-                  
-
+                  InputLabelProps={{
+                    style: { fontSize: '0.875rem', marginBottom: "15px" } // Cambia el tamaño de la letra
+                  }}
+                  InputProps={{
+                    style: { fontSize: '0.875rem', marginTop: "15px" } // Cambia el tamaño de la letra del contenido del campo
+                  }}
                 />
                 <TextField
                   type="date"
                   value={itemValue.fechaHasta}
-                  onChange={(e) => handleDateChange('fechaHasta', e.target.value)}
+                  onChange={(e) =>
+                    handleDateChange("fechaHasta", e.target.value)
+                  }
                   name="fechaHasta"
                   label="Fecha Hasta"
                   variant="filled"
+                  InputLabelProps={{
+                    style: { fontSize: '0.875rem', marginBottom: "15px" } // Cambia el tamaño de la letra
+                  }}
+                  InputProps={{
+                    style: { fontSize: '0.875rem', marginTop: "15px" } // Cambia el tamaño de la letra del contenido del campo
+                  }}
                 />
                 <TextField
                   type="time"
@@ -512,6 +577,12 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
                   name="horaDesde"
                   label="Hora Desde"
                   variant="filled"
+                  InputLabelProps={{
+                    style: { fontSize: '0.875rem', marginBottom: "15px" } // Cambia el tamaño de la letra
+                  }}
+                  InputProps={{
+                    style: { fontSize: '0.875rem', marginTop: "15px" } // Cambia el tamaño de la letra del contenido del campo
+                  }}
                 />
                 <TextField
                   type="time"
@@ -520,6 +591,12 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
                   name="horaHasta"
                   label="Hora Hasta"
                   variant="filled"
+                  InputLabelProps={{
+                    style: { fontSize: '0.875rem', marginBottom: "15px" } // Cambia el tamaño de la letra
+                  }}
+                  InputProps={{
+                    style: { fontSize: '0.875rem', marginTop: "15px" } // Cambia el tamaño de la letra del contenido del campo
+                  }}
                 />
 
                 <h3
@@ -538,6 +615,7 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
                   name="tipoPromocion"
                   variant="filled"
                   style={{ display: !elementActive ? "block" : "none" }}
+                  disabled={data ? true : false}
                 >
                   <MenuItem value="HAPPY_HOUR">Happy Hour</MenuItem>
                   <MenuItem value="PROMOCION">Promoción</MenuItem>
@@ -545,7 +623,14 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
               </div>
             </div>
             <div>
-              <div style={{ textAlign: "center", marginBottom: "20px", marginTop: "20px",display: !elementActive ? "block" : "none" }} >
+              <div
+                style={{
+                  textAlign: "center",
+                  marginBottom: "20px",
+                  marginTop: "20px",
+                  display: !elementActive ? "block" : "none",
+                }}
+              >
                 <h4>Selecciona las Sucursales</h4>
               </div>
               <div
@@ -554,19 +639,24 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
                   flexDirection: "column",
                   alignItems: "center",
                   paddingBottom: "10px",
-                  fontSize: "20px"
+                  fontSize: "20px",
                 }}
               >
                 {sucursales.map((sucursal) => (
-                  <div key={sucursal.id}>
+                  <div key={sucursal.id} style={{display: "flex", alignItems: "center", marginBottom: "10px", // Add some space between items
+                  }}>
                     <input
                       type="checkbox"
                       id={`sucursal-${sucursal.id}`}
                       checked={selectedSucursales.includes(sucursal.id)}
                       onChange={() => handleCheckboxChange(sucursal.id)}
-                      style={{ display: !elementActive ? "block" : "none" }}
+                      style={{ display: !elementActive ? "block" : "none", marginRight: "10px"}}
+                      disabled={data ? true : false}
                     />
-                    <label style={{ display: !elementActive ? "block" : "none" }} htmlFor={`sucursal-${sucursal.id}`}>
+                    <label
+                      style={{ display: !elementActive ? "block" : "none" }}
+                      htmlFor={`sucursal-${sucursal.id}`}
+                    >
                       {sucursal.nombre}
                     </label>
                   </div>
@@ -578,25 +668,55 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
                 <h4>Descripcion adicional de la promocion</h4>
               </div>
               <div
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center", // Center the content
+                marginBottom: "2vh",
+              }}
+            >
+              <TextField
                 style={{
-                  width: "100%",
+                  display: !elementActive ? "block" : "none",
+                  width: "20%", // Increase the width to make it a bit larger
+                  maxWidth: "600px", // Add a max-width to avoid it being too large
+                }}
+                label="Descripcion"
+                type="text"
+                value={itemValue.descripcionDescuento}
+                onChange={handlePropsElementsInputs}
+                name="descripcionDescuento"
+                variant="filled"
+                multiline
+                rows={4}
+                disabled={data ? true : false}
+              />
+            </div>
+              <div
+                style={{
                   display: "flex",
-                  justifyContent: "space-around",
-                  marginBottom: "2vh",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "2vh",
+                  padding: ".4rem",
                 }}
               >
+                 {data && (
+                  <div>
+                  <ImageCarrousel
+                    images={images} // Pass the images array as prop
+                    handleDeleteImage={(publicId: string, id: number) =>
+                      handleDeleteImage(publicId, id)
+                    } // Pass the handleDeleteImage function as prop
+                  />
+                </div>
+                )}
                 <TextField
-                  style={{ display: !elementActive ? "block" : "none" , width: "90%" }}
-                  label="Descripcion"
-                  type="text"
-                  value={itemValue.descripcionDescuento}
-                  onChange={handlePropsElementsInputs}
-                  name="descripcionDescuento"
-                  variant="filled"
-                  
-                  multiline
-                  rows={4}
-                  
+                  id="outlined-basic"
+                  variant="outlined"
+                  type="file"
+                  onChange={handleFileChange}
+                  inputProps={{ multiple: true }}
                 />
               </div>
               <div style={{ textAlign: "center" }}>
@@ -628,7 +748,20 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
                             {detalle.denominacion}
                           </TableCell>
                           <TableCell align="center">
-                            {detalle.cantidad}
+                            {data ? ( // Verifica si hay datos existentes (edición)
+                              <input
+                                type="number"
+                                value={detalle.cantidad}
+                                onChange={(e) =>
+                                  handleChangeCantidad(
+                                    detalle.id,
+                                    e.target.value
+                                  )
+                                }
+                              />
+                            ) : (
+                              detalle.cantidad // Si no hay datos, solo muestra la cantidad
+                            )}
                           </TableCell>
                           <TableCell align="center">
                             <Button

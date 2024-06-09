@@ -30,7 +30,7 @@ export const AppRouter = () => {
   const sucursalId = useAppSelector(state => state.sucursal.sucursalId);
 
 
-  useEffect(() => {
+  /* useEffect(() => {
     const storedEmpresa = localStorage.getItem("empresaActual");
     const storedSucursal = localStorage.getItem("sucursalActual");
     const storedSucursalData = localStorage.getItem("sucursales");
@@ -66,6 +66,45 @@ export const AppRouter = () => {
   
   useEffect(() => {
     localStorage.setItem("sucursalId", JSON.stringify(sucursalId));
+  }, [sucursalId]); */
+
+  useEffect(() => {
+    const storedEmpresa = sessionStorage.getItem("empresaActual");
+    const storedSucursal = sessionStorage.getItem("sucursalActual");
+    const storedSucursalData = sessionStorage.getItem("sucursales");
+    const storedSucursalId = sessionStorage.getItem("sucursalId");
+  
+    if (storedEmpresa) {
+      dispatch(setEmpresaActual(JSON.parse(storedEmpresa)));
+    }
+  
+    if (storedSucursal) {
+      dispatch(setSucursalActual(JSON.parse(storedSucursal)));
+    }
+  
+    if (storedSucursalData) {
+      dispatch(setDataSucursales(JSON.parse(storedSucursalData)));
+    }
+  
+    if (storedSucursalId) {
+      dispatch(setEmpresaId(JSON.parse(storedSucursalId)));
+    }
+  }, [dispatch]);
+  
+  useEffect(() => {
+    sessionStorage.setItem("empresaActual", JSON.stringify(empresaActual));
+  }, [empresaActual]);
+  
+  useEffect(() => {
+    sessionStorage.setItem("sucursalActual", JSON.stringify(sucursalActual));
+  }, [sucursalActual]);
+  
+  useEffect(() => {
+    sessionStorage.setItem("sucursales", JSON.stringify(sucursales));
+  }, [sucursales]);
+  
+  useEffect(() => {
+    sessionStorage.setItem("sucursalId", JSON.stringify(sucursalId));
   }, [sucursalId]);
 
   return (

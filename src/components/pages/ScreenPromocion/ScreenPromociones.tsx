@@ -4,7 +4,7 @@ import { TableGeneric } from "../../ui/TableGeneric/TableGeneric";
 import { Button, CircularProgress } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
 
-import { setDataTable } from "../../../redux/slices/TablaReducer";
+import { removeElementActive, setDataTable } from "../../../redux/slices/TablaReducer";
 import Swal from "sweetalert2";
 
 //Importamos IPromocion y Empresa Service                                
@@ -32,11 +32,11 @@ export const ScreenPromociones = () => {
   const dispatch = useAppDispatch();
   // Columnas de la tabla de personas
   const ColumnsTablePromocion= [                                                                           
-    {
+    /* {
       label: "ID",
       key: "id",
       render: (promocion: IPromocion) => (promocion?.id ? promocion.id : 0),
-    },
+    }, */
     { label: "Denominacion", key: "denominacion" },
     { label: "FechaDesde", key: "fechaDesde" },
     { label: "FechaHasta", key: "fechaHasta" },
@@ -113,6 +113,7 @@ export const ScreenPromociones = () => {
 
   const handleClose = () => {
     setOpenModal(false);
+    dispatch(removeElementActive());
   };
 
   return (
