@@ -22,7 +22,7 @@ export const ScreenPromociones = () => {
   const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
 
-  const promocionService = new PromocionService(API_URL + "/promociones");
+  const promocionService = new PromocionService(API_URL + "/promocion");
   const sucursalService = new SucursalService(API_URL + "/sucursal");
 
   //obtenemos la sucursal actual
@@ -38,13 +38,17 @@ export const ScreenPromociones = () => {
       render: (promocion: IPromocion) => (promocion?.id ? promocion.id : 0),
     }, */
     { label: "Denominacion", key: "denominacion" },
-    { label: "FechaDesde", key: "fechaDesde" },
-    { label: "FechaHasta", key: "fechaHasta" },
-    { label: "HoraDesde", key: "horaDesde" },
-    { label: "HoraHasta", key: "horaHasta" },
-    { label: "DescripcionDescuento", key: "descripcionDescuento" },
-    { label: "PrecioPromocional", key: "precioPromocional" },
-    { label: "TipoPromocion", key: "tipoPromocion" },
+    { label: "Fecha Desde", key: "fechaDesde" },
+    { label: "Fecha Hasta", key: "fechaHasta" },
+    { label: "Hora Desde", key: "horaDesde" },
+    { label: "Hora Hasta", key: "horaHasta" },
+    { label: "Descripcion", key: "descripcionDescuento" },
+    { label: "Precio Promocional", key: "precioPromocional" },
+    { label: "Tipo Promocion", key: "tipoPromocion" },
+    { label: "Habilitado", 
+      key: "habilitado",
+      render: (element: IPromocion) => (element.habilitado ? "Si" : "No"), 
+    },
 /*     { label: "Articulos", key: "articulos" },
     { label: "Imagenes", key: "imagenes" }, */
     
@@ -52,7 +56,23 @@ export const ScreenPromociones = () => {
       label: "Sucursal",
       key: "sucursalEmpresa", //OJITO  ABIERTO O CERRADO 
     }, */
-    { label: "Acciones", key: "acciones" },
+    { 
+      label: "Estado", 
+      key: "estado", 
+      render: (promocion: IPromocion) => (
+        <Button
+          variant="contained"
+          color={promocion.habilitado ? "success" : "error"}
+          onClick={() => handleToggleEnable(promocion)}
+        >
+          {promocion.habilitado ? "Deshabilitar" : "Habilitar"}
+        </Button>
+      )
+    },
+    {
+      label: "Acciones",
+      key: "acciones",
+    },
   ];
 
   // Función para manejar el borrado de una persona
@@ -114,6 +134,21 @@ export const ScreenPromociones = () => {
   const handleClose = () => {
     setOpenModal(false);
     dispatch(removeElementActive());
+  };
+
+
+  const handleToggleEnable = async (promocion: IPromocion) => {
+    if (sucursalActual) {
+      try {
+        await promocionService.changeHabilitado(promocion.id);
+        const updatedPromociones = await sucursalService.getPromociones(sucursalActual.id);
+        dispatch(setDataTable(updatedPromociones));
+      } catch (error) {
+        console.error("Error al cambiar el estado de habilitación:", error);
+      }
+    } else {
+      console.error("Sucursal actual es null");
+    }
   };
 
   return (

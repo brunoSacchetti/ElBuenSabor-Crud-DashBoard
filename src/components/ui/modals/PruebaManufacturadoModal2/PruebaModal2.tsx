@@ -445,6 +445,8 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
         
         productoId = newProducto.id;
       
+        console.log(productoId);
+        
         if (selectedFiles) {
           try {
             Swal.fire({
