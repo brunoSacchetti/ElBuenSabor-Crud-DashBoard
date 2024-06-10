@@ -15,6 +15,7 @@ import { setEmpresaActual, setEmpresaId } from "../redux/slices/EmpresaReducer";
 import { ScreenCategorias } from "../components/pages/ScreenCategorias/ScreenCategorias";
 import { setDataSucursales, setSucursalActual } from "../redux/slices/SucursalReducer";
 import { ScreenPromociones } from "../components/pages/ScreenPromocion/ScreenPromociones";
+import { ScreenEmpleado } from "../components/pages/ScreenEmpleados/ScreenEmpleados";
 
 export const AppRouter = () => {
   const location = useLocation();
@@ -120,7 +121,7 @@ export const AppRouter = () => {
               path="/articulosManufacturados"
               element={<ArticuloManufacturadoScreen />}
             />
-            <Route path="/usuarios" element={<ScreenUsuario />} />
+            <Route path="/empleados" element={<ScreenEmpleado />} />
             <Route path="/categorias" element={<ScreenCategorias />} />
             <Route path="/promociones" element={<ScreenPromociones />} />
             <Route

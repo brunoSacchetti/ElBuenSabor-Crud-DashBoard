@@ -1,4 +1,4 @@
-import ArticuloInsumo from "./ArticuloInsumo";
+
 import { Base } from "./Base";
 import Imagenes from "./Imagenes";
 

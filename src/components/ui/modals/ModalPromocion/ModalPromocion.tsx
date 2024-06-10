@@ -578,7 +578,7 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
                   label="Hora Desde"
                   variant="filled"
                   InputLabelProps={{
-                    style: { fontSize: '0.875rem', marginBottom: "15px" } // Cambia el tamaño de la letra
+                    style: { fontSize: '0.875rem', marginBottom: "15px" } 
                   }}
                   InputProps={{
                     style: { fontSize: '0.875rem', marginTop: "15px" } // Cambia el tamaño de la letra del contenido del campo
