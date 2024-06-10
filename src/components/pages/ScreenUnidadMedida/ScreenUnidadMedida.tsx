@@ -55,13 +55,23 @@ export const ScreenUnidadMedida = () => {
     });
   };
   // Función para obtener las personas
-  const getUnidadMedida = async () => {
+  /* const getUnidadMedida = async () => {
     await unidadMedidaService.getAll().then((unidadData) => {
       dispatch(setDataTable(unidadData));
       setLoading(false);
     });
-  };
+  }; */
 
+  const getUnidadMedida = async () => {
+    await unidadMedidaService.getAll().then((unidadData) => {
+      const data = unidadData as IUnidadMedida[];
+      // Filter out the units where eliminado is true
+      const filteredData = data.filter((unidad: IUnidadMedida) => !unidad.eliminado);
+      dispatch(setDataTable(filteredData));
+      setLoading(false);
+    });
+  };
+  
   // Efecto para cargar los datos al inicio
   useEffect(() => {
     setLoading(true);

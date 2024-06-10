@@ -57,8 +57,8 @@ const ColumnsProductosManufacturados = (categorias: ICategoria[]) => [
   },
   {
     label: "Habilitado",
-    key: "eliminado",
-    render: (element: IArticuloManufacturado) => (element.eliminado ? "Si" : "No"),
+    key: "habilitado",
+    render: (element: IArticuloManufacturado) => (element.habilitado ? "Si" : "No"),
   },
   {
     label: "Precio",
@@ -100,7 +100,7 @@ export const ArticuloManufacturadoScreen = () => {
   const sucursalService = new SucursalService(`${API_URL}/sucursal`);
 
   // Función para obtener las categorías
-  /* const fetchCategorias = async () => {
+  const fetchCategorias = async () => {
     if (!sucursalActual) {
       console.error("Error: sucursalActual is null");
       return; // Return early if sucursalActual is null
@@ -116,19 +116,19 @@ export const ArticuloManufacturadoScreen = () => {
     } finally {
       setLoading(false);
     }
-  }; */
+  };
 
-  const fetchCategorias = async () => {
+  /* const fetchCategorias = async () => {
     try {
       const data = await categoriaService.getAll();
       setCategorias(data);
     } catch (error) {
       console.error("Error al obtener las categorías:", error);
     }
-  };
+  }; */
 
   // Función para obtener los productos manufacturados
-  /* const getDataTable = (dispatch: any) => {
+  const getDataTable = (dispatch: any) => {
   productoManufacturadoService.getAll().then(dataTable => {
     const filteredArticulos = dataTable.filter((item) =>
       categorias.some(cat =>
@@ -138,15 +138,15 @@ export const ArticuloManufacturadoScreen = () => {
     const productoPosts = filteredArticulos.map((item) => item as IArticuloManufacturado);
     dispatch(setDataTable(productoPosts));
   });
-}; */
+};
 
-const productoGet = new ProductoGet(`${API_URL}/ArticuloManufacturado`);
+/* const productoGet = new ProductoGet(`${API_URL}/ArticuloManufacturado`);
 
 const getDataTable = (dispatch: any) => {
   productoGet.getAll().then(dataTable => {
     dispatch(setDataTable(dataTable));
   });
-};
+}; */
 
 const dispatch = useDispatch();
 
@@ -184,7 +184,9 @@ getDataTable(dispatch);
     id: number | string,
     data: IArticuloManufacturado
   ) => {
-    await productoManufacturadoService.put(id, data);
+    await productoManufacturadoService.changeHabilitado(id);
+    console.log(id);
+    
     dispatch(removeElementActive());
     reloadData();
   };

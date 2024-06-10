@@ -48,6 +48,11 @@ export const ScreenInsumos = () => {
       render: (insumos: IArticuloInsumo) => (insumos?.esParaElaborar ? "Si" : "No"),
     },
     {
+      label: "Habilitado",
+      key: "habilitado",
+      render: (insumos: IArticuloInsumo) => (insumos?.habilitado ? "Si" : "No"),
+    },
+    {
       label: "Acciones",
       key: "acciones",
       render: (insumos: IArticuloInsumo) => (
@@ -58,12 +63,15 @@ export const ScreenInsumos = () => {
           <Button onClick={() => handleDelete(insumos.id)} variant="contained" color="secondary">
             Eliminar
           </Button>
+          <Button onClick={() => handleToggleEnable(insumos)} variant="contained" color={insumos.habilitado ? "error" : "success"}>
+            {insumos.habilitado ? "Deshabilitar" : "Habilitar"}
+          </Button>
         </div>
       ),
     },
   ];
 
-  const getCategorias = async () => {
+  /* const getCategorias = async () => {
     if (!sucursalActual) {
       console.error("Error al obtener categorias: sucursalActual es null");
       setLoading(false);      
@@ -78,6 +86,39 @@ export const ScreenInsumos = () => {
       console.error("Error al obtener categorias:", error);
     } finally {
       setLoading(false);
+    }
+  }; */
+
+  const getCategorias = async () => {
+    if (!sucursalActual) {
+      console.error("Error al obtener categorias: sucursalActual es null");
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    try {
+      const categoriasData = await sucursalService.getCategoriasPorSucursal(sucursalActual.id);
+      const allInsumos = categoriasData.flatMap((categoria) => categoria.insumos);
+      setCategorias(categoriasData);
+      setInsumoXCategoria(allInsumos);
+      dispatch(setDataTable(allInsumos));
+    } catch (error) {
+      console.error("Error al obtener categorias:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleToggleEnable = async (insumo: IArticuloInsumo) => {
+    try {
+      await insumosService.changeHabilitado(insumo.id);
+      const updatedInsumos = insumosXCategoria.map((item) =>
+        item.id === insumo.id ? { ...item, habilitado: !item.habilitado } : item
+      );
+      setInsumoXCategoria(updatedInsumos);
+      dispatch(setDataTable(updatedInsumos));
+    } catch (error) {
+      console.error("Error al cambiar estado de habilitación:", error);
     }
   };
 
