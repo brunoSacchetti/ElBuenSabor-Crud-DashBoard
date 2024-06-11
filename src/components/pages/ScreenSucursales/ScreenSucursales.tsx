@@ -22,7 +22,7 @@ export const ScreenSucursales = () => {
   const [openModal, setOpenModal] = useState(false);
 
   const empresa = useAppSelector((state) => state.empresa.empresaActual);
-
+  
   const sucursales = useAppSelector((state) => state.sucursal.data);
 
   const location = useLocation();

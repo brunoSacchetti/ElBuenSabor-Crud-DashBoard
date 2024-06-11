@@ -42,7 +42,7 @@ const RutaPrivada: React.FC<RutaPrivadaProps> = ({ component: Component, roles }
                     console.log("RESPONSE EMPLEADO:", response);
                     
 
-                    if (!response.ok) {
+                    if (!response.status) {
                         throw new Error('Network response was not ok');
                     }
                     const empleadoData: IEmpleado = await response.json();
@@ -53,20 +53,20 @@ const RutaPrivada: React.FC<RutaPrivadaProps> = ({ component: Component, roles }
                     
                     //console.log("SUCURSAL",responseSucursal);
                     
-                    if (!responseSucursal?.ok) {
+                    /* if (!responseSucursal?.ok) {
                         throw new Error('Network response was not ok');
-                    }
-                    const sucursalData = await responseSucursal.json();
+                    } */
+                    //const sucursalData = await responseSucursal.
                 
                     // Establecer la empresa de la sucursal en el estado global
-                    dispatch(setEmpresaActual(sucursalData.empresa));
+                    dispatch(setEmpresaActual(responseSucursal.empresa));
 
                     const empresaActual = useAppSelector((state) => state.empresa.empresaActual);
                     const sucursalActual = useAppSelector((state) => state.sucursal.sucursalActual);    
                     
                     sessionStorage.setItem("empresaActual", JSON.stringify(empresaActual));
                     sessionStorage.setItem("sucursalActual", JSON.stringify(sucursalActual));
-
+                    
                 } catch (error) {
                     console.error('Error fetching empleado:', error);
                 }

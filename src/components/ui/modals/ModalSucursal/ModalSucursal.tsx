@@ -51,6 +51,8 @@ export const ModalSucursal: React.FC<IModalSucursales> = ({
   const [provincias, setProvincias] = useState<IProvincia[]>([]);
   const [localidades, setLocalidades] = useState<ILocalidad[]>([]);
 
+  console.log(empresaId);
+  
   useEffect(() => {
     fetch(API_URL + "/pais")
       .then((response) => response.json())

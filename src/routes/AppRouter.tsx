@@ -20,6 +20,8 @@ import { Login } from "../components/pages/Login/Login";
 import useAuthToken from "../hooks/useAuthToken";
 import { useAuth0 } from "@auth0/auth0-react";
 import RutaPrivada from "../components/PrivateRoutes/PrivateRoutes";
+import ISucursales from "../types/Sucursales";
+import { SucursalService } from "../services/SucursalService";
 
 export const AppRouter = () => {
   const location = useLocation();
@@ -90,6 +92,8 @@ const AuthCallback = () => {
   const sucursales = useAppSelector(state => state.sucursal.data);
   const API_URL = import.meta.env.VITE_API_URL;
 
+  const sucursalService = new SucursalService(API_URL + "/sucursal");
+
   const dispatch = useAppDispatch();
   const user = JSON.parse(localStorage.getItem('usuario') || '{}');
 
@@ -133,10 +137,15 @@ const AuthCallback = () => {
           }
           const empleadoData = await response.json();
           dispatch(setSucursalActual(empleadoData.sucursal));
-          dispatch(setEmpresaActual(empleadoData.sucursal.empresa));
+          //dispatch(setEmpresaActual(empleadoData.sucursal.empresa));
+          
+          const responseSucursal = await sucursalService.getById(empleadoData.sucursal.id) as ISucursales;
+          dispatch(setEmpresaActual(responseSucursal.empresa));
 
-          sessionStorage.setItem("empresaActual", JSON.stringify(empleadoData.sucursal.empresa));
+          //sessionStorage.setItem("empresaActual", JSON.stringify(empleadoData.sucursal.empresa));
           sessionStorage.setItem("sucursalActual", JSON.stringify(empleadoData.sucursal));
+          sessionStorage.setItem("empresaActual", JSON.stringify(responseSucursal.empresa));
+
         } catch (error) {
           console.error('Error fetching empleado:', error);
         }
@@ -146,5 +155,5 @@ const AuthCallback = () => {
     fetchEmpleado();
   }, [user, dispatch]);
 
-  return <Navigate to="/inicio" replace />;
+  return <Navigate to="/inicio" replace />; 
 };

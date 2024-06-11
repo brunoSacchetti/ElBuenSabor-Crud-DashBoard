@@ -26,7 +26,7 @@ export const ScreenEmpleado = () => {
   const ColumnsTableEmpleado = [
     { label : "Nombre" , key: "nombre"},
     { label : "Apellido" , key: "apellido"},
-    { label : "Rol", key:"tipoEmpleado"},
+    { label : "Rol", key:"rol"},
     { label : "Email", key:"email"},
     { label: "Acciones", key: "acciones" },
     //render de sucursal <-
