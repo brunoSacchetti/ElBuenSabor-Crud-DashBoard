@@ -135,22 +135,6 @@ export const ModalSucursal: React.FC<IModalSucursales> = ({
                 piso: Yup.number().required("Campo requerido"),
                 nroDpto: Yup.number().required("Campo requerido"),
               }),
-              // Validación personalizada para la casilla "Es Casa Matriz"
-              esCasaMatriz: Yup.boolean().test(
-                "esCasaMatriz",
-                "Ya existe una sucursal marcada como casa matriz",
-                async function (value, { parent }) {
-                  // Obtener las sucursales
-                  const sucursales = await apiSucursales.getAll(); // Reemplaza esto con tu método para obtener las sucursales
-
-                  // Si ya existe una sucursal marcada como casa matriz y se intenta marcar esta casilla, devuelve falso
-                  if (value && sucursales.some((sucursal) => sucursal.esCasaMatriz)) {
-                    return false;
-                  }
-
-                  return true;
-                }
-              ),
             })}
             initialValues={elementActive ? elementActive : initialValues}
             enableReinitialize={true}
