@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { NavBar } from "../components/ui/NavBar/NavBar"; // Importamos el componente NavBar
 import { SideBar } from "../components/ui/SideBar/SideBar";
 import "./AppRouter.css";
@@ -10,17 +10,25 @@ import { useAppDispatch, useAppSelector } from "../hooks/redux";
 import { ScreenUnidadMedida } from "../components/pages/ScreenUnidadMedida/ScreenUnidadMedida";
 import { ScreenInsumos } from "../components/pages/ScreenInsumos/ScreenInsumos";
 import { ArticuloManufacturadoScreen } from "../components/pages/ScreenProducto/ArticuloManufacturadoScreen";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { setEmpresaActual, setEmpresaId } from "../redux/slices/EmpresaReducer";
 import { ScreenCategorias } from "../components/pages/ScreenCategorias/ScreenCategorias";
 import { setDataSucursales, setSucursalActual } from "../redux/slices/SucursalReducer";
 import { ScreenPromociones } from "../components/pages/ScreenPromocion/ScreenPromociones";
 import { ScreenEmpleado } from "../components/pages/ScreenEmpleados/ScreenEmpleados";
+import { Login } from "../components/pages/Login/Login";
+import useAuthToken from "../hooks/useAuthToken";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export const AppRouter = () => {
   const location = useLocation();
   const isHomePage = location.pathname === '/';
   const SucursalPage = location.pathname === '/sucursales';
+
+  const { isAuthenticated, isLoading, user } = useAuth0();
+  const getToken = useAuthToken();
+  const [token, setToken] = useState<string | null>(null);
+
   //const selectedCompanyName = useAppSelector(state => state.empresa.empresaActual?.nombre); // Asume que el estado tiene esta forma
 
   const dispatch = useAppDispatch();
@@ -108,11 +116,38 @@ export const AppRouter = () => {
     sessionStorage.setItem("sucursalId", JSON.stringify(sucursalId));
   }, [sucursalId]);
 
+  useEffect(() => {
+    const fetchToken = async () => {
+      try {
+        const authToken = await getToken();
+        setToken(authToken);
+      } catch (error) {
+        console.error('Error al obtener el token:', error);
+      }
+    };
+
+    if (isAuthenticated) {
+      fetchToken();
+    }
+  }, [getToken, isAuthenticated]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  /* localStorage.setItem('usuario', JSON.stringify(user));
+  console.log('User:', user);
+  console.log('Token:', token); */
+
+  /* if (!isAuthenticated) {
+    return <Navigate to="/login" />;
+  } */
+
   return (
     <>
-      <NavBar/>
+      {location.pathname !== '/login' && <NavBar/>}
       <div className="AppContainer">
-        {!isHomePage && !SucursalPage && <SideBar />}
+        {location.pathname !== '/login' && !isHomePage && !SucursalPage && <SideBar />}
         <div className="Content">
           <Routes>
             <Route path="/inicio" element={<InicioDashboard />} />
@@ -130,6 +165,7 @@ export const AppRouter = () => {
             />
             <Route path="/unidadMedida" element={<ScreenUnidadMedida />} />
             <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
           </Routes>
         </div>
       </div>

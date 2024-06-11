@@ -17,9 +17,17 @@ Desarrollado en React con TypeScript
   - Mui Material: npm install @mui/material @emotion/react @emotion/styled
   - Yup: npm install yup
   - Formik: npm install formik
+  - Auth0: npm install @auth0/auth0-react
 
   - Ejecutar el comando de manera temporal --> et-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 
 ## Correr el proyecto
   - En consola colocar: npm install
   - Ejecucion del proyecto: npm run dev
+
+## Usuarios para Auth0
+ADMINISTRADOR: adminbuensabor@yopmail.com - 12Elbuensaboradmin@?
+COCINERO: cocinero@yopmail.com - 12Elbuensaboradmin@?
+CAJERO: cajero@yopmail.com - 12Elbuensaboradmin@?
+EMPLEADO: empleado@yopmail.com - 12Elbuensaboradmin@?
+

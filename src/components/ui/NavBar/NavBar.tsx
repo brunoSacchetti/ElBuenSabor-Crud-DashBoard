@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
 import { useEffect } from "react";
 import { setEmpresaActual } from "../../../redux/slices/EmpresaReducer";
 import { setSucursalActual } from "../../../redux/slices/SucursalReducer";
+import { LogoutButton } from "../../pages/Login/LogoutButton/LogoutButton";
 
 // Definición de las páginas y sus rutas
 const pages = [
@@ -73,6 +74,7 @@ export const NavBar: React.FC<NavBarProps> = ({ selectedCompanyName }) => {
             )} */}
           </Box>
           <Box sx={{ flexGrow: 1 }} />
+          <LogoutButton/>
         </Toolbar>
       </Container>
     </AppBar>

@@ -8,7 +8,7 @@ interface IEmpleadoPost {
   apellido:string;
   telefono:string;
   email:string;
-  tipoEmpleado:string;
+  rol:string;
   fechaNacimiento:string;
   idSucursal: number;
 }

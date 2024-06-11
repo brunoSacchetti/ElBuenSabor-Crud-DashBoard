@@ -29,7 +29,7 @@ export const ModalEmpleado = ({
     apellido: "",
     telefono: "",
     email: "",
-    tipoEmpleado: "",
+    rol: "",
     fechaNacimiento: "",
     idSucursal: 0,
   };
@@ -89,7 +89,7 @@ export const ModalEmpleado = ({
               if (elementActive) {
                 
                 const updatedValues:any = {
-                  tipoEmpleado: values.tipoEmpleado
+                  tipoEmpleado: values.rol
                 };
 
                 await empleadoService.put(values.id, updatedValues);
@@ -174,15 +174,16 @@ export const ModalEmpleado = ({
                     </div>
                     {/* Selector de roles siempre visible */}
                     <div style={{ marginBottom: "1rem" }}>
-                      <label htmlFor="tipoEmpleado">Tipo de Empleado:</label>
-                      <Field as="select" name="tipoEmpleado" id="tipoEmpleado">
+                      <label htmlFor="rol">Tipo de Empleado:</label>
+                      <Field as="select" name="rol" id="rol">
                         <option value="">Selecciona un tipo</option>
                         <option value="ADMIN">Admin</option>
                         <option value="CLIENTE">Cliente</option>
                         <option value="COCINERO">Cocinero</option>
+                        <option value="CAJERO">Cajero</option>
                       </Field>
                       <ErrorMessage
-                        name="tipoEmpleado"
+                        name="rol"
                         component="div"
                         className="error"
                       />

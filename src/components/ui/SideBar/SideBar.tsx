@@ -15,9 +15,9 @@ export const SideBar = () => {
           <CIcon customClassName="nav-icon" icon={cilFactory} /> Sucursales
           
         </CNavItem> */}
-        <CNavItem href="/pedidos">
+        {/* <CNavItem href="/pedidos">
           <CIcon customClassName="nav-icon" icon={cilList} /> Pedidos
-        </CNavItem>
+        </CNavItem> */}
         <CNavItem href="/articulosManufacturados">
           <CIcon customClassName="nav-icon" icon={cilRestaurant} /> Productos
         </CNavItem>
