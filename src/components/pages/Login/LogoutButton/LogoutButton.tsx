@@ -3,22 +3,20 @@ import React from 'react'
 import { Button } from 'react-bootstrap';
 
 export const LogoutButton = () => {
-  
-/* const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    window.location.href = '/';
-  }
- */
-  const {logout} = useAuth0(); 
+  const { logout } = useAuth0();
+
+  const handleLogout = () => {
+    try {
+      logout({ logoutParams: { returnTo: window.location.origin + "/login" } });
+    } catch (error) {
+      console.error('Error during logout:', error);
+      alert('Hubo un error al cerrar sesión. Inténtalo de nuevo.');
+    }
+  };
 
   return (
-    <>
-        <Button 
-            onClick={() => logout({logoutParams: {returnTo: "/login"}})}
-        >
-        Cerrar Sesion
-        </Button>
-    </>
-  )
-}
+    <Button onClick={handleLogout}>
+      Cerrar Sesión
+    </Button>
+  );
+};

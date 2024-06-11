@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import { NavBar } from "../components/ui/NavBar/NavBar"; // Importamos el componente NavBar
+import { NavBar } from "../components/ui/NavBar/NavBar";
 import { SideBar } from "../components/ui/SideBar/SideBar";
 import "./AppRouter.css";
 import { ScreenUsuario } from "../components/pages/ScreenUsuario/ScreenUsuario";
@@ -19,6 +19,7 @@ import { ScreenEmpleado } from "../components/pages/ScreenEmpleados/ScreenEmplea
 import { Login } from "../components/pages/Login/Login";
 import useAuthToken from "../hooks/useAuthToken";
 import { useAuth0 } from "@auth0/auth0-react";
+import RutaPrivada from "../components/PrivateRoutes/PrivateRoutes";
 
 export const AppRouter = () => {
   const location = useLocation();
@@ -29,92 +30,7 @@ export const AppRouter = () => {
   const getToken = useAuthToken();
   const [token, setToken] = useState<string | null>(null);
 
-  //const selectedCompanyName = useAppSelector(state => state.empresa.empresaActual?.nombre); // Asume que el estado tiene esta forma
-
   const dispatch = useAppDispatch();
-
-  const empresaActual = useAppSelector(state => state.empresa.empresaActual);
-  const sucursalActual = useAppSelector(state => state.sucursal.sucursalActual);
-  const sucursales = useAppSelector(state => state.sucursal.data);
-  const sucursalId = useAppSelector(state => state.sucursal.sucursalId);
-
-
-  /* useEffect(() => {
-    const storedEmpresa = localStorage.getItem("empresaActual");
-    const storedSucursal = localStorage.getItem("sucursalActual");
-    const storedSucursalData = localStorage.getItem("sucursales");
-    const storedSucursalId = localStorage.getItem("sucursalId");
-    
-    if (storedEmpresa) {
-      dispatch(setEmpresaActual(JSON.parse(storedEmpresa)));
-    }
-
-    if (storedSucursal) {
-      dispatch(setSucursalActual(JSON.parse(storedSucursal)));
-    }
-
-    if(storedSucursalData) {
-      dispatch(setDataSucursales(JSON.parse(storedSucursalData)));
-    };
-    if(storedSucursalId) {
-      dispatch(setEmpresaId(JSON.parse(storedSucursalId)));
-    };
-  }, [dispatch]);
-
-  useEffect(() => {
-    localStorage.setItem("empresaActual", JSON.stringify(empresaActual));
-  }, [empresaActual]);
-
-  useEffect(() => {
-    localStorage.setItem("sucursalActual", JSON.stringify(sucursalActual));
-  }, [sucursalActual]);
-
-  useEffect(() => {
-    localStorage.setItem("sucursales", JSON.stringify(sucursales));
-  }, [sucursales]);
-  
-  useEffect(() => {
-    localStorage.setItem("sucursalId", JSON.stringify(sucursalId));
-  }, [sucursalId]); */
-
-  useEffect(() => {
-    const storedEmpresa = sessionStorage.getItem("empresaActual");
-    const storedSucursal = sessionStorage.getItem("sucursalActual");
-    const storedSucursalData = sessionStorage.getItem("sucursales");
-    const storedSucursalId = sessionStorage.getItem("sucursalId");
-  
-    if (storedEmpresa) {
-      dispatch(setEmpresaActual(JSON.parse(storedEmpresa)));
-    }
-  
-    if (storedSucursal) {
-      dispatch(setSucursalActual(JSON.parse(storedSucursal)));
-    }
-  
-    if (storedSucursalData) {
-      dispatch(setDataSucursales(JSON.parse(storedSucursalData)));
-    }
-  
-    if (storedSucursalId) {
-      dispatch(setEmpresaId(JSON.parse(storedSucursalId)));
-    }
-  }, [dispatch]);
-  
-  useEffect(() => {
-    sessionStorage.setItem("empresaActual", JSON.stringify(empresaActual));
-  }, [empresaActual]);
-  
-  useEffect(() => {
-    sessionStorage.setItem("sucursalActual", JSON.stringify(sucursalActual));
-  }, [sucursalActual]);
-  
-  useEffect(() => {
-    sessionStorage.setItem("sucursales", JSON.stringify(sucursales));
-  }, [sucursales]);
-  
-  useEffect(() => {
-    sessionStorage.setItem("sucursalId", JSON.stringify(sucursalId));
-  }, [sucursalId]);
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -135,37 +51,30 @@ export const AppRouter = () => {
     return <div>Loading...</div>;
   }
 
-  /* localStorage.setItem('usuario', JSON.stringify(user));
-  console.log('User:', user);
-  console.log('Token:', token); */
-
-  /* if (!isAuthenticated) {
-    return <Navigate to="/login" />;
-  } */
+  if (isAuthenticated) {
+    localStorage.setItem('usuario', JSON.stringify(user));
+    console.log('User:', user);
+    console.log('Token:', token);
+  }
 
   return (
     <>
-      {location.pathname !== '/login' && <NavBar/>}
+      {location.pathname !== '/login' && <NavBar />}
       <div className="AppContainer">
         {location.pathname !== '/login' && !isHomePage && !SucursalPage && <SideBar />}
         <div className="Content">
           <Routes>
-            <Route path="/inicio" element={<InicioDashboard />} />
-            <Route path="/insumos" element={<ScreenInsumos />} />
-            <Route
-              path="/articulosManufacturados"
-              element={<ArticuloManufacturadoScreen />}
-            />
-            <Route path="/empleados" element={<ScreenEmpleado />} />
-            <Route path="/categorias" element={<ScreenCategorias />} />
-            <Route path="/promociones" element={<ScreenPromociones />} />
-            <Route
-              path="/sucursales"
-              element={<ScreenSucursales />}
-            />
-            <Route path="/unidadMedida" element={<ScreenUnidadMedida />} />
-            <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/auth-callback" element={<AuthCallback />} />  {/* Nueva ruta para la lógica post-login */}
+            <Route path="/inicio" element={<RutaPrivada component={InicioDashboard} roles={['EMPLEADO', 'ADMIN']} />} />
+            <Route path="/insumos" element={<RutaPrivada component={ScreenInsumos} roles={['ADMIN']} />} />
+            <Route path="/articulosManufacturados" element={<RutaPrivada component={ArticuloManufacturadoScreen} roles={['ADMIN']} />} />
+            <Route path="/empleados" element={<RutaPrivada component={ScreenEmpleado} roles={['ADMIN']} />} />
+            <Route path="/categorias" element={<RutaPrivada component={ScreenCategorias} roles={['EMPLEADO', 'ADMIN']} />} />
+            <Route path="/promociones" element={<RutaPrivada component={ScreenPromociones} roles={['EMPLEADO', 'ADMIN']} />} />
+            <Route path="/sucursales" element={<RutaPrivada component={ScreenSucursales} roles={['ADMIN']} />} />
+            <Route path="/unidadMedida" element={<RutaPrivada component={ScreenUnidadMedida} roles={['EMPLEADO', 'ADMIN']} />} />
+            <Route path="/" element={<RutaPrivada component={Home} roles={['ADMIN']} />} />
           </Routes>
         </div>
       </div>
@@ -173,14 +82,69 @@ export const AppRouter = () => {
   );
 };
 
+// Nueva ruta para manejar la lógica después del login
+const AuthCallback = () => {
 
+  const empresaActual = useAppSelector(state => state.empresa.empresaActual);
+  const sucursalActual = useAppSelector(state => state.sucursal.sucursalActual);
+  const sucursales = useAppSelector(state => state.sucursal.data);
+  const API_URL = import.meta.env.VITE_API_URL;
 
+  const dispatch = useAppDispatch();
+  const user = JSON.parse(localStorage.getItem('usuario') || '{}');
 
+  useEffect(() => {
+    const storedEmpresa = sessionStorage.getItem("empresaActual");
+    const storedSucursal = sessionStorage.getItem("sucursalActual");
+    const storedSucursalData = sessionStorage.getItem("sucursales");
 
+    if (storedEmpresa) {
+      dispatch(setEmpresaActual(JSON.parse(storedEmpresa)));
+    }
 
-      /* <NavBar />
-      <div className="AppContainer">
-        <SideBar />
-        <div className="Content">
-        <Routes>
-          <Route path="/empresas" element={<ScreenEmpresa />} />*/
+    if (storedSucursal) {
+      dispatch(setSucursalActual(JSON.parse(storedSucursal)));
+    }
+
+    if (storedSucursalData) {
+      dispatch(setDataSucursales(JSON.parse(storedSucursalData)));
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    sessionStorage.setItem("empresaActual", JSON.stringify(empresaActual));
+  }, [empresaActual]);
+
+  useEffect(() => {
+    sessionStorage.setItem("sucursalActual", JSON.stringify(sucursalActual));
+  }, [sucursalActual]);
+
+  useEffect(() => {
+    sessionStorage.setItem("sucursales", JSON.stringify(sucursales));
+  }, [sucursales]);
+
+  useEffect(() => {
+    const fetchEmpleado = async () => {
+      if (user) {
+        try {
+          const response = await fetch(`${API_URL}/empleado/findByEmail?email=${user.email}`);
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          const empleadoData = await response.json();
+          dispatch(setSucursalActual(empleadoData.sucursal));
+          dispatch(setEmpresaActual(empleadoData.sucursal.empresa));
+
+          sessionStorage.setItem("empresaActual", JSON.stringify(empleadoData.sucursal.empresa));
+          sessionStorage.setItem("sucursalActual", JSON.stringify(empleadoData.sucursal));
+        } catch (error) {
+          console.error('Error fetching empleado:', error);
+        }
+      }
+    };
+
+    fetchEmpleado();
+  }, [user, dispatch]);
+
+  return <Navigate to="/inicio" replace />;
+};
