@@ -127,4 +127,50 @@ export abstract class BackendClient<T> extends AbstractBackendClient<T> {
       throw new Error(`Error al eliminar el elemento con ID ${id}`);
     }
   }
+
+  //#region Seguridad
+  
+  async postSec(url: string, data: T, token: string): Promise<T> {
+    const options: RequestInit = {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    };
+  
+    return this.makeRequest(url, options);
+  }
+  
+  async putSec(id: number | string, data: T, token: string): Promise<T> {
+    const url = `${this.baseUrl}/${id}`;
+    const options: RequestInit = {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    };
+  
+    return this.makeRequest(url, options);
+  }
+  
+  private async makeRequest(url: string, options: RequestInit): Promise<T> {
+    try {
+      const response = await fetch(url, options);
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+      return response.json() as Promise<T>;
+    } catch (error) {
+      console.error("Request error:", error);
+      throw error;
+    }
+  }
+  
+
 }

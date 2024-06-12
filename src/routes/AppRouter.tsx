@@ -77,6 +77,7 @@ export const AppRouter = () => {
             <Route path="/sucursales" element={<RutaPrivada component={ScreenSucursales} roles={['ADMIN']} />} />
             <Route path="/unidadMedida" element={<RutaPrivada component={ScreenUnidadMedida} roles={['EMPLEADO', 'ADMIN']} />} />
             <Route path="/" element={<RutaPrivada component={Home} roles={['ADMIN']} />} />
+            <Route path="*" element={<Navigate to="/login" />} />
           </Routes>
         </div>
       </div>

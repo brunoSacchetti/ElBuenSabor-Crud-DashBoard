@@ -14,6 +14,7 @@ import { CFormSelect } from "@coreui/react";
 import SucursalPost from "../../../../types/Dtos/SucursalDto/SucursalPost";
 import SucursalPut from "../../../../types/Dtos/SucursalDto/SucursalPut";
 import { Checkbox } from "@mui/material";
+import useAuthToken from "../../../../hooks/useAuthToken";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -50,6 +51,9 @@ export const ModalSucursal: React.FC<IModalSucursales> = ({
   const [paises, setPaises] = useState<IPais[]>([]);
   const [provincias, setProvincias] = useState<IProvincia[]>([]);
   const [localidades, setLocalidades] = useState<ILocalidad[]>([]);
+
+  //Obtenemos el token para mandarlo
+  const getToken = useAuthToken();
 
   console.log(empresaId);
   
@@ -150,7 +154,9 @@ export const ModalSucursal: React.FC<IModalSucursales> = ({
 
                 await apiSucursales.put(sucursalPut.id, sucursalPut);
               } else {
-                await apiSucursales.post(API_URL + "/sucursal", values);
+                const token = await getToken();
+                //await apiSucursales.post(API_URL + "/sucursal", values);
+                await apiSucursales.postSec(API_URL + "/sucursal", values, token);
               }
               getSucursales();
               handleClose();

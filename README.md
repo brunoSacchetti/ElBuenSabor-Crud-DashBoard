@@ -26,8 +26,8 @@ Desarrollado en React con TypeScript
   - Ejecucion del proyecto: npm run dev
 
 ## Usuarios para Auth0
-ADMINISTRADOR: adminbuensabor@yopmail.com - 12Elbuensaboradmin@?
-COCINERO: cocinero@yopmail.com - 12Elbuensaboradmin@?
-CAJERO: cajero@yopmail.com - 12Elbuensaboradmin@?
-EMPLEADO: empleado@yopmail.com - 12Elbuensaboradmin@?
+- ADMINISTRADOR: adminbuensabor@yopmail.com - 12Elbuensaboradmin@?
+- COCINERO: cocinero@yopmail.com - 12Elbuensaboradmin@?
+- CAJERO: cajero@yopmail.com - 12Elbuensaboradmin@?
+- EMPLEADO: empleado@yopmail.com - 12Elbuensaboradmin@?
 
