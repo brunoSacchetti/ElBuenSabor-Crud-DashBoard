@@ -54,7 +54,7 @@ export const AppRouter = () => {
   }
 
   if (isAuthenticated) {
-    localStorage.setItem('usuario', JSON.stringify(user));
+    sessionStorage.setItem('usuario', JSON.stringify(user));
     console.log('User:', user);
     console.log('Token:', token);
   }
@@ -96,7 +96,7 @@ const AuthCallback = () => {
   const sucursalService = new SucursalService(API_URL + "/sucursal");
 
   const dispatch = useAppDispatch();
-  const user = JSON.parse(localStorage.getItem('usuario') || '{}');
+  const user = JSON.parse(sessionStorage.getItem('usuario') || '{}');
 
   useEffect(() => {
     const storedEmpresa = sessionStorage.getItem("empresaActual");

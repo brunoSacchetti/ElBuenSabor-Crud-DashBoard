@@ -28,7 +28,7 @@ export const NavBar: React.FC<NavBarProps> = ({ selectedCompanyName }) => {
 
   const selectedCompany = useAppSelector((state) => state.empresa.empresaActual);
   const selectedSucursal = useAppSelector((state) => state.sucursal.sucursalActual);
-  const user = JSON.parse(localStorage.getItem('usuario') || "null");
+  const user = JSON.parse(sessionStorage.getItem('usuario') || "null");
 
   const dispatch = useAppDispatch();
 

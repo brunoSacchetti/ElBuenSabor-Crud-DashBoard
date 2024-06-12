@@ -20,7 +20,7 @@ const RutaPrivada: React.FC<RutaPrivadaProps> = ({ component: Component, roles }
     const [, setEmpleado] = useState<IEmpleado | null>(null);
     const [loading, setLoading] = useState(true);
 
-    const userDataString = localStorage.getItem('usuario');
+    const userDataString = sessionStorage.getItem('usuario');
     const sucursalService = new SucursalService(API_URL + "/sucursal");
 
     //console.log("EMAIL",userDataString);
