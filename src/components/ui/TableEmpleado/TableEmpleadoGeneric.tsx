@@ -9,9 +9,8 @@ import TableRow from "@mui/material/TableRow";
 import { useEffect, useState } from "react";
 import { ButtonsTable } from "../ButtonsTable/ButtonsTable";
 import { useAppSelector } from "../../../hooks/redux";
-import { TextField, Box, SelectChangeEvent } from "@mui/material";
-import { CategoriaService } from "../../../services/CategoriaService";
-import { ICategoria } from "../../../types/Categoria";
+import { TextField, Box } from "@mui/material";
+
 
 // Definimos la interfaz para cada columna de la tabla
 interface ITableColumn<T> {
@@ -26,7 +25,7 @@ export interface ITableProps<T> {
   setOpenModal: (state: boolean) => void;
 }
 
-export const TableGeneric = <T extends { id: any }>({
+export const TableEmpleadoGeneric = <T extends { id: any }>({
   columns,
   handleDelete,
   setOpenModal,
@@ -53,7 +52,6 @@ export const TableGeneric = <T extends { id: any }>({
   // Obtener los datos de la tabla del estado global
   const dataTable = useAppSelector((state) => state.tablaReducer.dataTable);
 
-  console.log(dataTable);
   
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -66,7 +64,7 @@ export const TableGeneric = <T extends { id: any }>({
 
   useEffect(() => {
     const results = dataTable.filter((row) =>
-      row.denominacion.toLowerCase().includes(searchTerm.toLowerCase()) 
+      row.nombre.toLowerCase().includes(searchTerm.toLowerCase()) 
     );
     setFilteredRows(results);
     setPage(0);

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { TableGeneric } from "../../ui/TableGeneric/TableGeneric";
+
 import { Button, CircularProgress } from "@mui/material";
 import { useAppDispatch } from "../../../hooks/redux";
 
@@ -10,6 +10,7 @@ import Swal from "sweetalert2";
 import { EmpleadoService } from "../../../services/EmpleadoService";
 import IEmpleado from "../../../types/Empleado";
 import { ModalEmpleado } from "../../ui/modals/ModalEmpleado/ModalEmpleado";
+import { TableEmpleadoGeneric } from "../../ui/TableEmpleado/TableEmpleadoGeneric";
 
 // Definición de la URL base de la API
 const API_URL = import.meta.env.VITE_API_URL;
@@ -105,7 +106,7 @@ export const ScreenEmpleado = () => {
           </div>
         ) : (
           // Mostrar la tabla de personas una vez que los datos se han cargado
-          <TableGeneric<IEmpleado>
+          <TableEmpleadoGeneric<IEmpleado>
             handleDelete={handleDelete}
             columns={ColumnsTableEmpleado}
             setOpenModal={setOpenModal}
