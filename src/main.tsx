@@ -6,7 +6,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { store } from './redux/store.ts'
 import '@coreui/coreui/dist/css/coreui.min.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
-
+import "./main.css"
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Auth0Provider } from '@auth0/auth0-react'
 

@@ -15,7 +15,7 @@ export const LogoutButton = () => {
   };
 
   return (
-    <Button onClick={handleLogout}>
+    <Button onClick={handleLogout} style={{backgroundColor:"red", border:"none"}} >
       Cerrar Sesión
     </Button>
   );

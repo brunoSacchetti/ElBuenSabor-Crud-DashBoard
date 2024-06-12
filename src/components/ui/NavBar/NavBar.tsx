@@ -5,10 +5,12 @@ import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { setEmpresaActual } from "../../../redux/slices/EmpresaReducer";
 import { setSucursalActual } from "../../../redux/slices/SucursalReducer";
 import { LogoutButton } from "../../pages/Login/LogoutButton/LogoutButton";
+import { Unstable_Popup as Popup } from '@mui/base/Unstable_Popup';
+import { Popover, Typography } from "@mui/material";
 
 // Definición de las páginas y sus rutas
 const pages = [
@@ -48,6 +50,22 @@ export const NavBar: React.FC<NavBarProps> = ({ selectedCompanyName }) => {
     }
   }, [dispatch]);
 
+
+
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleClick = (event:any) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
+
+
   return (
     <AppBar position="static" style={{ background: "#f09e2f" }}>
       <Container maxWidth="xl">
@@ -69,17 +87,32 @@ export const NavBar: React.FC<NavBarProps> = ({ selectedCompanyName }) => {
                 {selectedCompany.nombre} - {selectedSucursal.nombre}
               </Box>
             )}
-            {/* {selectedCompany && location.pathname !== "/" && (
-              <Box component="span" sx={{ color: "white", mx: 2 }}>
-                Empresa: {selectedCompany.nombre}
-              </Box>
-            )} */}
           </Box>
           <Box sx={{ flexGrow: 1 }} />
-          <h3><span style={{ fontSize: "3vh" }} className="material-symbols-outlined">
-          account_circle
-        </span>{user.nickname}</h3>
-        <LogoutButton/>
+
+          <div style={{display:"flex",gap:"0.2rem", cursor:"pointer"}} onClick={handleClick}>
+          
+            <img src={user.picture} alt={user.nickname} style={{width:"1.8rem",borderRadius:"5rem"}} />
+         
+        <div style={{color:"black",marginRight:"1.5rem"}}>{user.nickname}</div>
+        </div>
+<Popover
+  id={id}
+  open={open}
+  anchorEl={anchorEl}
+  onClose={handleClose}
+  anchorOrigin={{
+    vertical: 'bottom',
+    horizontal: 'left',
+  }}
+  transformOrigin={{
+    vertical: 'top',
+    horizontal: 'center',
+  }}
+>
+  <Typography sx={{ p: 2 }}><LogoutButton/></Typography>
+</Popover>
+
         </Toolbar>
       </Container>
     </AppBar>
