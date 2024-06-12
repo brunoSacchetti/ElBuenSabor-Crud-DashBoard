@@ -43,9 +43,9 @@ export const ButtonsTable = ({
         <span className="material-symbols-outlined">edit</span>
       </Button>
       {/* Botón para eliminar el elemento */}
-      <Button variant="contained" color="error" onClick={handleDeleteItem}>
+      {<Button variant="contained" color="error" onClick={handleDeleteItem}>
         <span className="material-symbols-outlined">delete_forever</span>
-      </Button>
+      </Button>}
     </div>
   );
 };

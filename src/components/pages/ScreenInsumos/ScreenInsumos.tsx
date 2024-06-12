@@ -60,9 +60,9 @@ export const ScreenInsumos = () => {
           <Button onClick={() => handleEdit(insumos)} variant="contained" color="primary">
             Editar
           </Button>
-          <Button onClick={() => handleDelete(insumos.id)} variant="contained" color="secondary">
+          {/* <Button onClick={() => handleDelete(insumos.id)} variant="contained" color="secondary">
             Eliminar
-          </Button>
+          </Button> */}
           <Button onClick={() => handleToggleEnable(insumos)} variant="contained" color={insumos.habilitado ? "error" : "success"}>
             {insumos.habilitado ? "Deshabilitar" : "Habilitar"}
           </Button>
@@ -172,10 +172,10 @@ export const ScreenInsumos = () => {
       const allInsumos = categoriasData.flatMap((categoria) => categoria.insumos);
       
       // Filtrar los insumos habilitados
-      const insumosHabilitados = allInsumos.filter((insumo) => insumo.habilitado);
+      //const insumosHabilitados = allInsumos.filter((insumo) => insumo.habilitado);
       
-      setInsumoXCategoria(insumosHabilitados);
-      dispatch(setDataTable(insumosHabilitados));
+      setInsumoXCategoria(allInsumos);
+      dispatch(setDataTable(allInsumos));
     } catch (error) {
       console.error("Error al obtener categorias:", error);
     } finally {
@@ -194,6 +194,17 @@ export const ScreenInsumos = () => {
   return (
     <>
       <div>
+      <h1 style={{
+        fontSize: "2.5rem",
+        color: "#333",
+        textAlign: "center",
+        marginBottom: "1rem",
+        marginTop: "1rem",
+        fontFamily: "'Arial', sans-serif",
+        letterSpacing: "0.1rem",
+      }}>
+        Insumos
+      </h1>
         <div
           style={{
             padding: ".4rem",

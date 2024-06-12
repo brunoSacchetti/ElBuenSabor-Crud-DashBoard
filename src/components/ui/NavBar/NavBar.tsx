@@ -26,6 +26,7 @@ export const NavBar: React.FC<NavBarProps> = ({ selectedCompanyName }) => {
 
   const selectedCompany = useAppSelector((state) => state.empresa.empresaActual);
   const selectedSucursal = useAppSelector((state) => state.sucursal.sucursalActual);
+  const user = JSON.parse(localStorage.getItem('usuario') || "null");
 
   const dispatch = useAppDispatch();
 
@@ -37,6 +38,7 @@ export const NavBar: React.FC<NavBarProps> = ({ selectedCompanyName }) => {
     // Load company and branch names from localStorage or API
     const empresa = JSON.parse(localStorage.getItem("empresa") || "null");
     const sucursal = JSON.parse(localStorage.getItem("sucursal") || "null");
+    
 
     if (empresa) {
       dispatch(setEmpresaActual(empresa));
@@ -74,7 +76,10 @@ export const NavBar: React.FC<NavBarProps> = ({ selectedCompanyName }) => {
             )} */}
           </Box>
           <Box sx={{ flexGrow: 1 }} />
-          <LogoutButton/>
+          <h3><span style={{ fontSize: "3vh" }} className="material-symbols-outlined">
+          account_circle
+        </span>{user.nickname}</h3>
+        <LogoutButton/>
         </Toolbar>
       </Container>
     </AppBar>

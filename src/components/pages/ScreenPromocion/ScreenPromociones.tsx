@@ -154,6 +154,16 @@ export const ScreenPromociones = () => {
   return (
     <>
       <div>
+      <h1 style={{
+        fontSize: "2.5rem",
+        color: "#333",
+        textAlign: "center",
+        marginTop: "1rem",
+        fontFamily: "'Arial', sans-serif",
+        letterSpacing: "0.1rem",
+      }}>
+        Promociones
+      </h1>
         <div
           style={{
             padding: ".4rem",
