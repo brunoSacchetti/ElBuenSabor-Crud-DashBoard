@@ -55,7 +55,7 @@ export const ButtonsTable = ({
       }}
     >
       {/* ALTA Y BAJA */}
-      {el.alta === true ? (
+      {el.habilitado === true ? (
         <Button
           onClick={handleChangeRegisterOrCancelItem}
           variant="contained"
