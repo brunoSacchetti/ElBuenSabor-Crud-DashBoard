@@ -23,6 +23,28 @@ export class ImagenService extends BackendClient<IImagen> {
       }
     }
 
+    async uploadImagesWithSecurity(url: string, formData: FormData, token: string): Promise<any> {
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        if (!response.ok) {
+          throw new Error(`Error al subir las imágenes. Status: ${response.status}`);
+        }
+  
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error('Error al subir las imágenes:', error);
+        throw error;
+      }
+    }
+
     async getImagesByArticuloId(id: number): Promise<IImagen[]> {
       const response = await fetch(`${this.baseUrl}/getImagesByArticuloId/${id}`, {
         method: "GET",
@@ -51,6 +73,28 @@ export class ImagenService extends BackendClient<IImagen> {
         throw new Error('Failed to delete image');
       }
       return response.json(); // Podrías devolver algún tipo de mensaje de confirmación si lo deseas
+    }
+
+    async deleteImageWithSecurity(url: string, publicId: string, id: number, token: string): Promise<any> {
+      try {
+        const response = await fetch(`${url}/${publicId}/imagenes/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+    
+        if (!response.ok) {
+          throw new Error(`Error al eliminar la imagen. Status: ${response.status}`);
+        }
+    
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error('Error al eliminar la imagen:', error);
+        throw error;
+      }
     }
   }
 

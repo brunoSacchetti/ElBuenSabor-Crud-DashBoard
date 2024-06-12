@@ -62,7 +62,7 @@ export const ScreenPromociones = () => {
       render: (promocion: IPromocion) => (
         <Button
           variant="contained"
-          color={promocion.habilitado ? "success" : "error"}
+          color={promocion.habilitado ? "error" : "success"}
           onClick={() => handleToggleEnable(promocion)}
         >
           {promocion.habilitado ? "Deshabilitar" : "Habilitar"}

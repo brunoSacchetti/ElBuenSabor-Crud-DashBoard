@@ -11,6 +11,7 @@ import { ImageCarrousel } from "../../ImageCarrousel/ImageCarrousel";
 import { ImagenService } from "../../../../services/ImagenService";
 import IImagenes from "../../../../types/Imagenes";
 import Swal from "sweetalert2";
+import useAuthToken from "../../../../hooks/useAuthToken";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -35,6 +36,10 @@ export const ModalArticuloInsumoEdit = ({
   };
 
   const insumoEditService = new InsumoEditService(`${API_URL}/ArticuloInsumo`);
+
+  //Obtenemos el token para mandarlo
+  const getToken = useAuthToken();
+
   const dispatch = useAppDispatch();
 
   const handleClose = () => {
@@ -52,6 +57,7 @@ export const ModalArticuloInsumoEdit = ({
   const [images, setImages] = useState<IImagenes[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const imageService = new ImagenService(`${API_URL}/ArticuloInsumo`);
+  
 
   const fetchImages = async (id: number) => {
     try {

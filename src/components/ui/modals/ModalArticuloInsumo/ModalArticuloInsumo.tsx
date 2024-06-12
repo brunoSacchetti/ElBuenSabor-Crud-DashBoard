@@ -27,6 +27,7 @@ import Swal from "sweetalert2";
 import { ImageCarrousel } from "../../ImageCarrousel/ImageCarrousel";
 import InsumoEditDto from "../../../../types/Dtos/InsumosDto/InsumoEditDto";
 import { InsumoEditService } from "../../../../services/InsumoEditService";
+import useAuthToken from "../../../../hooks/useAuthToken";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -65,6 +66,9 @@ export const ModalArticuloInsumo = ({
     (state) => state.tablaReducer.elementActive
   );
   const [unidadMedida, setUnidadMedida] = useState<IUnidadMedidaPost[]>([]);
+
+   //Obtenemos el token para mandarlo
+   const getToken = useAuthToken();
 
   const unidadMedidaService = new UnidadMedidaService(
     `${API_URL}/UnidadMedida`
@@ -193,14 +197,12 @@ export const ModalArticuloInsumo = ({
           validationSchema={validationSchema}
           enableReinitialize={true}
           onSubmit={async (values: InsumoPost) => {
+            const token = await getToken();
+            
             try {
               let insumo;
-              
 
-              //#region ARREGLAR - NO SE HACE EL PUT
               if (elementActive) {
-                
-                
                 try{
                   const {id, precioVenta, precioCompra, stockActual, stockMaximo, stockMinimo } = values;
 
@@ -212,7 +214,8 @@ export const ModalArticuloInsumo = ({
                     stockMaximo,
                     stockMinimo,
                   };
-                  await insumoEditService.put(values.id, editedData);
+                  //await insumoEditService.put(values.id, editedData);
+                  await insumoEditService.putSec(values.id, editedData, token);
                   insumo = values;
                 } catch (error) {
                   console.error("Error al editar insumo:", error);
@@ -222,9 +225,14 @@ export const ModalArticuloInsumo = ({
               } else {
                 const newItemValue = { ...values, idCategoria: selectedCategoriaId };
                 
-                const response = await insumoService.post(
+                /* const response = await insumoService.post(
                   `${API_URL}/ArticuloInsumo`,
                   newItemValue
+                ); */
+
+                const response = await insumoService.postSec(
+                  `${API_URL}/ArticuloInsumo`,
+                  newItemValue, token
                 );
                 insumo = response;
                 
@@ -249,8 +257,9 @@ export const ModalArticuloInsumo = ({
                 formData.append("uploads", file);
                });
           
-                await imageService.uploadImages(`${API_URL}/ArticuloInsumo/uploads?id=${insumo.id}`,formData);
-                Swal.fire("Éxito", "Imágenes subidas correctamente", "success");
+               //await imageService.uploadImages(`${API_URL}/ArticuloInsumo/uploads?id=${insumo.id}`,formData);
+               await imageService.uploadImagesWithSecurity(`${API_URL}/ArticuloInsumo/uploads?id=${insumo.id}`,formData, token);
+               Swal.fire("Éxito", "Imágenes subidas correctamente", "success");
                 //fetchImages();
               } catch (error) {
                 Swal.fire("Error", "Algo falló al subir las imágenes, inténtalo de nuevo.", "error");

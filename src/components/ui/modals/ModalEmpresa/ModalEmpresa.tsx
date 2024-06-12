@@ -10,6 +10,7 @@ import { TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import { ImagenService } from "../../../../services/ImagenService";
 import { removeEmpresaActive } from "../../../../redux/slices/EmpresaReducer";
+import useAuthToken from "../../../../hooks/useAuthToken";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -42,6 +43,9 @@ export const ModalEmpresa = ({
   const elementActive = useAppSelector((state) => state.empresa.empresaActual);
   const dispatch = useAppDispatch();
 
+  //Obtenemos el token para mandarlo
+  const getToken = useAuthToken();
+
   // Función para cerrar el modal
   const handleClose = () => {
     setOpenModal(false);
@@ -57,7 +61,7 @@ export const ModalEmpresa = ({
   };
 
   // Función para subir las imágenes seleccionadas
-  const uploadImages = async (files: FileList, idEmpresa: number) => {
+  const uploadImages = async (files: FileList, idEmpresa: number, token: string) => {
     try {
       const formData = new FormData();
       for (let i = 0; i < files.length; i++) {
@@ -66,7 +70,7 @@ export const ModalEmpresa = ({
       formData.append("id", String(idEmpresa)); // Adjuntar el ID de la empresa
       
       // Enviar las imágenes al backend
-      await imagenService.uploadImages(`http://localhost:8080/empresa/uploads?id=${idEmpresa}`,formData);
+      await imagenService.uploadImagesWithSecurity(`http://localhost:8080/empresa/uploads?id=${idEmpresa}`,formData, token);
       console.log("Imágenes subidas correctamente.");
     } catch (error) {
       console.error("Error al subir imágenes:", error);
@@ -102,25 +106,33 @@ export const ModalEmpresa = ({
           {/* Componente Formik para el formulario */}
           <Formik
             validationSchema={Yup.object({
-              cuil: Yup.string().required("Campo requerido"),
+              cuil: Yup.string()
+                    .matches(/^[0-9]+$/, 'CUIL inválido. Solo se permiten números.')
+                    .matches(/^\d{11}$/, 'CUIL inválido. Debe tener 11 dígitos.')
+                    .required("Campo requerido"),
               nombre: Yup.string().required("Campo requerido"),
               razonSocial: Yup.string().required("Campo requerido"),
             })}
             initialValues={elementActive ? elementActive : initialValues}
             enableReinitialize={true}
             onSubmit={async (values: IEmpresa) => {
+
+              const token = await getToken();
+
               try {
                 let idEmpresa;
                 // Enviar los datos de la empresa al servidor
                 if (elementActive) {
-                  await apiEmpresa.put(values.id, values);
+                  //await apiEmpresa.put(values.id, values);
+                  await apiEmpresa.putSec(values.id, values, token);
                   idEmpresa = values.id;
                 } else {
-                  const response = await apiEmpresa.post(API_URL + "/empresa", values);
+                  //const response = await apiEmpresa.post(API_URL + "/empresa", values);
+                  const response = await apiEmpresa.postSec(API_URL + "/empresa", values, token);
                   idEmpresa = response.id; // Obtener el ID de la empresa creada
                   // Subir las imágenes seleccionadas
                   if (selectedFiles) {
-                    await uploadImages(selectedFiles, idEmpresa);
+                    await uploadImages(selectedFiles, idEmpresa, token);
                   }
                 }
                 // Obtener las empresas actualizadas y cerrar el modal

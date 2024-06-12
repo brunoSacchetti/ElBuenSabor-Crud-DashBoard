@@ -51,6 +51,7 @@ export const ModalSucursal: React.FC<IModalSucursales> = ({
   const [paises, setPaises] = useState<IPais[]>([]);
   const [provincias, setProvincias] = useState<IProvincia[]>([]);
   const [localidades, setLocalidades] = useState<ILocalidad[]>([]);
+  
 
   //Obtenemos el token para mandarlo
   const getToken = useAuthToken();
@@ -143,6 +144,9 @@ export const ModalSucursal: React.FC<IModalSucursales> = ({
             initialValues={elementActive ? elementActive : initialValues}
             enableReinitialize={true}
             onSubmit={async (values: SucursalPost | SucursalPut) => {
+              
+              const token = await getToken();
+
               if (elementActive) {
                 const sucursalPut: SucursalPut = {
                   id: values.id,
@@ -152,9 +156,8 @@ export const ModalSucursal: React.FC<IModalSucursales> = ({
                   esCasaMatriz: values.esCasaMatriz,
                 };
 
-                await apiSucursales.put(sucursalPut.id, sucursalPut);
+                await apiSucursales.putSec(sucursalPut.id, sucursalPut, token);
               } else {
-                const token = await getToken();
                 //await apiSucursales.post(API_URL + "/sucursal", values);
                 await apiSucursales.postSec(API_URL + "/sucursal", values, token);
               }
