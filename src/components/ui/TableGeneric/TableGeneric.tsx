@@ -9,6 +9,7 @@ import TableRow from "@mui/material/TableRow";
 import { useEffect, useState } from "react";
 import { ButtonsTable } from "../ButtonsTable/ButtonsTable";
 import { useAppSelector } from "../../../hooks/redux";
+import { TextField, Box } from "@mui/material";
 
 // Definimos la interfaz para cada columna de la tabla
 interface ITableColumn<T> {
@@ -22,7 +23,6 @@ export interface ITableProps<T> {
   handleDelete: (id: number) => void; // Función para manejar la eliminación de un elemento
   setOpenModal: (state: boolean) => void;
 }
-
 
 export const TableGeneric = <T extends { id: any }>({
   columns,
@@ -51,29 +51,41 @@ export const TableGeneric = <T extends { id: any }>({
   // Obtener los datos de la tabla del estado global
   const dataTable = useAppSelector((state) => state.tablaReducer.dataTable);
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredRows, setFilteredRows] = useState<any[]>([]);
 
   useEffect(() => {
-
     setRows(dataTable);
-  }, [dataTable]); // da
-  
+    setFilteredRows(dataTable);
+  }, [dataTable]);
+
+  useEffect(() => {
+    const results = dataTable.filter((row) =>
+      row.denominacion.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredRows(results);
+    setPage(0);
+  }, [searchTerm, dataTable]);
 
   return (
-    <div
-      style={{
-        width: "100%",
+    <Box
+      sx={{
         display: "flex",
-        justifyContent: "center",
+        flexDirection: "column",
         alignItems: "center",
+        width: "100%",
+        mt: 2,
       }}
     >
-      {/* Contenedor del componente Paper */}
+      <TextField
+        label="Buscar producto"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        sx={{ mb: 2, width: "90%" }}
+      />
       <Paper sx={{ width: "90%", overflow: "hidden" }}>
-        {/* Contenedor de la tabla */}
         <TableContainer sx={{ maxHeight: "80vh" }}>
-          {/* Tabla */}
           <Table stickyHeader aria-label="sticky table">
-            {/* Encabezado de la tabla */}
             <TableHead>
               <TableRow>
                 {columns.map((column, i: number) => (
@@ -83,30 +95,26 @@ export const TableGeneric = <T extends { id: any }>({
                 ))}
               </TableRow>
             </TableHead>
-            {/* Cuerpo de la tabla */}
             <TableBody>
-              {rows
+              {filteredRows
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index: number) => {
                   return (
                     <TableRow hover role="checkbox" tabIndex={-1} key={index}>
-                      {/* Celdas de la fila */}
                       {columns.map((column, i: number) => {
                         return (
                           <TableCell key={i} align={"center"}>
-                            {
-                              column.render ? ( // Si existe la función "render" se ejecuta
-                                column.render(row)
-                              ) : column.label === "Acciones" ? ( // Si el label de la columna es "Acciones" se renderizan los botones de acción
-                                <ButtonsTable
-                                  el={row}
-                                  handleDelete={handleDelete}
-                                  setOpenModal={setOpenModal}
-                                />
-                              ) : (
-                                row[column.key]
-                              ) // Si no hay una función personalizada, se renderiza el contenido de la celda tal cual
-                            }
+                            {column.render ? (
+                              column.render(row)
+                            ) : column.label === "Acciones" ? (
+                              <ButtonsTable
+                                el={row}
+                                handleDelete={handleDelete}
+                                setOpenModal={setOpenModal}
+                              />
+                            ) : (
+                              row[column.key]
+                            )}
                           </TableCell>
                         );
                       })}
@@ -116,17 +124,16 @@ export const TableGeneric = <T extends { id: any }>({
             </TableBody>
           </Table>
         </TableContainer>
-        {/* Paginación de la tabla */}
         <TablePagination
           rowsPerPageOptions={[10, 25, 100]}
           component="div"
-          count={rows.length}
+          count={filteredRows.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
-    </div>
+    </Box>
   );
 };

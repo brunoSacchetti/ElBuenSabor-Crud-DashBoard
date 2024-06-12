@@ -80,11 +80,6 @@ export const TableGeneric = <T extends { id: any }>({
 
   const categoriaService = new CategoriaService(API_URL + "/categoria");
 
-  /* useEffect(() => {
-
-    getCategorias();
-  }, []); */
-
   useEffect(() => {
     if (sucursalActual) {
       getCategorias();
@@ -100,37 +95,6 @@ export const TableGeneric = <T extends { id: any }>({
       console.error("Error al obtener categorías:", error);
     }
   };
-/* 
-  const getCategorias = async () => {
-    if (!sucursalActual) {
-      console.error("Error al obtener categorias: sucursalActual es null");
-      return;
-    }
-    try {
-      console.log(sucursalActual);
-      const data = await sucursalService.getCategoriasPorSucursal(sucursalActual.id);
-      setCategoria(data);
-    } catch (error) {
-      console.error("Error al obtener categorias:", error);
-    }
-  }; */
-
-  /* const handleChangeCategorias = async (
-    e: SelectChangeEvent<number>
-  ) => {
-    const categoriaId = e.target.value as number;
-    setSelectedCategoriaId(categoriaId);
-    if (categoriaId !== -1) { // Si se selecciona una categoría
-      try {
-        const categoriaSeleccionada = await categoriaService.getById(categoriaId); // Obtener la categoría seleccionada
-        setProductosManufacturados(categoriaSeleccionada?.articulosManufacturados); // Establecer los productos manufacturados asociados a esa categoría
-      } catch (error) {
-        console.error("Error al obtener la categoría:", error);
-      }
-    } else {
-      setProductosManufacturados([]); // Si no hay categoría seleccionada, limpiar la lista de productos manufacturados
-    }
-  }; */
 
   const handleChangeCategorias = async (e: SelectChangeEvent<number>) => {
     const categoriaId = e.target.value as number;
