@@ -364,13 +364,8 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
         });
         return;
       }
-
-      console.log(selectedDetalle);
-
       if (data) {
         // Si hay datos, se trata de una edición, entonces realizamos la solicitud PUT
-  
-        console.log(selectedDetalle);
   
         const productoEditado = {
           id: itemValue.id,
@@ -384,17 +379,6 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
           }))
         }
 
-        /* const updatedItemValue = {
-          ...itemValue,
-          articuloManufacturadoDetalles: selectedDetalle.map((detalle) => ({
-            cantidad: detalle.cantidad,
-            idArticuloInsumo: detalle.id // Ajusta esto según la estructura de tu objeto detalle
-          }))
-        }; */
-
-        console.log("PRODUCTO EDITADO", productoEditado);
-        
-  
         const productoPutService = new ProductoPostService(`${API_URL}/ArticuloManufacturado`);
   
         // Realizar el put del producto con los detalles asignados
@@ -434,7 +418,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
           ...itemValue,
           articuloManufacturadoDetalles: selectedDetalle.map((detalle) => ({
             cantidad: detalle.cantidad,
-            idArticuloInsumo: detalle.id // Ajusta esto según la estructura de tu objeto detalle
+            idArticuloInsumo: detalle.id 
           }))
         };
         
