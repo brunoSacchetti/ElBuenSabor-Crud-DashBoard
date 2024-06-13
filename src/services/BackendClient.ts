@@ -80,6 +80,7 @@ export abstract class BackendClient<T> extends AbstractBackendClient<T> {
     const newData = await response.json();
     return newData as T;
   }
+
   async postOnlyData(data: T): Promise<T> {
     const response = await fetch(`${this.baseUrl}`, {
       method: "POST",
@@ -142,6 +143,19 @@ export abstract class BackendClient<T> extends AbstractBackendClient<T> {
     };
   
     return this.makeRequest(url, options);
+  }
+
+  async postOnlyDataSeguridad(data: T, token: string): Promise<T> {
+    const response = await fetch(`${this.baseUrl}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+    const newData = await response.json();
+    return newData as T;
   }
   
   async putSec(id: number | string, data: T, token: string): Promise<T> {
