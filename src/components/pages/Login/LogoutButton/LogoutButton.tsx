@@ -7,6 +7,7 @@ export const LogoutButton = () => {
 
   const handleLogout = () => {
     try {
+      sessionStorage.clear();
       logout({ logoutParams: { returnTo: window.location.origin + "/login" } });
     } catch (error) {
       console.error('Error during logout:', error);
