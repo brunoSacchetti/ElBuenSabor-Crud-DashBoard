@@ -9,9 +9,7 @@ import { ArticuloInsumoService } from "../../../services/ArticuloInsumoService";
 import { ModalArticuloInsumo } from "../../ui/modals/ModalArticuloInsumo/ModalArticuloInsumo";
 import { ModalArticuloInsumoEdit } from "../../ui/modals/ModalArticuloInsumo/ModalArticuloInsumoEdit";
 import { SucursalService } from "../../../services/SucursalService";
-import { setCategoriaData } from "../../../redux/slices/CategoriaReducer";
 import { ICategoria } from "../../../types/Categoria";
-import { CategoriaService } from "../../../services/CategoriaService";
 import InsumoEditDto from "../../../types/Dtos/InsumosDto/InsumoEditDto";
 
 // Definición de la URL base de la API
@@ -31,25 +29,13 @@ export const ScreenInsumos = () => {
 
   
   const ColumnsTableInsumo = [
-    /* {
-      label: "ID",
-      key: "id",
-      render: (insumos: IArticuloInsumo) => (insumos?.id ? insumos.id : 0),
-    }, */
     { label: "Nombre", key: "denominacion" },
     { label: "Precio Venta", key: "precioVenta" },
-    {
-      label: "Precio Compra",
-      key: "precioCompra",
-    },
-    {
-      label: "Para Elaborar",
-      key: "esParaElaborar",
+    { label: "Precio Compra", key: "precioCompra",},
+    { label: "Para Elaborar", key: "esParaElaborar",
       render: (insumos: IArticuloInsumo) => (insumos?.esParaElaborar ? "Si" : "No"),
     },
-    {
-      label: "Habilitado",
-      key: "habilitado",
+    { label: "Habilitado", key: "habilitado",
       render: (insumos: IArticuloInsumo) => (insumos?.habilitado ? "Si" : "No"),
     },
     {
@@ -70,25 +56,6 @@ export const ScreenInsumos = () => {
       ),
     },
   ];
-
-  /* const getCategorias = async () => {
-    if (!sucursalActual) {
-      console.error("Error al obtener categorias: sucursalActual es null");
-      setLoading(false);      
-      return;
-    }
-    setLoading(true);
-    try {
-      const categoriaData = await sucursalService.getCategoriasPorSucursal(sucursalActual.id);
-      dispatch(setCategoriaData(categoriaData));
-      setCategorias(categoriaData);
-    } catch (error) {
-      console.error("Error al obtener categorias:", error);
-    } finally {
-      setLoading(false);
-    }
-  }; */
-
   const getCategorias = async () => {
     if (!sucursalActual) {
       console.error("Error al obtener categorias: sucursalActual es null");
@@ -166,14 +133,10 @@ export const ScreenInsumos = () => {
       setLoading(false);
       return;
     }
-  
     try {
       const categoriasData = await sucursalService.getCategoriasPorSucursal(sucursalActual.id);
       const allInsumos = categoriasData.flatMap((categoria) => categoria.insumos);
-      
-      // Filtrar los insumos habilitados
-      //const insumosHabilitados = allInsumos.filter((insumo) => insumo.habilitado);
-      
+
       setInsumoXCategoria(allInsumos);
       dispatch(setDataTable(allInsumos));
     } catch (error) {
@@ -251,7 +214,7 @@ export const ScreenInsumos = () => {
         <ModalArticuloInsumoEdit
           openModal={openModal}
           setOpenModal={setOpenModal}
-          articuloInsumo={editingArticulo} // Pasar el artículo a editar
+          articuloInsumo={editingArticulo}
         />
       ) : (
         <ModalArticuloInsumo
