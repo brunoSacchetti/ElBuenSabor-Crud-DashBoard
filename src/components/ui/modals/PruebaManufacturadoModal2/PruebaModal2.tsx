@@ -39,6 +39,7 @@ import { setLoading } from "../../../../redux/slices/EmpresaReducer";
 import { ProductoPostService } from "../../../../services/ProductoPostService";
 import ProductoDetallePost from "../../../../types/post/ProductoDetallePost";
 import { ImageCarrousel } from "../../ImageCarrousel/ImageCarrousel";
+import useAuthToken from "../../../../hooks/useAuthToken";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -81,6 +82,9 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
   const [selectedCategoriaId, setSelectedCategoriaId] = useState<number>(1);
   const [openInsumosModal, setOpenInsumosModal] = useState<boolean>(false);
   const [dataIngredients, setDataIngredients] = useState<any[]>([]);
+
+  //Obtenemos el token para mandarlo
+  const getToken = useAuthToken();
 
   const [openImageModal, setOpenImageModal] = useState<boolean>(false);
 
@@ -332,6 +336,9 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
    const imageService = new ImagenService(API_URL + "/ArticuloManufacturado");
    
   const handleConfirmModal = async () => {
+
+    const token = await getToken();
+
     try {
       // Verifica si hay al menos un detalle agregado
       if (selectedDetalle.length === 0) {
@@ -382,7 +389,8 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
         const productoPutService = new ProductoPostService(`${API_URL}/ArticuloManufacturado`);
   
         // Realizar el put del producto con los detalles asignados
-        await productoPutService.put(itemValue.id, productoEditado as ProductoPost);
+        //await productoPutService.put(itemValue.id, productoEditado as ProductoPost);
+        await productoPutService.putSec(itemValue.id, productoEditado as ProductoPost, token);
 
         if (selectedFiles) {
           try {
@@ -425,7 +433,8 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
         const productoPostService = new ProductoPostService(`${API_URL}/ArticuloManufacturado`);
       
         // Realiza el post del producto con los detalles asignados
-        const newProducto = await productoPostService.postOnlyData(updatedItemValue);
+        //const newProducto = await productoPostService.postOnlyData(updatedItemValue);
+        const newProducto = await productoPostService.postOnlyDataSeguridad(updatedItemValue, token);
         
         productoId = newProducto.id;
       
