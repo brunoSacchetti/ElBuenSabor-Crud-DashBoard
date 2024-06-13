@@ -2,7 +2,6 @@ import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { NavBar } from "../components/ui/NavBar/NavBar";
 import { SideBar } from "../components/ui/SideBar/SideBar";
 import "./AppRouter.css";
-import { ScreenUsuario } from "../components/pages/ScreenUsuario/ScreenUsuario";
 import { Home } from "../components/pages/Home/Home";
 import { ScreenSucursales } from "../components/pages/ScreenSucursales/ScreenSucursales";
 import { InicioDashboard } from "../components/pages/InicioDashboard/InicioDashboard";
@@ -11,7 +10,7 @@ import { ScreenUnidadMedida } from "../components/pages/ScreenUnidadMedida/Scree
 import { ScreenInsumos } from "../components/pages/ScreenInsumos/ScreenInsumos";
 import { ArticuloManufacturadoScreen } from "../components/pages/ScreenProducto/ArticuloManufacturadoScreen";
 import { useEffect, useState } from "react";
-import { setEmpresaActual, setEmpresaId } from "../redux/slices/EmpresaReducer";
+import { setEmpresaActual } from "../redux/slices/EmpresaReducer";
 import { ScreenCategorias } from "../components/pages/ScreenCategorias/ScreenCategorias";
 import { setDataSucursales, setSucursalActual } from "../redux/slices/SucursalReducer";
 import { ScreenPromociones } from "../components/pages/ScreenPromocion/ScreenPromociones";
@@ -22,6 +21,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import RutaPrivada from "../components/PrivateRoutes/PrivateRoutes";
 import ISucursales from "../types/Sucursales";
 import { SucursalService } from "../services/SucursalService";
+import { ScreenPedido } from "../components/pages/ScreenPedidos/ScreenPedidos";
 
 export const AppRouter = () => {
   const location = useLocation();
@@ -76,6 +76,7 @@ export const AppRouter = () => {
             <Route path="/promociones" element={<RutaPrivada component={ScreenPromociones} roles={['EMPLEADO', 'ADMIN']} />} />
             <Route path="/sucursales" element={<RutaPrivada component={ScreenSucursales} roles={['ADMIN']} />} />
             <Route path="/unidadMedida" element={<RutaPrivada component={ScreenUnidadMedida} roles={['EMPLEADO', 'ADMIN']} />} />
+            <Route path="/pedidos" element={<RutaPrivada component={ScreenPedido} roles={['EMPLEADO', 'ADMIN']} />} />
             <Route path="/" element={<RutaPrivada component={Home} roles={['ADMIN']} />} />
             <Route path="*" element={<Navigate to="/login" />} />
           </Routes>

@@ -10,7 +10,7 @@ import Swal from "sweetalert2";
 //Importamos IPromocion y Empresa Service                                
 import IPromocion from "../../../types/Promocion";
 import { PromocionService } from "../../../services/PromocionService";
-import { ModalPromocion } from "../../ui/modals/ModalPromocion/ModalPromocion";   //*cambiar al final*/
+import { ModalPromocion } from "../../ui/modals/ModalPromocion/ModalPromocion";
 import { SucursalService } from "../../../services/SucursalService";
 
 
@@ -32,11 +32,7 @@ export const ScreenPromociones = () => {
   const dispatch = useAppDispatch();
   // Columnas de la tabla de personas
   const ColumnsTablePromocion= [                                                                           
-    /* {
-      label: "ID",
-      key: "id",
-      render: (promocion: IPromocion) => (promocion?.id ? promocion.id : 0),
-    }, */
+
     { label: "Denominacion", key: "denominacion" },
     { label: "Fecha Desde", key: "fechaDesde" },
     { label: "Fecha Hasta", key: "fechaHasta" },
@@ -49,13 +45,6 @@ export const ScreenPromociones = () => {
       key: "habilitado",
       render: (element: IPromocion) => (element.habilitado ? "Si" : "No"), 
     },
-/*     { label: "Articulos", key: "articulos" },
-    { label: "Imagenes", key: "imagenes" }, */
-    
-        /* {
-      label: "Sucursal",
-      key: "sucursalEmpresa", //OJITO  ABIERTO O CERRADO 
-    }, */
     { 
       label: "Estado", 
       key: "estado", 
@@ -118,12 +107,6 @@ export const ScreenPromociones = () => {
   };
 
   // Efecto para cargar los datos al inicio
-
-  /* useEffect(() => {
-    setLoading(true);
-    getPromocion();                                               
-  }, []); */
-
   useEffect(() => {
     if (sucursalActual) {
       setLoading(true);
@@ -213,7 +196,6 @@ export const ScreenPromociones = () => {
       <ModalPromocion
         getData={getPromocion}
         open={openModal}
-        //setOpenModal={setOpenModal}
         handleClose={handleClose}
       />
     </>

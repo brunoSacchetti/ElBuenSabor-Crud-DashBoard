@@ -41,7 +41,6 @@ const RutaPrivada: React.FC<RutaPrivadaProps> = ({ component: Component, roles }
                     
                     console.log("RESPONSE EMPLEADO:", response);
                     
-
                     if (!response.status) {
                         throw new Error('Network response was not ok');
                     }
@@ -49,23 +48,22 @@ const RutaPrivada: React.FC<RutaPrivadaProps> = ({ component: Component, roles }
                     setEmpleado(empleadoData);
                     dispatch(setSucursalActual(empleadoData.sucursal));
 
+
                     const responseSucursal = await sucursalService.getById(empleadoData.sucursal.id) as ISucursales;
-                    
-                    //console.log("SUCURSAL",responseSucursal);
-                    
-                    /* if (!responseSucursal?.ok) {
-                        throw new Error('Network response was not ok');
-                    } */
-                    //const sucursalData = await responseSucursal.
-                
+
                     // Establecer la empresa de la sucursal en el estado global
-                    dispatch(setEmpresaActual(responseSucursal.empresa));
+                    /* dispatch(setEmpresaActual(responseSucursal.empresa));
 
                     const empresaActual = useAppSelector((state) => state.empresa.empresaActual);
                     const sucursalActual = useAppSelector((state) => state.sucursal.sucursalActual);    
                     
                     sessionStorage.setItem("empresaActual", JSON.stringify(empresaActual));
-                    sessionStorage.setItem("sucursalActual", JSON.stringify(sucursalActual));
+                    sessionStorage.setItem("sucursalActual", JSON.stringify(sucursalActual)); */ //COMENTE ESTO PARA ERROR 
+
+                    dispatch(setEmpresaActual(responseSucursal.empresa));
+
+                    sessionStorage.setItem("empresaActual", JSON.stringify(responseSucursal.empresa));
+                    sessionStorage.setItem("sucursalActual", JSON.stringify(empleadoData.sucursal));
                     
                 } catch (error) {
                     console.error('Error fetching empleado:', error);

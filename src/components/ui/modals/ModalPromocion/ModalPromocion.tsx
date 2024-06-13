@@ -68,9 +68,7 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
   getData,
 }) => {
   const [categoria, setCategoria] = useState<ICategoria[]>([]);
-
   const [dataIngredients, setDataIngredients] = useState<any[]>([]);
-
   // #region STATES - Promociones
   const [itemValue, setItemValue] = useState<PromocionPostDto>(initialValues);
   const [openInsumosModal, setOpenInsumosModal] = useState<boolean>(false);
@@ -81,11 +79,8 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
   //#region SERVICE - Promociones
   const sucursalService = new SucursalService(`${API_URL}/sucursal`);
   const promocionService = new PromocionService(`${API_URL}/promocion`);
-  const promocionDetalleService = new PromocionDetalleService(
-    `${API_URL}/promocionDetalle`
-  );
+  
   const insumosServices = new InsumoGetService(`${API_URL}/ArticuloInsumo`);
-  const promocionPutService = new PromocionPutService(`${API_URL}/promocion`);
   //obtenemos la sucursal actual
 
   const dispatch = useAppDispatch();

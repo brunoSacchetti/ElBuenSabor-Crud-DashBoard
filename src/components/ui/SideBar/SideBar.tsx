@@ -1,7 +1,7 @@
 import CIcon from '@coreui/icons-react'
 import { CBadge, CNavItem, CNavTitle, CSidebar, CSidebarHeader, CSidebarNav, CSidebarToggler } from '@coreui/react'
 import styles from './SideBar.module.css'
-import {cilSpeedometer,cilRestaurant,cilGift,cilFeaturedPlaylist,cilDrink, cilMug, cilList, cilAddressBook} from '@coreui/icons';
+import {cilSpeedometer,cilRestaurant,cilGift,cilFeaturedPlaylist,cilDrink, cilMug, cilAddressBook, cilBasket} from '@coreui/icons';
 
 export const SideBar = () => {
   return (
@@ -36,6 +36,9 @@ export const SideBar = () => {
         </CNavItem>
         <CNavItem href="/unidadMedida">
           <CIcon customClassName="nav-icon" icon={cilMug} /> Unidad de Medida
+        </CNavItem>
+        <CNavItem href="/pedidos">
+          <CIcon customClassName="nav-icon" icon={cilBasket} /> Pedidos
         </CNavItem>
       </CSidebarNav>
       <CSidebarHeader className="border-top">
