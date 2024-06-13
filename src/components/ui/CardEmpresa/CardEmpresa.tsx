@@ -7,6 +7,7 @@ import Typography from '@mui/material/Typography';
 import { IconButton } from '@mui/material';
 import { Delete, Edit, ChevronRight, LocationOn, VisibilityOff } from '@mui/icons-material';
 import IEmpresa from '../../../types/Empresa';
+import { EmpresaService } from '../../../services/EmpresaService'; // Asegúrate de importar correctamente tu servicio
 
 interface MediaCardProps {
   empresa: IEmpresa;
@@ -16,10 +17,28 @@ interface MediaCardProps {
   imageUrl?: string | null;
 }
 
-export const CardEmpresa: React.FC<MediaCardProps> = ({ empresa, onDelete, onEdit, onSelect, imageUrl }) => {
-  
-  const defaultImageUrl = './nohayfoto.jpg';
+const empresaService = new EmpresaService("http://localhost:8080"); // Asegúrate de que la URL base sea la correcta
 
+export const CardEmpresa: React.FC<MediaCardProps> = ({ empresa, onDelete, onEdit, onSelect, imageUrl }) => {
+  const defaultImageUrl = './nohayfoto.jpg';
+  const [tieneSucursales, setTieneSucursales] = React.useState(false);
+
+  // Función para cargar la empresa con sus sucursales
+  const cargarEmpresaConSucursales = async () => {
+    try {
+      const empresaConSucursales = await empresaService.getEmpresaSucursales(empresa.id);
+      setTieneSucursales(empresaConSucursales.sucursales.length > 0);
+    } catch (error) {
+      console.error('Error al cargar la empresa con sucursales:', error);
+    }
+  };
+
+  React.useEffect(() => {
+    cargarEmpresaConSucursales();
+  }, []); // Se ejecuta solo una vez al montar el componente
+
+ 
+  
   return (
     <Card sx={{ maxWidth: 345, borderRadius: "20px", border: "1px solid lightgray"}}>
       <img src={imageUrl || defaultImageUrl} alt={`${empresa.nombre} logo`} style={{ width: '100%', height: 'auto' }} />
@@ -33,7 +52,7 @@ export const CardEmpresa: React.FC<MediaCardProps> = ({ empresa, onDelete, onEdi
         <Typography variant="body2" color="text.secondary">
           <strong>CUIL:</strong> {empresa.cuil}
         </Typography>
-        {empresa.sucursales && empresa.sucursales.length > 0 ? (
+        {tieneSucursales ? (
           <Button variant="contained" color="primary" startIcon={<LocationOn />}>
             Sucursales Disponibles
           </Button>
