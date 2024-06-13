@@ -48,7 +48,6 @@ export const TableGeneric = <T extends { id: any }>({
   const [selectedCategoriaId, setSelectedCategoriaId] = useState<number>(-1); // -1 para indicar que no hay categoría seleccionada
   const [productosManufacturados, setProductosManufacturados] = useState<IArticuloManufacturado[]>([]);
 
-  
   const sucursalActual = useAppSelector((state) => state.sucursal.sucursalActual);
 
   const sucursalService = new SucursalService(API_URL + "/sucursal");
@@ -72,7 +71,7 @@ export const TableGeneric = <T extends { id: any }>({
 
   useEffect(() => {
     const results = dataTable.filter((row) =>
-      row.denominacion.toLowerCase().includes(searchTerm.toLowerCase())
+      row.denominacion && row.denominacion.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredRows(results);
     setPage(0);
@@ -84,8 +83,7 @@ export const TableGeneric = <T extends { id: any }>({
     if (sucursalActual) {
       getCategorias();
     }
-  }, [,sucursalActual]);
-  
+  }, [sucursalActual]);
 
   const getCategorias = async () => {
     try {
@@ -99,7 +97,7 @@ export const TableGeneric = <T extends { id: any }>({
   const handleChangeCategorias = async (e: SelectChangeEvent<number>) => {
     const categoriaId = e.target.value as number;
     console.log(categoriaId);
-    
+
     setSelectedCategoriaId(categoriaId);
     if (categoriaId !== -1) { // Si se selecciona una categoría
       try {
@@ -112,10 +110,9 @@ export const TableGeneric = <T extends { id: any }>({
       }
     } else {
       setProductosManufacturados([]); // Si no hay categoría seleccionada, limpiar la lista de productos manufacturados
-      
     }
   };
-   
+
   return (
     <>
       <div
@@ -140,7 +137,7 @@ export const TableGeneric = <T extends { id: any }>({
             onChange={handleChangeCategorias}
             variant="filled"
           >
-            <MenuItem value={-1}>Todas las Categorias</MenuItem> 
+            <MenuItem value={-1}>Todas las Categorias</MenuItem>
             {categoria.map((cat) => (
               <MenuItem key={cat.id} value={cat.id}>
                 {cat.denominacion}

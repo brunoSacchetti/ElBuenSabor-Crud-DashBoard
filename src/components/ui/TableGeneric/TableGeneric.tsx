@@ -9,7 +9,7 @@ import TableRow from "@mui/material/TableRow";
 import { useEffect, useState } from "react";
 import { ButtonsTable } from "../ButtonsTable/ButtonsTable";
 import { useAppSelector } from "../../../hooks/redux";
-import { TextField, Box, SelectChangeEvent } from "@mui/material";
+import { TextField, Box } from "@mui/material";
 import { CategoriaService } from "../../../services/CategoriaService";
 import { ICategoria } from "../../../types/Categoria";
 
@@ -54,7 +54,6 @@ export const TableGeneric = <T extends { id: any }>({
   const dataTable = useAppSelector((state) => state.tablaReducer.dataTable);
 
   console.log(dataTable);
-  
 
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredRows, setFilteredRows] = useState<any[]>([]);
@@ -65,8 +64,10 @@ export const TableGeneric = <T extends { id: any }>({
   }, [dataTable]);
 
   useEffect(() => {
-    const results = dataTable.filter((row) =>
-      row.denominacion.toLowerCase().includes(searchTerm.toLowerCase()) 
+    const results = dataTable.filter(
+      (row) =>
+        row.denominacion &&
+        row.denominacion.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredRows(results);
     setPage(0);

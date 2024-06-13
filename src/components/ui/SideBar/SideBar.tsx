@@ -1,50 +1,70 @@
 import CIcon from '@coreui/icons-react'
 import { CBadge, CNavItem, CNavTitle, CSidebar, CSidebarHeader, CSidebarNav, CSidebarToggler } from '@coreui/react'
+import { Link } from 'react-router-dom'
 import styles from './SideBar.module.css'
-import {cilSpeedometer,cilRestaurant,cilGift,cilFeaturedPlaylist,cilDrink, cilMug, cilAddressBook, cilBasket} from '@coreui/icons';
+import { cilSpeedometer, cilRestaurant, cilGift, cilFeaturedPlaylist, cilDrink, cilMug, cilAddressBook, cilBasket } from '@coreui/icons';
 
 export const SideBar = () => {
   return (
     <CSidebar className={styles.SideBarBig}>
       <CSidebarNav>
         <CNavTitle>Dashboard</CNavTitle>
-        <CNavItem href="/inicio">
-          <CIcon customClassName="nav-icon" icon={cilSpeedometer} /> Inicio
+        <CNavItem>
+          <Link to="/inicio" className="nav-link">
+            <CIcon customClassName="nav-icon" icon={cilSpeedometer} /> Inicio
+          </Link>
         </CNavItem>
-        {/* <CNavItem href="/sucursales">
-          <CIcon customClassName="nav-icon" icon={cilFactory} /> Sucursales
-          
+        {/* <CNavItem>
+          <Link to="/sucursales" className="nav-link">
+            <CIcon customClassName="nav-icon" icon={cilFactory} /> Sucursales
+          </Link>
         </CNavItem> */}
-        {/* <CNavItem href="/pedidos">
-          <CIcon customClassName="nav-icon" icon={cilList} /> Pedidos
+        {/* <CNavItem>
+          <Link to="/pedidos" className="nav-link">
+            <CIcon customClassName="nav-icon" icon={cilList} /> Pedidos
+          </Link>
         </CNavItem> */}
-        <CNavItem href="/articulosManufacturados">
-          <CIcon customClassName="nav-icon" icon={cilRestaurant} /> Productos
+        <CNavItem>
+          <Link to="/articulosManufacturados" className="nav-link">
+            <CIcon customClassName="nav-icon" icon={cilRestaurant} /> Productos
+          </Link>
         </CNavItem>
-        <CNavItem href="/promociones">
-          <CIcon customClassName="nav-icon" icon={cilGift} /> Promociones
-          <CBadge color="primary ms-auto">NEW</CBadge>
+        <CNavItem>
+          <Link to="/promociones" className="nav-link">
+            <CIcon customClassName="nav-icon" icon={cilGift} /> Promociones
+            <CBadge color="primary ms-auto">NEW</CBadge>
+          </Link>
         </CNavItem>
-        <CNavItem href="/empleados">
-          <CIcon customClassName="nav-icon" icon={cilAddressBook} /> Empleados
+        <CNavItem>
+          <Link to="/empleados" className="nav-link">
+            <CIcon customClassName="nav-icon" icon={cilAddressBook} /> Empleados
+          </Link>
         </CNavItem>
-        <CNavItem href="/categorias">
-          <CIcon customClassName="nav-icon" icon={cilFeaturedPlaylist} /> Categorias
+        <CNavItem>
+          <Link to="/categorias" className="nav-link">
+            <CIcon customClassName="nav-icon" icon={cilFeaturedPlaylist} /> Categorias
+          </Link>
         </CNavItem>
-        <CNavItem href="/insumos">
-          <CIcon customClassName="nav-icon" icon={cilDrink} /> Insumos
+        <CNavItem>
+          <Link to="/insumos" className="nav-link">
+            <CIcon customClassName="nav-icon" icon={cilDrink} /> Insumos
+          </Link>
         </CNavItem>
-        <CNavItem href="/unidadMedida">
-          <CIcon customClassName="nav-icon" icon={cilMug} /> Unidad de Medida
+        <CNavItem>
+          <Link to="/unidadMedida" className="nav-link">
+            <CIcon customClassName="nav-icon" icon={cilMug} /> Unidad de Medida
+          </Link>
         </CNavItem>
-        <CNavItem href="/pedidos">
-          <CIcon customClassName="nav-icon" icon={cilBasket} /> Pedidos
+        <CNavItem>
+          <Link to="/pedidos" className="nav-link">
+            <CIcon customClassName="nav-icon" icon={cilBasket} /> Pedidos
+          </Link>
         </CNavItem>
       </CSidebarNav>
       <CSidebarHeader className="border-top">
         <CSidebarToggler />
       </CSidebarHeader>
-      <CSidebarHeader className="border-bottom"/> {/* Arreglar */}
+      <CSidebarHeader className="border-bottom" /> {/* Arreglar */}
     </CSidebar>
   );
 };
