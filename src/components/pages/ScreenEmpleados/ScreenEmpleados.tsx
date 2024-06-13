@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 
 import { Button, CircularProgress } from "@mui/material";
-import { useAppDispatch } from "../../../hooks/redux";
+import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
 
 import { setDataTable } from "../../../redux/slices/TablaReducer";
 import Swal from "sweetalert2";
@@ -20,7 +20,9 @@ export const ScreenEmpleado = () => {
   const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
 
-  const empleadoService = new EmpleadoService(API_URL + "/empleado");
+  const sucursalActual = useAppSelector((state) => state.sucursal.sucursalActual);
+
+  const empleadoService = new EmpleadoService(API_URL);
 
   const dispatch = useAppDispatch();
   // Columnas de la tabla de personas
@@ -55,11 +57,42 @@ export const ScreenEmpleado = () => {
   };
   // Función para obtener las personas
   const getEmpleados = async () => {
-    await empleadoService.getAll().then((empleado) => {
-      dispatch(setDataTable(empleado));
+    if (!sucursalActual) {
+      console.error('No se ha seleccionado una sucursal.');
+      return;
+    }
+  
+    setLoading(true);
+    try {
+      const empleados = await empleadoService.findAllBySucursalId(sucursalActual.id);
+      if (empleados.length === 0) {
+        console.log('La sucursal no tiene empleados.');
+        // Puedes manejar esta condición como desees, por ejemplo, mostrando un mensaje o realizando alguna acción específica.
+      }
+      dispatch(setDataTable(empleados));
+      console.log(empleados);
+    } catch (error) {
+      console.error('Error al obtener empleados:', error);
+    } finally {
       setLoading(false);
-    });
+    }
   };
+  
+  
+
+  /* const getEmpleados = async () => {
+    try {
+      const empleados = await empleadoService.getAll();
+      const empleadosNoEliminados = empleados.filter((empleado) => !empleado.eliminado);
+      dispatch(setDataTable(empleadosNoEliminados));
+      console.log(empleadosNoEliminados);
+    } catch (error) {
+      console.error('Error fetching empleados:', error);
+    } finally {
+      setLoading(false);
+    }
+  }; */
+  
 
   // Efecto para cargar los datos al inicio
   useEffect(() => {
@@ -85,7 +118,7 @@ export const ScreenEmpleado = () => {
             }}
             variant="contained"
           >
-            Agregar
+            Agregar Empleado
           </Button>
         </div>
         {/* Mostrar indicador de carga mientras se cargan los datos */}

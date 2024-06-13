@@ -4,6 +4,7 @@ import { Base } from "./Base";
 
 interface IEmpleadoPost {
   id:number;
+  //eliminado: boolean;
   nombre:string;
   apellido:string;
   telefono:string;

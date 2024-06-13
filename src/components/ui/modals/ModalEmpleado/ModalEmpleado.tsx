@@ -8,6 +8,7 @@ import { removeElementActive } from "../../../../redux/slices/TablaReducer";
 import IEmpleadoPost from "../../../../types/Empleado";
 import { EmpleadoService } from "../../../../services/EmpleadoService";
 import { TextField } from "@mui/material";
+import useAuthToken from "../../../../hooks/useAuthToken";
 const API_URL = import.meta.env.VITE_API_URL;
 
 // Interfaz para los props del componente ModalPersona
@@ -25,6 +26,7 @@ export const ModalEmpleado = ({
   // Valores iniciales para el formulario
   const initialValues: IEmpleadoPost = {
     id: 0,
+    //eliminado: false,
     nombre: "",
     apellido: "",
     telefono: "",
@@ -33,6 +35,9 @@ export const ModalEmpleado = ({
     fechaNacimiento: "",
     idSucursal: 0,
   };
+
+  //Obtenemos el token para mandarlo
+  const getToken = useAuthToken();
 
   const empleadoService = new EmpleadoService(API_URL + "/empleado");
 
@@ -43,6 +48,9 @@ export const ModalEmpleado = ({
   const sucursalActual = useAppSelector(
     (state) => state.sucursal.sucursalActual
   );
+
+  console.log("SucursalActual: " + sucursalActual?.id);
+  
   const dispatch = useAppDispatch();
 
   // Función para cerrar el modal
@@ -76,7 +84,7 @@ export const ModalEmpleado = ({
             validationSchema={Yup.object({
               nombre: Yup.string().required("Campo requerido"),
               apellido: Yup.string().required("Campo requerido"),
-              tipoEmpleado: Yup.string().required("Campo requerido"),
+              rol: Yup.string().required("Campo requerido"),
               email: Yup.string().required("Campo requerido"),
             })}
             initialValues={elementActive ? elementActive : initialValues}
@@ -84,15 +92,16 @@ export const ModalEmpleado = ({
             onSubmit={async (values: IEmpleadoPost) => {
               // Enviar los datos al servidor al enviar el formulario
 
-              
+              const token = await getToken();
               
               if (elementActive) {
                 
                 const updatedValues:any = {
-                  tipoEmpleado: values.rol
+                  rol: values.rol,
                 };
 
-                await empleadoService.put(values.id, updatedValues);
+                //await empleadoService.put(values.id, updatedValues);
+                await empleadoService.putSec(values.id, updatedValues, token);
               } else {
                 if (!sucursalActual) {
                   console.error(
@@ -100,12 +109,14 @@ export const ModalEmpleado = ({
                   );
                   return;
                 }
-                let newValues = { ...values, idSucursal: sucursalActual.id };
+                let newValues = { ...values as IEmpleadoPost, idSucursal: sucursalActual.id };
+                
                 console.log(newValues);
 
-                await empleadoService.post(API_URL + "/empleado", newValues);
+                //await empleadoService.post(API_URL + "/empleado", newValues);
+                await empleadoService.postSec(API_URL + "/empleado", newValues as IEmpleadoPost, token);
               }
-              // Obtener las unidades de medida actualizadas y cerrar el modal
+              
               getEmpleados();
               handleClose();
             }}
@@ -122,8 +133,8 @@ export const ModalEmpleado = ({
                         marginBottom: "1rem",
                       }}
                     >
-                      <label htmlFor="nombre">Nombre:</label>
                       <TextField
+                        label="Nombre"
                         name="nombre"
                         type="text"
                         placeholder="Nombre"
@@ -136,8 +147,8 @@ export const ModalEmpleado = ({
                         marginBottom: "1rem",
                       }}
                     >
-                      <label htmlFor="apellido">Apellido:</label>
                       <TextField
+                        label="Apellido"
                         name="apellido"
                         type="text"
                         placeholder="Apellido"
@@ -150,8 +161,8 @@ export const ModalEmpleado = ({
                         marginBottom: "1rem",
                       }}
                     >
-                      <label htmlFor="telefono">Teléfono:</label>
                       <TextField
+                        label="Telefono"
                         name="telefono"
                         type="text"
                         placeholder="Teléfono"
@@ -164,8 +175,8 @@ export const ModalEmpleado = ({
                         marginBottom: "1rem",
                       }}
                     >
-                      <label htmlFor="email">Correo Electrónico:</label>
                       <TextField
+                        label="Correo Electrónico"
                         name="email"
                         type="email"
                         placeholder="Correo Electrónico"
@@ -178,9 +189,10 @@ export const ModalEmpleado = ({
                       <Field as="select" name="rol" id="rol">
                         <option value="">Selecciona un tipo</option>
                         <option value="ADMIN">Admin</option>
-                        <option value="CLIENTE">Cliente</option>
+                        {/* <option value="CLIENTE">Cliente</option> */}
                         <option value="COCINERO">Cocinero</option>
                         <option value="CAJERO">Cajero</option>
+                        <option value="EMPLEADO">Empleado</option>
                       </Field>
                       <ErrorMessage
                         name="rol"
@@ -195,10 +207,8 @@ export const ModalEmpleado = ({
                         display: data ? "none" : "block",
                       }}
                     >
-                      <label htmlFor="fechaNacimiento">
-                        Fecha de Nacimiento:
-                      </label>
                       <TextField
+                        /* label="Fecha de Nacimiento" */
                         name="fechaNacimiento"
                         type="date"
                         placeholder="Fecha de Nacimiento"
