@@ -11,6 +11,7 @@ import { EmpleadoService } from "../../../services/EmpleadoService";
 import IEmpleado from "../../../types/Empleado";
 import { ModalEmpleado } from "../../ui/modals/ModalEmpleado/ModalEmpleado";
 import { TableEmpleadoGeneric } from "../../ui/TableEmpleado/TableEmpleadoGeneric";
+import { ModalEmpleadoPrueba } from "../../ui/modals/ModalEmpleado/ModalEmpleadoPrueba";
 
 // Definición de la URL base de la API
 const API_URL = import.meta.env.VITE_API_URL;
@@ -22,7 +23,7 @@ export const ScreenEmpleado = () => {
 
   const sucursalActual = useAppSelector((state) => state.sucursal.sucursalActual);
 
-  const empleadoService = new EmpleadoService(API_URL);
+  const empleadoService = new EmpleadoService(API_URL + "/empleado");
 
   const dispatch = useAppDispatch();
   // Columnas de la tabla de personas
@@ -148,7 +149,12 @@ export const ScreenEmpleado = () => {
       </div>
 
       {/* Modal para agregar o editar una persona */}
-      <ModalEmpleado
+      {/* <ModalEmpleado
+        getEmpleados={getEmpleados}
+        openModal={openModal}
+        setOpenModal={setOpenModal}
+      /> */}
+      <ModalEmpleadoPrueba
         getEmpleados={getEmpleados}
         openModal={openModal}
         setOpenModal={setOpenModal}

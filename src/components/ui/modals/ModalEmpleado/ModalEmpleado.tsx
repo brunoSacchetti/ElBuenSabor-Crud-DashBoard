@@ -109,12 +109,12 @@ export const ModalEmpleado = ({
                   );
                   return;
                 }
-                let newValues = { ...values as IEmpleadoPost, idSucursal: sucursalActual.id };
+                let newValues = { ...values, idSucursal: sucursalActual.id };
                 
                 console.log(newValues);
 
                 //await empleadoService.post(API_URL + "/empleado", newValues);
-                await empleadoService.postSec(API_URL + "/empleado", newValues as IEmpleadoPost, token);
+                await empleadoService.postSec(API_URL + "/empleado", newValues, token);
               }
               
               getEmpleados();

@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
 
 import { TableGeneric } from "../../ui/TableGeneric/TableGeneric";
-import { Button, CircularProgress } from "@mui/material";
+import { Button, CircularProgress, MenuItem, Select } from "@mui/material";
 import { useAppDispatch } from "../../../hooks/redux";
 
 import { setDataTable } from "../../../redux/slices/TablaReducer";
 import Swal from "sweetalert2";
 
-import { ModalEmpresa } from "../../ui/modals/ModalEmpresa/ModalEmpresa";
 import { PedidoService } from "../../../services/PedidoService";
 import IPedido from "../../../types/Pedido";
+import PedidoDto from "../../../types/Dtos/Pedido/PedidoDto";
+import { TablePedido } from "../../ui/TablePedido/TablePedido";
+import { useNavigate } from "react-router-dom";
 
 // Definición de la URL base de la API
 const API_URL = import.meta.env.VITE_API_URL;
@@ -21,41 +23,48 @@ export const ScreenPedido = () => {
 
   const pedidoService = new PedidoService(API_URL + "/pedido");
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   // Columnas de la tabla de personas
   const ColumnsTablePedido = [
     {
-      label: "ID",
+      label: "Nro",
       key: "id",
-      render: (pedido: IPedido) => (pedido?.id ? pedido.id : 0),
+      render: (pedido: PedidoDto) => (pedido?.id ? pedido.id : 0),
     },
-    { label: "Estado", key: "estado" },
+    { label: "Estado", 
+      key: "estado",
+      render: (pedido: PedidoDto) => (pedido.estado),
+    },
     { label: "Hora Finalizacion", key: "horaEstimadaFinalizacion" },
-    /* {
-      label: "Sucursales",
-      key: "sucursales",
-      render: (empresa: IEmpresa) => (
-        <>
-          {empresa.sucursales && empresa.sucursales.length > 0 ? (
-            <Link to={`/empresas/${empresa.id}/sucursales`}>
-              <Button variant="contained" color="success">
-                <CIcon icon={cilLocationPin} />
-              </Button>
-            </Link>
-          ) : (
-            <Button
-              variant="contained"
-              color="error"
-              onClick={() => alert("No hay sucursales en esta empresa")}
-            >
-              <CIcon icon={cilLowVision} />
-            </Button>
-          )}
-        </>
-      ),
-    }, */
+    { label: "Forma Pago", key: "formaPago" },
     { label: "Fecha Pedido", key: "fechaPedido"},
     { label: "Tipo Envio", key: "tipoEnvio"},
-    { label: "Acciones", key: "acciones" },
+    { 
+      label: "Acciones", 
+      key: "acciones",
+      render: (pedido: PedidoDto) => (
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <Button variant="contained" color="primary" style={{height: "40px", fontSize: "12px"}} onClick={() => handleViewDetails(pedido.id)}>
+            Ver Detalles
+          </Button>
+          <Select 
+            value={pedido.estado}
+            onChange={(e) => handleCambiarEstado(pedido.id, e.target.value)}
+          >
+            <MenuItem value=""><em>Seleccionar</em></MenuItem>
+            <MenuItem value="PENDIENTE">Pendiente</MenuItem>
+            <MenuItem value="PREPARACION">En Preparacion</MenuItem>
+            <MenuItem value="FACTURADO">Facturado</MenuItem>
+            <MenuItem value="RECHAZADO">Rechazado</MenuItem>
+          </Select>
+          {pedido.estado === "FACTURADO" && (
+            <Button variant="contained" color="error" /* onClick={() => handleDownloadInvoice(pedido.id)} */>
+              Descargar Factura
+            </Button>
+          )}
+        </div>
+      )
+    }
   ];
 
   // Función para manejar el borrado de una persona
@@ -79,12 +88,17 @@ export const ScreenPedido = () => {
       }
     });
   };
-  // Función para obtener las personas
+ 
   const getPedido = async () => {
-    await pedidoService.getAll().then((pedidoData) => {
+    setLoading(true);
+    try {
+      const pedidoData = await pedidoService.getAll();
       dispatch(setDataTable(pedidoData));
+    } catch (error) {
+      console.error("Failed to fetch pedidos", error);
+    } finally {
       setLoading(false);
-    });
+    }
   };
 
   // Efecto para cargar los datos al inicio
@@ -92,6 +106,53 @@ export const ScreenPedido = () => {
     setLoading(true);
     getPedido();
   }, []);
+
+  const handleViewDetails = (id: number) => {
+    navigate(`/pedido/${id}`);
+  };
+
+  const handleCambiarEstado = async (id: number, newStatus: string) => {
+
+    console.log(id);
+    console.log(newStatus);
+    
+    try {
+      await pedidoService.cambiarEstado(newStatus, id);
+      getPedido();
+      Swal.fire({
+        title: "Estado actualizado",
+        text: `El estado del pedido ha sido actualizado a ${newStatus}`,
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+    } catch (error) {
+      Swal.fire({
+        title: "Error",
+        text: "Hubo un problema al actualizar el estado del pedido",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    }
+  };
+
+  /* const handleDownloadInvoice = async (id: number) => {
+    try {
+      const invoiceUrl = await pedidoService.downloadInvoice(id); // Asumiendo que tienes este método en tu servicio
+      const link = document.createElement('a');
+      link.href = invoiceUrl;
+      link.setAttribute('download', `Factura_${id}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      Swal.fire({
+        title: "Error",
+        text: "Hubo un problema al descargar la factura",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    }
+  }; */
 
   return (
     <>
@@ -105,7 +166,7 @@ export const ScreenPedido = () => {
         fontFamily: "'Arial', sans-serif",
         letterSpacing: "0.1rem",
       }}>
-        Lista de Pedidos
+        Listado de Pedidos
       </h1>
 
         {/* Mostrar indicador de carga mientras se cargan los datos */}
@@ -125,8 +186,8 @@ export const ScreenPedido = () => {
             <h2>Cargando...</h2>
           </div>
         ) : (
-          // Mostrar la tabla de personas una vez que los datos se han cargado
-          <TableGeneric<IPedido>
+          
+          <TablePedido<PedidoDto>
             handleDelete={handleDelete}
             columns={ColumnsTablePedido}
             setOpenModal={setOpenModal}

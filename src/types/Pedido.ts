@@ -9,7 +9,7 @@ interface IPedido extends Base<IPedido> {
   tipoEnvio:string,
   formaPago:string,
   fechaPedido:string,
-  sucursal:ISucursales,
+  //sucursal:ISucursales,
 }
 
 export default IPedido;
