@@ -58,7 +58,7 @@ export const ScreenPedido = () => {
             <MenuItem value="RECHAZADO">Rechazado</MenuItem>
           </Select>
           {pedido.estado === "FACTURADO" && (
-            <Button variant="contained" color="error" /* onClick={() => handleDownloadInvoice(pedido.id)} */>
+            <Button variant="contained" color="error" onClick={() => handleDescargarFactura(pedido.id)}>
               Descargar Factura
             </Button>
           )}
@@ -135,16 +135,39 @@ export const ScreenPedido = () => {
     }
   };
 
-  /* const handleDownloadInvoice = async (id: number) => {
+  const handleDescargarFactura = async (pedidoId : any) => {
+
+    console.log(pedidoId);
+    
     try {
-      const invoiceUrl = await pedidoService.downloadInvoice(id); // Asumiendo que tienes este método en tu servicio
-      const link = document.createElement('a');
-      link.href = invoiceUrl;
-      link.setAttribute('download', `Factura_${id}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
+      const response = await fetch(`${API_URL}/facturas/download-factura/${pedidoId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/pdf",
+        },
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(new Blob([blob]));
+
+        // Crear un enlace y simular el clic para descargar el archivo
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `Factura_Pedido_${pedidoId}.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      } else {
+        Swal.fire({
+          title: "Error",
+          text: "Hubo un problema al descargar la factura",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      }
     } catch (error) {
+      console.error("Error al descargar la factura", error);
       Swal.fire({
         title: "Error",
         text: "Hubo un problema al descargar la factura",
@@ -152,7 +175,7 @@ export const ScreenPedido = () => {
         confirmButtonText: "OK",
       });
     }
-  }; */
+  };
 
   return (
     <>
