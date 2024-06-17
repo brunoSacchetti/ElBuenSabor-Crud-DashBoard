@@ -3,27 +3,26 @@ import { CBadge, CNavItem, CNavTitle, CSidebar, CSidebarHeader, CSidebarNav, CSi
 import { Link } from 'react-router-dom'
 import styles from './SideBar.module.css'
 import { cilSpeedometer, cilRestaurant, cilGift, cilFeaturedPlaylist, cilDrink, cilMug, cilAddressBook, cilBasket } from '@coreui/icons';
+import { useAuth0 } from '@auth0/auth0-react';
 
 export const SideBar = () => {
+  
+  const userDataString = sessionStorage.getItem('usuario');
+  const userData = userDataString ? JSON.parse(userDataString) : null;
+  const rol = userData["https://my-app.example.com/roles"][0];
+
   return (
     <CSidebar className={styles.SideBarBig}>
       <CSidebarNav>
         <CNavTitle>Dashboard</CNavTitle>
-        <CNavItem>
+    {rol === 'COCINERO' ? <></> : <CNavItem>
           <Link to="/inicio" className="nav-link">
             <CIcon customClassName="nav-icon" icon={cilSpeedometer} /> Inicio
           </Link>
-        </CNavItem>
-        {/* <CNavItem>
-          <Link to="/sucursales" className="nav-link">
-            <CIcon customClassName="nav-icon" icon={cilFactory} /> Sucursales
-          </Link>
-        </CNavItem> */}
-        {/* <CNavItem>
-          <Link to="/pedidos" className="nav-link">
-            <CIcon customClassName="nav-icon" icon={cilList} /> Pedidos
-          </Link>
-        </CNavItem> */}
+        </CNavItem> }
+
+
+
         <CNavItem>
           <Link to="/articulosManufacturados" className="nav-link">
             <CIcon customClassName="nav-icon" icon={cilRestaurant} /> Productos
@@ -35,11 +34,12 @@ export const SideBar = () => {
             <CBadge color="primary ms-auto">NEW</CBadge>
           </Link>
         </CNavItem>
-        <CNavItem>
+        {rol === 'COCINERO' ? <></> : <CNavItem>
           <Link to="/empleados" className="nav-link">
             <CIcon customClassName="nav-icon" icon={cilAddressBook} /> Empleados
           </Link>
-        </CNavItem>
+        </CNavItem> } 
+        
         <CNavItem>
           <Link to="/categorias" className="nav-link">
             <CIcon customClassName="nav-icon" icon={cilFeaturedPlaylist} /> Categorias
