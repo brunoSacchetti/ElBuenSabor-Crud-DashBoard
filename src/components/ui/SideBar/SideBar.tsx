@@ -34,6 +34,12 @@ export const SideBar = () => {
             <CBadge color="primary ms-auto">NEW</CBadge>
           </Link>
         </CNavItem>
+        <CNavItem>
+          <Link to="/estadistica" className="nav-link">
+            <CIcon customClassName="nav-icon" icon={cilGift} /> ESTADS
+            <CBadge color="primary ms-auto">NEW</CBadge>
+          </Link>
+        </CNavItem>
         {rol === 'COCINERO' ? <></> : <CNavItem>
           <Link to="/empleados" className="nav-link">
             <CIcon customClassName="nav-icon" icon={cilAddressBook} /> Empleados

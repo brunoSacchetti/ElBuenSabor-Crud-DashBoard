@@ -20,6 +20,7 @@ import RutaPrivada from "../components/PrivateRoutes/PrivateRoutes";
 
 import { ScreenPedido } from "../components/pages/ScreenPedidos/ScreenPedidos";
 import { ScreenDetallePedido } from "../components/pages/ScreenPedidos/ScreenDetallePedido";
+import { Charts } from "../components/pages/Charts/Charts";
 
 export const AppRouter = () => {
   const location = useLocation();
@@ -69,6 +70,8 @@ export const AppRouter = () => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/inicio" element={<RutaPrivada component={InicioDashboard} roles={['EMPLEADO', 'ADMIN']} />} />
                 <Route path="/insumos" element={<RutaPrivada component={ScreenInsumos} roles={['ADMIN']} />} />
+                <Route path="/estadistica" element={<RutaPrivada component={Charts} roles={['ADMIN']} />} />
+        
                 <Route path="/articulosManufacturados" element={<RutaPrivada component={ArticuloManufacturadoScreen} roles={['ADMIN']} />} />
                 <Route path="/empleados" element={<RutaPrivada component={ScreenEmpleado} roles={['ADMIN']} />} />
                 <Route path="/categorias" element={<RutaPrivada component={ScreenCategorias} roles={['EMPLEADO', 'ADMIN']} />} />
