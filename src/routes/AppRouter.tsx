@@ -20,7 +20,7 @@ import RutaPrivada from "../components/PrivateRoutes/PrivateRoutes";
 
 import { ScreenPedido } from "../components/pages/ScreenPedidos/ScreenPedidos";
 import { ScreenDetallePedido } from "../components/pages/ScreenPedidos/ScreenDetallePedido";
-import { Charts } from "../components/pages/Charts/Charts";
+import Charts from "../components/pages/Charts/Charts";
 
 export const AppRouter = () => {
   const location = useLocation();

@@ -1,64 +1,85 @@
 import React, { useEffect, useState } from 'react';
-import { BarChart } from '@mui/x-charts';
+import { BarChart, PieChart } from '@mui/x-charts';
+import axios from 'axios';
+import RankingProductosDto from '../../../types/Charts/RankingProductosDto';
+import FechaLimite from '../../../types/Charts/FechaLimite';
+
 
 const API_URL = import.meta.env.API_URL;
 
 const Charts = () => {
-  const [rankingData, setRankingData] = useState([]);
-  const [fechaDesde, setFechaDesde] = useState("");
-  const [fechaHasta, setFechaHasta] = useState("");
+  const [rankingData, setRankingData] = useState<RankingProductosDto[]>([]);
+  const [fechaLimiteMin, setFechaLimiteMin] = useState<string>("");
+  const [fechaLimiteMax, setFechaLimiteMax] = useState<string>(""); 
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        if (fechaDesde && fechaHasta) {
-          const url = new URL(API_URL + '/rankingProductos');
-          url.searchParams.append('fechaDesde', fechaDesde);
-          url.searchParams.append('fechaHasta', fechaHasta);
-
-          const response = await fetch(url.toString());
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          const data = await response.json();
-          setRankingData(data);
+        if (fechaLimiteMin && fechaLimiteMax) {
+          const response = await axios.get("http://localhost:8080/estadisticasDashboard/rankingProductos", {
+            params: {
+              fechaDesde: fechaLimiteMin,
+              fechaHasta: fechaLimiteMax  
+            }
+          });
+          setRankingData(response.data);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
 
-    if (fechaDesde && fechaHasta) {
+    if (fechaLimiteMin && fechaLimiteMax) {
       fetchData();
     }
-  }, [fechaDesde, fechaHasta]);
+  }, [fechaLimiteMin, fechaLimiteMax]);
 
   useEffect(() => {
-    const fetchFechas = async () => {
+    const fetchFechasLimites = async () => {
       try {
-        const response = await fetch(API_URL + '/estadisticasDashboard/limite-fechas');
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        setFechaDesde(data.fechaMinima);
-        setFechaHasta(data.fechaMaxima);
+        const response = await axios.get("http://localhost:8080/estadisticasDashboard/limite-fechas");
+        const { fechaMinima, fechaMaxima } = response.data;
+
+        console.log(response.data);
+
+        // Establecer las fechas límites en el estado
+        setFechaLimiteMin(fechaMinima);
+        setFechaLimiteMax(fechaMaxima);
+
       } catch (error) {
-        console.log('Error fetching fechas:', error);
+        console.error("Error al obtener las fechas límites:", error);
       }
     };
 
-    fetchFechas();
+    fetchFechasLimites();
   }, []);
 
   return (
     <>
+ 
+    <div style={{ marginBottom: '20px' }}>
+    <h1>Ranking de Productos</h1>
+        <PieChart
+          xAxis={[{ scaleType: 'band', data: rankingData.map(item => item.denominacion) }]}
+          series={[{ data: rankingData.map(item => ({ value: item.cantidad, label: item.denominacion })) }]}
+          width={400}
+          height={200}
+        />
+      </div>
+
+      <div>
+      <h1>Ranking de Productos</h1>
       <BarChart
         xAxis={[{ scaleType: 'band', data: rankingData.map(item => item.denominacion) }]}
         series={[{ data: rankingData.map(item => item.cantidad) }]}
-        width={500}
+        width={800}
         height={300}
       />
+    </div>
+
+
+
+
     </>
   );
 };
