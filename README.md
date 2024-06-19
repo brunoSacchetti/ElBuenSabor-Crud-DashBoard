@@ -17,6 +17,7 @@ Desarrollado en React con TypeScript
   - Mui Material: npm install @mui/material @emotion/react @emotion/styled
   - Yup: npm install yup
   - Formik: npm install formik
+  - ChartJS: npm install react-chartjs-2 chart.js
   - Auth0: npm install @auth0/auth0-react
 
   - Ejecutar el comando de manera temporal --> et-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass

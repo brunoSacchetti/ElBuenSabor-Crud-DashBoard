@@ -20,9 +20,11 @@ export const SideBar = () => {
             <CIcon customClassName="nav-icon" icon={cilSpeedometer} /> Inicio
           </Link>
         </CNavItem> }
-
-
-
+        <CNavItem>
+          <Link to="/estadistica" className="nav-link">
+            <CIcon customClassName="nav-icon" icon={cilGift} /> Estadisticas
+          </Link>
+        </CNavItem>
         <CNavItem>
           <Link to="/articulosManufacturados" className="nav-link">
             <CIcon customClassName="nav-icon" icon={cilRestaurant} /> Productos
@@ -31,12 +33,6 @@ export const SideBar = () => {
         <CNavItem>
           <Link to="/promociones" className="nav-link">
             <CIcon customClassName="nav-icon" icon={cilGift} /> Promociones
-            <CBadge color="primary ms-auto">NEW</CBadge>
-          </Link>
-        </CNavItem>
-        <CNavItem>
-          <Link to="/estadistica" className="nav-link">
-            <CIcon customClassName="nav-icon" icon={cilGift} /> ESTADS
             <CBadge color="primary ms-auto">NEW</CBadge>
           </Link>
         </CNavItem>
