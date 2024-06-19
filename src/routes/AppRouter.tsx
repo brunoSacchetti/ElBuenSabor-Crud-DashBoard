@@ -81,7 +81,7 @@ export const AppRouter = () => {
                 <Route path="/pedidos" element={<RutaPrivada component={ScreenPedido} roles={['EMPLEADO', 'ADMIN','COCINERO']} />} />
                 <Route path="/pedido/:id" element={<RutaPrivada component={ScreenDetallePedido} roles={['EMPLEADO', 'COCINERO', 'ADMIN']} />} />
                 <Route path="/" element={<RutaPrivada component={Home} roles={['ADMIN']} />} />
-                <Route path="*" element={<Navigate to="/login" />} />
+                {/* <Route path="*" element={<Navigate to="/login" />} /> */}
               </Routes>
             </div>
           </div>

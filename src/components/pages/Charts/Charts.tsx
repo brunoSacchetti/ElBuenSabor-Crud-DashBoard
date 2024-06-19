@@ -4,11 +4,16 @@ import axios from 'axios';
 import RankingProductosDto from '../../../types/Charts/RankingProductosDto';
 import FechaLimite from '../../../types/Charts/FechaLimite';
 import Ingresos from '../../../types/Charts/Ingresos';
+import { saveAs } from 'file-saver';
 import { Bar, Line } from 'react-chartjs-2';
 import CantidadPedidosCliente from '../../../types/Charts/CantidadPedidosCliente';
 
 
 const API_URL = import.meta.env.API_URL;
+
+const urlIngresos = "http://localhost:8080/estadisticasDashboard/excel/ingresos";
+const urlRanking = "http://localhost:8080/estadisticasDashboard/excel/ranking-productos";
+const urlPedidosClientes = "http://localhost:8080/estadisticasDashboard/excel/pedidos-clientes";
 
 const Charts = () => {
   const [rankingData, setRankingData] = useState<RankingProductosDto[]>([]);
@@ -20,6 +25,9 @@ const Charts = () => {
   const [fechaLimiteMin, setFechaLimiteMin] = useState<string>("");
   const [fechaLimiteMax, setFechaLimiteMax] = useState<string>(""); 
 
+
+  const [fechaDesde,setFechaDesde] = useState("");
+  const [fechaHasta,setFechaHasta] = useState("");
 
  //#region RANKING PRODUCTOS
   useEffect(() => {
@@ -156,14 +164,14 @@ const Charts = () => {
       {
         label: 'Cantidad de Pedidos',
         data: cantidadPedidoCliente.map(item => item.cantidad_pedidos),
-        backgroundColor: 'rgba(75, 192, 192, 0.2)', // Fondo debajo de la línea
-        borderColor: 'rgba(75, 192, 192, 1)', // Color de la línea
-        borderWidth: 2, // Grosor de la línea
-        pointBackgroundColor: 'rgba(75, 192, 192, 1)', // Color de los puntos
-        pointBorderColor: 'rgba(75, 192, 192, 1)', // Color del borde de los puntos
-        pointHoverBackgroundColor: 'rgba(75, 192, 192, 1)', // Color de los puntos al hacer hover
-        pointHoverBorderColor: 'rgba(75, 192, 192, 1)', // Color del borde de los puntos al hacer hover
-        fill: true, // Rellenar el área debajo de la línea
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: 'rgba(75, 192, 192, 1)', 
+        borderWidth: 2, 
+        pointBackgroundColor: 'rgba(75, 192, 192, 1)',
+        pointBorderColor: 'rgba(75, 192, 192, 1)', 
+        pointHoverBackgroundColor: 'rgba(75, 192, 192, 1)', 
+        pointHoverBorderColor: 'rgba(75, 192, 192, 1)', 
+        fill: true, 
       },
     ],
   };
@@ -180,34 +188,143 @@ const Charts = () => {
       },
     },
   };
+  const inputStyle = {
+    margin: '0 10px'
+  };
 
+  const buttonStyle = {
+
+    padding: '5px 10px',
+    backgroundColor: '#4CAF50',
+    color: 'white',
+    border: 'none',
+    cursor: 'pointer',
+    borderRadius: '5px'
+  };
+
+
+  /* const handleGenerateExcel = async () => {
+    try {
+  
+      const fechaDesdeFiltro = fechaDesde || fechaLimiteMin; // Supón que 'fecha_minima' es el valor mínimo posible en tu conjunto de datos
+      const fechaHastaFiltro = fechaHasta || fechaLimiteMax;
+  
+      const response = await axios.get("http://localhost:8080/estadisticasDashboard/excel/ingresos", {
+        params: {
+          fechaDesde: fechaDesdeFiltro,
+          fechaHasta: fechaHastaFiltro,
+        },
+        responseType: 'blob', // la respuesta en formato binario
+      });
+  
+  
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+  
+  
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'ingresos.xlsx');
+      document.body.appendChild(link);
+      link.click();
+  
+  
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error al generar el reporte en formato .xlsx:", error);
+  
+    }
+  }; */
+
+  const handleGenerateExcel = async (event: React.FormEvent,url:string) => {
+    event.preventDefault();
+    try {
+      const fechaDesdeFiltro = fechaDesde || fechaLimiteMin;
+      const fechaHastaFiltro = fechaHasta || fechaLimiteMax;
+  
+      const response = await axios.get(url, {
+        params: {
+          fechaDesde: fechaDesdeFiltro,
+          fechaHasta: fechaHastaFiltro,
+        },
+        responseType: 'blob', // Solicitamos la respuesta como un blob
+      });
+  
+      const getFileNameFromUrl = (url: string) => {
+        const segments = url.split('/');
+        return segments[segments.length - 1];
+      };
+
+      saveAs(new Blob([response.data]), `${getFileNameFromUrl(url)}.xls`);
+
+    } catch (error) {
+      console.error('Error al generar el reporte en formato .xls:', error);
+    }
+  };
 
   return (
-    <div style={{display: "flex", flexWrap: "wrap", justifyContent: "space-around"}}>
- 
-    <div style={{ marginBottom: '20px' }}>
-    <h1>Ranking de Productos</h1>
+    <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-around" }}>
+      <div style={{ marginBottom: '90px' }}>
+        <h1>Ranking de Productos</h1>
         <PieChart
           xAxis={[{ scaleType: 'band', data: rankingData.map(item => item.denominacion) }]}
           series={[{ data: rankingData.map(item => ({ value: item.cantidad, label: item.denominacion })) }]}
-          width={500}
-          height={200}
+          width={700}
+          height={300}
         />
+        <div>
+          <label style={inputStyle}>
+            Fecha Desde:
+            <input type="date" value={fechaDesde} onChange={(e) => setFechaDesde(e.target.value)}/>
+          </label>
+          <label style={inputStyle}>
+            Fecha Hasta:
+            <input type="date" value={fechaHasta} onChange={(e) => setFechaHasta(e.target.value)} />
+          </label>
+          <button style={buttonStyle} onClick={(event) => handleGenerateExcel(event, urlRanking)}>Exportar Excel</button>
+        </div>
       </div>
 
-      <div style={{ width: '600px', height: '400px' }}>
-        <h1>Ingresos</h1>
-        <Bar data={data} options={options} />
+
+      <div style={{ marginBottom: '80px' }}>
+        <div style={{ width: '700px', height: '400px' }}>
+          <h1>Ingresos</h1>
+          <Bar data={data} options={options} />
+          <div>
+            <form >
+              <label style={inputStyle}>
+                Fecha Desde:
+                <input type="date" value={fechaDesde} onChange={(e) => setFechaDesde(e.target.value)}/>
+              </label>
+              <label style={inputStyle}>
+                Fecha Hasta:
+                <input type="date" value={fechaHasta} onChange={(e) => setFechaHasta(e.target.value)} />
+              </label>
+              <button style={buttonStyle} onClick={(event) => handleGenerateExcel(event, urlIngresos)}>Exportar Excel</button>
+            </form>
+          </div>
+        </div>
       </div>
 
-      
-      <div style={{ width: '800px', height: '400px' }}>
-      <h1>Cantidad de Pedidos por Cliente</h1>
+        
+  
+      <div style={{ width: '700px', height: '300px' }}>
+        <h1>Cantidad de Pedidos por Cliente</h1>
         <Line data={dataCantPedidosCliente} options={optionsCantidadPedido} />
+        <div style={{marginTop:'20px'}}>
+          <label style={inputStyle}>
+            Fecha Desde:
+            <input type="date" value={fechaDesde} onChange={(e) => setFechaDesde(e.target.value)}/>
+          </label>
+          <label style={inputStyle}>
+            Fecha Hasta:
+            <input type="date" value={fechaHasta} onChange={(e) => setFechaHasta(e.target.value)} />
+          </label>
+          <button style={buttonStyle} onClick={(event) => handleGenerateExcel(event, urlPedidosClientes)}>Exportar Excel</button>
+        </div>
+        </div>
+        
       </div>
-
-    </div>
+ 
   );
-};
-
+}
 export default Charts;
