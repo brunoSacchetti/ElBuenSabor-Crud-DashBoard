@@ -2,7 +2,7 @@ import CIcon from '@coreui/icons-react'
 import { CBadge, CNavItem, CNavTitle, CSidebar, CSidebarHeader, CSidebarNav, CSidebarToggler } from '@coreui/react'
 import { Link } from 'react-router-dom'
 import styles from './SideBar.module.css'
-import { cilSpeedometer, cilRestaurant, cilGift, cilFeaturedPlaylist, cilDrink, cilMug, cilAddressBook, cilBasket } from '@coreui/icons';
+import { cilSpeedometer, cilRestaurant, cilGift, cilFeaturedPlaylist, cilDrink, cilMug, cilAddressBook, cilBasket, cilBarChart } from '@coreui/icons';
 
 export const SideBar = () => {
   
@@ -21,7 +21,7 @@ export const SideBar = () => {
         </CNavItem> }
         <CNavItem>
           <Link to="/estadistica" className="nav-link">
-            <CIcon customClassName="nav-icon" icon={cilGift} /> Estadisticas
+            <CIcon customClassName="nav-icon" icon={cilBarChart} /> Estadisticas
           </Link>
         </CNavItem>
         <CNavItem>
