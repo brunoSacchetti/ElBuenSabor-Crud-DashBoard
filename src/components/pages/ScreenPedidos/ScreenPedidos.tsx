@@ -39,6 +39,10 @@ export const ScreenPedido = () => {
     { label: "Forma Pago", key: "formaPago" },
     { label: "Fecha Pedido", key: "fechaPedido"},
     { label: "Tipo Envio", key: "tipoEnvio"},
+    { label: "Cliente", 
+      key: "cliente",
+      render: (pedido: PedidoDto) => (pedido.cliente.nombre + " " + pedido.cliente.apellido),
+    },
     { 
       label: "Acciones", 
       key: "acciones",

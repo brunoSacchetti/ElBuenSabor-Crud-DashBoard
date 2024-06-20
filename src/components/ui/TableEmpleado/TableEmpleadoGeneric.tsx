@@ -63,9 +63,12 @@ export const TableEmpleadoGeneric = <T extends { id: any }>({
   }, [dataTable]);
 
   useEffect(() => {
-    const results = dataTable.filter((row) =>
-      row.nombre.toLowerCase().includes(searchTerm.toLowerCase()) 
-    );
+    const results = dataTable.filter((row) => {
+      if (row && row.nombre) {
+        return row.nombre.toLowerCase().includes(searchTerm.toLowerCase());
+      }
+      return false;
+    });
     setFilteredRows(results);
     setPage(0);
   }, [searchTerm, dataTable]);
@@ -81,7 +84,7 @@ export const TableEmpleadoGeneric = <T extends { id: any }>({
       }}
     >
       <TextField
-        label="Buscar producto"
+        label="Buscar empleado"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         sx={{ mb: 2, width: "90%" }}
