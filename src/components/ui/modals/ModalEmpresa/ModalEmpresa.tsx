@@ -70,7 +70,7 @@ export const ModalEmpresa = ({
       formData.append("id", String(idEmpresa)); // Adjuntar el ID de la empresa
       
       // Enviar las imágenes al backend
-      await imagenService.uploadImagesWithSecurity(`http://localhost:8080/empresa/uploads?id=${idEmpresa}`,formData, token);
+      await imagenService.uploadImagesWithSecurity(`${API_URL}/empresa/uploads?id=${idEmpresa}`,formData, token);
       console.log("Imágenes subidas correctamente.");
     } catch (error) {
       console.error("Error al subir imágenes:", error);

@@ -8,9 +8,13 @@ import { saveAs } from 'file-saver';
 import { Bar, Line } from 'react-chartjs-2';
 import CantidadPedidosCliente from '../../../types/Charts/CantidadPedidosCliente';
 
-const urlIngresos = "http://localhost:8080/estadisticasDashboard/excel/ingresos";
-const urlRanking = "http://localhost:8080/estadisticasDashboard/excel/ranking-productos";
-const urlPedidosClientes = "http://localhost:8080/estadisticasDashboard/excel/pedidos-clientes";
+const API_URL = import.meta.env.VITE_API_URL;
+
+const urlIngresos = `${API_URL}/estadisticasDashboard/excel/ingresos`;
+const urlRanking = `${API_URL}/estadisticasDashboard/excel/ranking-productos`;
+const urlPedidosClientes = `${API_URL}/estadisticasDashboard/excel/pedidos-clientes`;
+
+
 
 const Charts = () => {
   const [rankingData, setRankingData] = useState<RankingProductosDto[]>([]);
@@ -31,7 +35,7 @@ const Charts = () => {
     const fetchRankingData = async () => {
       try {
         if (fechaLimiteMin && fechaLimiteMax) {
-          const response = await axios.get("http://localhost:8080/estadisticasDashboard/rankingProductos", {
+          const response = await axios.get(`${API_URL}/estadisticasDashboard/rankingProductos`, {
             params: {
               fechaDesde: fechaLimiteMin,
               fechaHasta: fechaLimiteMax  
@@ -53,7 +57,7 @@ const Charts = () => {
   useEffect(() => {
     const fetchFechasLimites = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/estadisticasDashboard/limite-fechas");
+        const response = await axios.get(`${API_URL}/estadisticasDashboard/limite-fechas`);
         const { fechaMinima, fechaMaxima } = response.data;
 
         console.log(response.data);
@@ -75,7 +79,7 @@ const Charts = () => {
     const fetchIngresosData = async () => {
       try {
         if (fechaLimiteMin && fechaLimiteMax) {
-          const response = await axios.get("http://localhost:8080/estadisticasDashboard/recaudacionesDiarias", {
+          const response = await axios.get(`${API_URL}/estadisticasDashboard/recaudacionesDiarias`, {
             params: {
               fechaDesde: fechaLimiteMin,
               fechaHasta: fechaLimiteMax
@@ -110,7 +114,7 @@ const Charts = () => {
     const fetchPedidosClienteData = async () => {
       try {
         if (fechaLimiteMin && fechaLimiteMax) {
-          const response = await axios.get("http://localhost:8080/estadisticasDashboard/pedidosCliente", {
+          const response = await axios.get(`${API_URL}/estadisticasDashboard/pedidosCliente`, {
             params: {
               fechaDesde: fechaLimiteMin,
               fechaHasta: fechaLimiteMax

@@ -17,7 +17,9 @@ interface MediaCardProps {
   imageUrl?: string | null;
 }
 
-const empresaService = new EmpresaService("http://localhost:8080"); // Asegúrate de que la URL base sea la correcta
+const API_URL = import.meta.env.VITE_API_URL;
+
+const empresaService = new EmpresaService(API_URL); // Asegúrate de que la URL base sea la correcta
 
 export const CardEmpresa: React.FC<MediaCardProps> = ({ empresa, onDelete, onEdit, onSelect, imageUrl }) => {
   const defaultImageUrl = './nohayfoto.jpg';
