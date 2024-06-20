@@ -10,7 +10,7 @@ import Swal from "sweetalert2";
 //Importamos IEmpresa y Empresa Service
 import IUsuarios from "../../../types/Usuarios";
 import { UsuariosService } from "../../../services/UsuariosService";
-import { ModalUsuario } from "../../ui/modals/ModalUsuario/ModalUsuario";
+
 
 // Definición de la URL base de la API
 const API_URL = import.meta.env.VITE_API_URL;
@@ -18,7 +18,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 export const ScreenUsuario = () => {
   // Estado para controlar la carga de datos
   const [loading, setLoading] = useState(false);
-  const [openModal, setOpenModal] = useState(false);
+  const [, setOpenModal] = useState(false);
 
   const usuarioService = new UsuariosService(API_URL + "/usuarios");
   const dispatch = useAppDispatch();
@@ -121,11 +121,7 @@ export const ScreenUsuario = () => {
       </div>
 
       {/* Modal para agregar o editar una persona */}
-      <ModalUsuario
-        getUsuario={getUsuario}
-        openModal={openModal}
-        setOpenModal={setOpenModal}
-      />
+
     </>
   );
 };

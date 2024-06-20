@@ -7,7 +7,6 @@ import { removeElementActive, setDataTable } from "../../../redux/slices/TablaPr
 import { Button, CircularProgress } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 
-import { CategoriaService } from "../../../services/CategoriaService";
 import { ICategoria } from "../../../types/Categoria";
 import IArticuloManufacturado from "../../../types/ArticuloManufacturado";
 import { PruebaModal2 } from "../../ui/modals/PruebaManufacturadoModal2/PruebaModal2";
@@ -71,7 +70,7 @@ export const ArticuloManufacturadoScreen = () => {
     `${API_URL}/ArticuloManufacturado`
   );
 
-  const categoriaService = new CategoriaService(`${API_URL}/categoria`);
+
   
   const sucursalService = new SucursalService(`${API_URL}/sucursal`);
 

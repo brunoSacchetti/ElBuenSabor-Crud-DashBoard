@@ -114,6 +114,7 @@ const parentId =useAppSelector((state) => state.categoria.categoriaPadreId)
             onSubmit={async (values: CategoriaPost) => {
               try {
                 let idCategoria;
+              console.log(idCategoria);
               
                 values.idSucursales = selectedSucursales;
               
