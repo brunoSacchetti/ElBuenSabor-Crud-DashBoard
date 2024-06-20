@@ -18,6 +18,7 @@ Desarrollado en React con TypeScript
   - Yup: npm install yup
   - Formik: npm install formik
   - ChartJS: npm install react-chartjs-2 chart.js
+  - FontAwesonme: npm install --save @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons @fortawesome/fontawesome-svg-core
   - Auth0: npm install @auth0/auth0-react
 
   - Ejecutar el comando de manera temporal --> et-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass

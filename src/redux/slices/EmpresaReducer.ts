@@ -1,12 +1,4 @@
-// src/types/Empresa.ts
-export interface Empresa {
-    id: number;
-    nombre: string;
-    razonSocial: string;
-    cuil: string;
-    sucursales?: any[];  // Asumiendo que no has definido un tipo para sucursales
-}
-  
+
   // src/redux/slices/empresaSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import IEmpresa from '../../types/Empresa';
