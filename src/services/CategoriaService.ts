@@ -1,7 +1,7 @@
 import { ICategoria } from "../types/Categoria";
-import { CategoriaDto } from "../types/Dtos/CategoriaDto/CategoriaDto";
+
 import { CategoriaEdit } from "../types/Dtos/CategoriaDto/CategoriaEdit";
-import { CategoriaPost } from "../types/Dtos/CategoriaDto/CateogoriaPost";
+
 import { BackendClient } from "./BackendClient";
 
 export class CategoriaService extends BackendClient<ICategoria> {

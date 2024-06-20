@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Button, TextField, Select, MenuItem } from "@mui/material";
+import { Modal, Button, Select, MenuItem } from "@mui/material";
 import { CategoriaService } from "../../../../services/CategoriaService";
 import IArticuloInsumo from "../../../../types/ArticuloInsumo";
 import { TableModal2 } from "../../TableInsumo2/TableModal2";

@@ -5,7 +5,6 @@ import TextFieldValue from "../../TextFildValue/TextFildValue";
 import { Field, Form, Formik } from "formik";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/redux";
 import { removeSucursalActive } from "../../../../redux/slices/SucursalReducer";
-import ISucursales from "../../../../types/Sucursales";
 import { SucursalService } from "../../../../services/SucursalService";
 import IPais from "../../../../types/Pais";
 import IProvincia from "../../../../types/Provincia";

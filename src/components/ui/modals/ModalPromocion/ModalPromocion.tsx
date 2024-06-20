@@ -26,9 +26,9 @@ import { SucursalService } from "../../../../services/SucursalService";
 import PromocionPostDto from "../../../../types/Dtos/PromocionDto/PromocionPostDto";
 import { PromocionService } from "../../../../services/PromocionService";
 import { ArticulosPromoModal } from "./ArticulosPromoModal";
-import { PromocionDetalleService } from "../../../../services/PromocionDetalleService";
+
 import ISucursales from "../../../../types/Sucursales";
-import { PromocionPutService } from "../../../../services/PromocionPutService";
+
 import IImagenes from "../../../../types/Imagenes";
 import { ImagenService } from "../../../../services/ImagenService";
 import { setLoading } from "../../../../redux/slices/EmpresaReducer";
@@ -67,8 +67,8 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
   open,
   getData,
 }) => {
-  const [categoria, setCategoria] = useState<ICategoria[]>([]);
-  const [dataIngredients, setDataIngredients] = useState<any[]>([]);
+  const [, setCategoria] = useState<ICategoria[]>([]);
+  const [, setDataIngredients] = useState<any[]>([]);
   // #region STATES - Promociones
   const [itemValue, setItemValue] = useState<PromocionPostDto>(initialValues);
   const [openInsumosModal, setOpenInsumosModal] = useState<boolean>(false);

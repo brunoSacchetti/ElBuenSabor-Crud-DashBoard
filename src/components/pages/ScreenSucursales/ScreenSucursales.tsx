@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { TableGeneric } from "../../ui/TableGeneric/TableGeneric";
+
 import { Button, CircularProgress, Grid } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
-import { setDataTable } from "../../../redux/slices/TablaReducer";
+
 import Swal from "sweetalert2";
 
 import ISucursales from "../../../types/Sucursales";

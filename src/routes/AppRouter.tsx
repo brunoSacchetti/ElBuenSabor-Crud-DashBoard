@@ -5,7 +5,6 @@ import "./AppRouter.css";
 import { Home } from "../components/pages/Home/Home";
 import { ScreenSucursales } from "../components/pages/ScreenSucursales/ScreenSucursales";
 import { InicioDashboard } from "../components/pages/InicioDashboard/InicioDashboard";
-import { useAppDispatch } from "../hooks/redux";
 import { ScreenUnidadMedida } from "../components/pages/ScreenUnidadMedida/ScreenUnidadMedida";
 import { ScreenInsumos } from "../components/pages/ScreenInsumos/ScreenInsumos";
 import { ArticuloManufacturadoScreen } from "../components/pages/ScreenProducto/ArticuloManufacturadoScreen";
@@ -24,14 +23,10 @@ import Charts from "../components/pages/Charts/Charts";
 
 export const AppRouter = () => {
   const location = useLocation();
-  const isHomePage = location.pathname === '/';
-  const SucursalPage = location.pathname === '/sucursales';
 
   const { isAuthenticated, isLoading, user } = useAuth0();
   const getToken = useAuthToken();
   const [token, setToken] = useState<string | null>(null);
-
-  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const fetchToken = async () => {

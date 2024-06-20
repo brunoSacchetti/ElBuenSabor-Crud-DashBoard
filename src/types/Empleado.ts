@@ -1,6 +1,3 @@
-import { Base } from "./Base";
-
-
 
 interface IEmpleadoPost {
   id:number;

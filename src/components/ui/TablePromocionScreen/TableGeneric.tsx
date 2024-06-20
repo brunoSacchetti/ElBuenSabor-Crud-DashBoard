@@ -12,10 +12,10 @@ import { ButtonsTable } from "./ButtonsTable/ButtonsTable";
 import { useAppSelector } from "../../../hooks/redux";
 import IArticuloManufacturado from "../../../types/ArticuloManufacturado";
 import { MenuItem, Select, SelectChangeEvent } from "@mui/material";
-import { CategoriaService } from "../../../services/CategoriaService";
+
 import { ICategoria } from "../../../types/Categoria";
 import { SucursalService } from "../../../services/SucursalService";
-import IPromocion from "../../../types/Promocion";
+
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -48,7 +48,7 @@ export const TableGeneric = <T extends { id: any }>({
   const [categoria, setCategoria] = useState<ICategoria[]>([]);
   const [selectedCategoriaId, setSelectedCategoriaId] = useState<number>(-1); // -1 para indicar que no hay categoría seleccionada
   const [productosManufacturados, setProductosManufacturados] = useState<IArticuloManufacturado[]>([]);
-  const [promociones, setPromociones] = useState<IPromocion[]>([]);
+
 
   
   const sucursalActual = useAppSelector((state) => state.sucursal.sucursalActual);
@@ -80,7 +80,7 @@ export const TableGeneric = <T extends { id: any }>({
     setPage(0);
   }, [searchTerm, dataTable]);
 
-  const categoriaService = new CategoriaService(API_URL + "/categoria");
+ 
 
   /* useEffect(() => {
 

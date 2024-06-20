@@ -9,6 +9,7 @@ const empleadoSlice = createSlice({
   initialState,
   reducers: {
     setData: (state, action: PayloadAction<IEmpleado[]>) => {
+      console.log(state);
       return action.payload;
     },
     resetData: () => {

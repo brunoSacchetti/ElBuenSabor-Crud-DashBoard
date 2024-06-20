@@ -47,7 +47,7 @@ export const TableEmpleadoGeneric = <T extends { id: any }>({
   };
 
   // Estado para almacenar las filas de la tabla
-  const [rows, setRows] = useState<any[]>([]);
+  const [, setRows] = useState<any[]>([]);
 
   // Obtener los datos de la tabla del estado global
   const dataTable = useAppSelector((state) => state.tablaReducer.dataTable);

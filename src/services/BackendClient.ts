@@ -1,4 +1,4 @@
-import IImagen from "../types/IImagen";
+
 import { AbstractBackendClient } from "./AbstractBackendClient";
 
 export abstract class BackendClient<T> extends AbstractBackendClient<T> {
@@ -11,15 +11,6 @@ export abstract class BackendClient<T> extends AbstractBackendClient<T> {
     const data = await response.json();
     return data as T[];
   }
-
-  /* async getById(id: number): Promise<T | null> {
-    const response = await fetch(`${this.baseUrl}/${id}`);
-    if (!response.ok) {
-      return null;
-    }
-    const data = await response.json();
-    return data as T;
-  } */
 
   async getById(id: number| string): Promise<T | null> {
     const url = `${this.baseUrl}/${id}`;
@@ -69,6 +60,7 @@ export abstract class BackendClient<T> extends AbstractBackendClient<T> {
   }
 
   async post(url: string, data: T): Promise<T> {
+    console.log(url); //BORRAR
     const response = await fetch(`${this.baseUrl}`, {
       method: "POST",
       headers: {
@@ -104,20 +96,6 @@ export abstract class BackendClient<T> extends AbstractBackendClient<T> {
     const newData = await response.json();
     return newData as T;
   }
-
-  /* async put(url: string, id: string, data: T): Promise<T> {
-    const response = await fetch(`${this.baseUrl}/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    console.log(url);
-    
-    const newData = await response.json();
-    return newData as T;
-  } */
 
   // Método para eliminar un elemento por su ID
   async delete(id: number | string): Promise<void> {

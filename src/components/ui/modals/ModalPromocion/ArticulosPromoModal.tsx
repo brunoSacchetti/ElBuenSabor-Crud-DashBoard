@@ -125,7 +125,7 @@ export const ArticulosPromoModal: React.FC<InsumosModalProps> = ({
               variant="filled"
               style={{ marginBottom: 20, width: "100%" }}
               value={-1}
-              onChange={(e) => {}}
+              onChange={() => {}}
             >
               <MenuItem value={-1}>Todas las Categorías</MenuItem>
               {categoria.map((cat) => (

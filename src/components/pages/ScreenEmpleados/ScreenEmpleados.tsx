@@ -9,7 +9,6 @@ import Swal from "sweetalert2";
 
 import { EmpleadoService } from "../../../services/EmpleadoService";
 import IEmpleado from "../../../types/Empleado";
-import { ModalEmpleado } from "../../ui/modals/ModalEmpleado/ModalEmpleado";
 import { TableEmpleadoGeneric } from "../../ui/TableEmpleado/TableEmpleadoGeneric";
 import { ModalEmpleadoPrueba } from "../../ui/modals/ModalEmpleado/ModalEmpleadoPrueba";
 

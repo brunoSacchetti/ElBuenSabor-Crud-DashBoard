@@ -4,7 +4,6 @@ import IEmpleado from "../../types/Dtos/EmpleadoDto/IEmpleado";
 import { setSucursalActual } from "../../redux/slices/SucursalReducer";
 import { setEmpresaActual } from "../../redux/slices/EmpresaReducer";
 import { useDispatch } from "react-redux";
-import { useAppSelector } from "../../hooks/redux";
 import { SucursalService } from "../../services/SucursalService";
 import ISucursales from "../../types/Sucursales";
 

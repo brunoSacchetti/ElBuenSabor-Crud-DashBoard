@@ -1,10 +1,10 @@
 import { Button, Modal, Form as BootstrapForm } from "react-bootstrap";
 import * as Yup from "yup";
-import { FieldArray, Form, Formik } from "formik";
+import { Form, Formik } from "formik";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/redux";
 import { removeCategoriaActive } from "../../../../redux/slices/CategoriaReducer";
 import { CategoriaPost } from "../../../../types/Dtos/CategoriaDto/CateogoriaPost";
-import { CategoriaService } from "../../../../services/CategoriaService";
+
 import TextFieldValue from "../../TextFildValue/TextFildValue";
 import { CategoriaPostService } from "../../../../services/CategoriaPostService/CategoriaPostService";
 import { useState } from "react";
@@ -44,11 +44,8 @@ export const ModalCategoria = ({
   );
 
   const sucursales = useAppSelector((state) => state.sucursal.data);
-  //console.log(sucursales);
-  
-  const sucursalActual = useAppSelector((state) => state.sucursal.sucursalActual);
-  //console.log(sucursalActual);
-  
+
+
 
   // Guardamos las sucursales seleccionadas
   const [selectedSucursales, setSelectedSucursales] = useState<number[]>([]);
@@ -141,7 +138,7 @@ const parentId =useAppSelector((state) => state.categoria.categoriaPadreId)
               }
             }}
           >
-            {({ values, handleChange, setFieldValue }) => (
+            {({ values, setFieldValue }) => (
               <Form autoComplete="off" className="form-obraAlta">
                 <div className="container_Form_Ingredientes">
                   <TextFieldValue

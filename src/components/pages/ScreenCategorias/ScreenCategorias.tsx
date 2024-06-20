@@ -1,26 +1,22 @@
 import { useEffect, useState } from "react";
 
-import { TableGeneric } from "../../ui/TableGeneric/TableGeneric";
 import { Button, CircularProgress, Typography } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
 
-import { setDataTable } from "../../../redux/slices/TablaReducer";
+
 import Swal from "sweetalert2";
 
 //Importamos IEmpresa y Empresa Service
-import IEmpresa from "../../../types/Empresa";
-import { EmpresaService } from "../../../services/EmpresaService";
+
 import { ModalCategoria } from "../../ui/modals/ModalCategoria/ModalCategoria";
-import CIcon from "@coreui/icons-react";
-import { cilLocationPin, cilLowVision } from "@coreui/icons";
-import { Link } from "react-router-dom";
+
 import { CategoriaService } from "../../../services/CategoriaService";
 import { setCategoriaData, setCategoriaPadreId } from "../../../redux/slices/CategoriaReducer";
 import { ICategoria } from "../../../types/Categoria";
 import { AccordionCategoria } from "../../ui/AccordionCategoria/AccordionCategoria";
 import { SucursalService } from "../../../services/SucursalService";
 import { ModalEditCategoria } from "../../ui/modals/ModalCategoria/ModalEditCategoria";
-import { CategoriaPostService } from "../../../services/CategoriaPostService/CategoriaPostService";
+
 
 // Definición de la URL base de la API
 const API_URL = import.meta.env.VITE_API_URL;
@@ -30,14 +26,14 @@ export const ScreenCategorias = () => {
   const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [categorias, setCategorias] = useState<ICategoria[]>([]);
-  const [subcategoria, setSubcategoria] = useState<ICategoria>({ id: 0, eliminado: false, denominacion: '', esInsumo: false, subCategoria:[]});
+  const [,setSubcategoria] = useState<ICategoria>({ id: 0, eliminado: false, denominacion: '', esInsumo: false, subCategoria:[]});
   const [categoriaEdit, setCategoriaEdit] = useState<ICategoria | null>(null);
   const [openEditModal, setOpenEditModal] = useState(false);
    
 
   const categoriaService = new CategoriaService(API_URL + "/categoria");
   const sucursalService = new SucursalService(API_URL + "/sucursal");
-  const categoriaPostService = new CategoriaPostService(API_URL + "/categoria/addSubcategoria");
+
   const dispatch = useAppDispatch();
 
   //obtenemos la sucursal actual

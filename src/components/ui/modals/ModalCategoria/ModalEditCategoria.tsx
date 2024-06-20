@@ -1,13 +1,12 @@
-import { Button, Modal, Form as BootstrapForm } from "react-bootstrap";
+import { Button, Modal} from "react-bootstrap";
 import * as Yup from "yup";
-import { FieldArray, Form, Formik } from "formik";
-import { useAppDispatch, useAppSelector } from "../../../../hooks/redux";
+import { Form, Formik } from "formik";
+import { useAppDispatch } from "../../../../hooks/redux";
 import { removeCategoriaActive } from "../../../../redux/slices/CategoriaReducer";
-import { CategoriaPost } from "../../../../types/Dtos/CategoriaDto/CateogoriaPost";
-import { CategoriaService } from "../../../../services/CategoriaService";
+
 import TextFieldValue from "../../TextFildValue/TextFildValue";
 import { CategoriaPostService } from "../../../../services/CategoriaPostService/CategoriaPostService";
-import { useState } from "react";
+
 import { ICategoria } from "../../../../types/Categoria";
 import { CategoriaEdit } from "../../../../types/Dtos/CategoriaDto/CategoriaEdit";
 

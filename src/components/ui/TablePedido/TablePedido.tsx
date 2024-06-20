@@ -10,8 +10,7 @@ import { useEffect, useState } from "react";
 import { ButtonsTable } from "../ButtonsTable/ButtonsTable";
 import { useAppSelector } from "../../../hooks/redux";
 import { TextField, Box } from "@mui/material";
-import { CategoriaService } from "../../../services/CategoriaService";
-import { ICategoria } from "../../../types/Categoria";
+
 
 // Definimos la interfaz para cada columna de la tabla
 interface ITableColumn<T> {
@@ -48,7 +47,7 @@ export const TablePedido = <T extends { id: any }>({
   };
 
   // Estado para almacenar las filas de la tabla
-  const [rows, setRows] = useState<any[]>([]);
+  const [, setRows] = useState<any[]>([]);
 
   // Obtener los datos de la tabla del estado global
   const dataTable = useAppSelector((state) => state.tablaReducer.dataTable);

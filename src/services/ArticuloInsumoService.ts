@@ -1,5 +1,4 @@
 import IArticuloInsumo from "../types/ArticuloInsumo";
-import InsumoEditDto from "../types/Dtos/InsumosDto/InsumoEditDto";
 import InsumoPost from "../types/Dtos/InsumosDto/InsumoPost";
 import { BackendClient } from "./BackendClient";
 

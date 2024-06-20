@@ -4,7 +4,7 @@ import { Field, Form, Formik, ErrorMessage } from "formik";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/redux";
 import { removeElementActive } from "../../../../redux/slices/TablaReducer";
 import { ArticuloInsumoService } from "../../../../services/ArticuloInsumoService";
-import { CategoriaService } from "../../../../services/CategoriaService";
+
 
 import InsumoPost from "../../../../types/Dtos/InsumosDto/InsumoPost";
 import {
@@ -74,7 +74,7 @@ export const ModalArticuloInsumo = ({
     `${API_URL}/UnidadMedida`
   );
 
-  const categoriaService = new CategoriaService(`${API_URL}/categoria`)
+
 
   const handleClose = () => {
     setOpenModal(false);

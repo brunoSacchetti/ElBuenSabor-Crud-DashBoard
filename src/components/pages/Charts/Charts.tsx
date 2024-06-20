@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { BarChart, LineChart, PieChart } from '@mui/x-charts';
+import { PieChart } from '@mui/x-charts';
 import axios from 'axios';
 import RankingProductosDto from '../../../types/Charts/RankingProductosDto';
-import FechaLimite from '../../../types/Charts/FechaLimite';
+
 import Ingresos from '../../../types/Charts/Ingresos';
 import { saveAs } from 'file-saver';
 import { Bar, Line } from 'react-chartjs-2';
 import CantidadPedidosCliente from '../../../types/Charts/CantidadPedidosCliente';
-
-
-const API_URL = import.meta.env.API_URL;
 
 const urlIngresos = "http://localhost:8080/estadisticasDashboard/excel/ingresos";
 const urlRanking = "http://localhost:8080/estadisticasDashboard/excel/ranking-productos";

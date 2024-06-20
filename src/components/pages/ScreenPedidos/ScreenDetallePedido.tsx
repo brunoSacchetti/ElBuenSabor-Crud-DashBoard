@@ -21,7 +21,7 @@ export const ScreenDetallePedido = () => {
         setPedido(data as PedidoDto);
         setLoading(false);
       })
-      .catch((error) => {
+      .catch(() => {
         Swal.fire({
           title: 'Error',
           text: 'No se pudo cargar los detalles del pedido',

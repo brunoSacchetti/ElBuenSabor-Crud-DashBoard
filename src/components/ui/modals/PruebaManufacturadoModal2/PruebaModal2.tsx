@@ -15,18 +15,13 @@ import {
 } from "@mui/material";
 import styles from "./MasterDetailModal.module.css";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/redux";
-import { ArticuloManufacturadoService } from "../../../../services/ArticuloManufacturadoService";
 import { InsumoGetService } from "../../../../services/InsumoGetService";
 import { handleSuccess } from "../../../../helpers/alerts";
 import ProductoPost from "../../../../types/post/ProductoPost";
-import { ProductoDetalleService } from "../../../../services/ProductoDetalleService";
 import { removeElementActive } from "../../../../redux/slices/TablaReducer";
-import { UnidadMedidaService } from "../../../../services/UnidadMedidaService";
 import IUnidadMedida from "../../../../types/UnidadMedida";
 import { ICategoria } from "../../../../types/Categoria";
-import { CategoriaService } from "../../../../services/CategoriaService";
 import { InsumosModal } from "./InsumosModal"; // Importamos el modal secundario
-import { TablePruebaModal2 } from "../../TablePruebaModal2/TablePruebaModal2";
 import IArticuloInsumo from "../../../../types/ArticuloInsumo";
 import { UnidadMedidaGetService } from "../../../../services/UnidadMedidaGetService";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -37,7 +32,6 @@ import { ImagenService } from "../../../../services/ImagenService";
 import IImagenes from "../../../../types/Imagenes";
 import { setLoading } from "../../../../redux/slices/EmpresaReducer";
 import { ProductoPostService } from "../../../../services/ProductoPostService";
-import ProductoDetallePost from "../../../../types/post/ProductoDetallePost";
 import { ImageCarrousel } from "../../ImageCarrousel/ImageCarrousel";
 import useAuthToken from "../../../../hooks/useAuthToken";
 
@@ -81,24 +75,19 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
   const [categoria, setCategoria] = useState<ICategoria[]>([]);
   const [selectedCategoriaId, setSelectedCategoriaId] = useState<number>(1);
   const [openInsumosModal, setOpenInsumosModal] = useState<boolean>(false);
-  const [dataIngredients, setDataIngredients] = useState<any[]>([]);
+  const [, setDataIngredients] = useState<any[]>([]);
 
   //Obtenemos el token para mandarlo
   const getToken = useAuthToken();
 
-  const [openImageModal, setOpenImageModal] = useState<boolean>(false);
+
 
   const unidadMedidaService = new UnidadMedidaGetService(
     `${API_URL}/UnidadMedida`
   );
-  const productoManufacturadoService = new ArticuloManufacturadoService(
-    `${API_URL}/ArticuloManufacturado`
-  );
-  const productoDetalleService = new ProductoDetalleService(
-    `${API_URL}/ArticuloManufacturadoDetalle`
-  );
+
   const insumosServices = new InsumoGetService(`${API_URL}/ArticuloInsumo`);
-  const categoriaService = new CategoriaService(`${API_URL}/categoria`);
+
   const sucursalService = new SucursalService(`${API_URL}/sucursal`);
 
   //obtenemos la sucursal actual
@@ -511,14 +500,6 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
   
   
 
-  const handleTableIngredientSelect = (selectedData: any) => {
-    const filteredData = selectedData.map((item: any) => ({
-      id: item.id,
-      cantidad: item.cantidad,
-      denominacion: item.denominacion,
-    }));
-    setSelectedDetalle(filteredData);
-  };
 
   const handleChangeUnidadMedidaValues = async (
     e: SelectChangeEvent<number>
@@ -567,23 +548,6 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
     console.log(updatedDetalle);
     setSelectedDetalle(updatedDetalle);
   };
-
- 
-
-  /* useEffect(() => {
-    if (productoData.id) {
-      fetchImages();
-    }
-  }, [elementActive.id]);
-
-  const fetchImages = async () => {
-    try {
-      const data = await imageService.getImagesByArticuloId(elementActive.id);
-      setImages(data);
-    } catch (error) {
-      Swal.fire("Error", "Error al obtener las imágenes", "error");
-    } 
-  }; */
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedFiles(event.target.files);

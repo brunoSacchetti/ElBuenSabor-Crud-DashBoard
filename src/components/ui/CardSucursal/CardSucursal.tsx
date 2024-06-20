@@ -2,10 +2,10 @@ import * as React from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
-import Button from '@mui/material/Button';
+
 import Typography from '@mui/material/Typography';
 import { IconButton } from '@mui/material';
-import { Delete, Edit, ChevronRight, LocationOn, VisibilityOff } from '@mui/icons-material';
+import { Delete, Edit, ChevronRight } from '@mui/icons-material';
 import ISucursales from '../../../types/Sucursales';
 
 interface CardSucursalProps {

@@ -31,7 +31,7 @@ export const categoriaSlice = createSlice({
     setCategoriaId: (state, action: PayloadAction<number>) => {
       state.categoriaId = action.payload;
     },
-    setCategoriaActual: (state, action: PayloadAction<ICategoria>) => {
+    setCategoriaActual: (state, action: PayloadAction<CategoriaDto>) => { //ICategoria
       state.categoriaActual = action.payload;
     },
     setLoading: (state, action: PayloadAction<boolean>) => {

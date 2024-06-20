@@ -1,5 +1,3 @@
-
-import { useEffect } from "react";
 import { PieChart } from "../../ui/charts/PieChart/PieChart";
 import { VerticalBarChart } from "../../ui/charts/VerticalBarChart/VerticalBarChart";
 import styles from "./Inicio.module.css";

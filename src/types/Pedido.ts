@@ -1,5 +1,4 @@
 import { Base } from "./Base";
-import ISucursales from "./Sucursales";
 
 interface IPedido extends Base<IPedido> {
   horaEstimadaFinalizacion:string,
@@ -9,7 +8,6 @@ interface IPedido extends Base<IPedido> {
   tipoEnvio:string,
   formaPago:string,
   fechaPedido:string,
-  //sucursal:ISucursales,
 }
 
 export default IPedido;

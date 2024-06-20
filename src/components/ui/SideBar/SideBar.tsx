@@ -3,7 +3,6 @@ import { CBadge, CNavItem, CNavTitle, CSidebar, CSidebarHeader, CSidebarNav, CSi
 import { Link } from 'react-router-dom'
 import styles from './SideBar.module.css'
 import { cilSpeedometer, cilRestaurant, cilGift, cilFeaturedPlaylist, cilDrink, cilMug, cilAddressBook, cilBasket } from '@coreui/icons';
-import { useAuth0 } from '@auth0/auth0-react';
 
 export const SideBar = () => {
   

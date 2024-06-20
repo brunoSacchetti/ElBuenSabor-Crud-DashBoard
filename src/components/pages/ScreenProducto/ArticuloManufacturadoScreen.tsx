@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { NavBar } from "../../ui/NavBar/NavBar";
+
 import { TableGeneric } from "../../ui/TableScreenProducto/TableGeneric";
 import { ArticuloManufacturadoService } from "../../../services/ArticuloManufacturadoService";
-import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
+import {  useAppSelector } from "../../../hooks/redux";
 import { removeElementActive, setDataTable } from "../../../redux/slices/TablaProductoReducer";
-import { Button, CircularProgress, styled } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 
 import { CategoriaService } from "../../../services/CategoriaService";
@@ -12,41 +12,17 @@ import { ICategoria } from "../../../types/Categoria";
 import IArticuloManufacturado from "../../../types/ArticuloManufacturado";
 import { PruebaModal2 } from "../../ui/modals/PruebaManufacturadoModal2/PruebaModal2";
 import { SucursalService } from "../../../services/SucursalService";
-import ProductoPost from "../../../types/post/ProductoPost";
+
 
 
 import { useDispatch } from "react-redux";
-import { ProductoGet } from "../../../services/ProductoGet";
+
 // Definición de la URL base de la API
 const API_URL = import.meta.env.VITE_API_URL;
 
-const StyledButton = styled(Button)({
-  backgroundColor: '#607d8b', // Gris
-  color: 'white',
-  fontFamily: 'Arial, sans-serif',
-  fontSize: '16px',
-  padding: '10px 20px',
-  textTransform: 'none',
-  '&:hover': {
-    backgroundColor: '#455a64', // Gris más oscuro
-  },
-});
 
-const ColumnsProductosManufacturados = (categorias: ICategoria[]) => [
-  /* { label: "Id", key: "id" }, */
+const ColumnsProductosManufacturados = () => [
   { label: "Nombre", key: "denominacion" },
-  /* { 
-    label: "Categoria", 
-    key: "categoria",
-    render: (element: IArticuloManufacturado) => {
-      // Buscar la categoría correspondiente al artículo manufacturado
-      const categoria = categorias.find(cat =>
-        cat.articulosManufacturados.some((am: IArticuloManufacturado) => am.id === element.id)
-      );
-      return categoria ? categoria.denominacion : 'Categoría no encontrada';
-    },
-    
-  }, */
   { 
     label: "Categoria", 
     key: "categoriaNombre",
@@ -140,19 +116,10 @@ export const ArticuloManufacturadoScreen = () => {
   });
 };
 
-/* const productoGet = new ProductoGet(`${API_URL}/ArticuloManufacturado`);
-
-const getDataTable = (dispatch: any) => {
-  productoGet.getAll().then(dataTable => {
-    dispatch(setDataTable(dataTable));
-  });
-}; */
 
 const dispatch = useDispatch();
 
 getDataTable(dispatch); 
-
-
 
   // Efecto para cargar los datos al inicio
   useEffect(() => {
@@ -182,7 +149,7 @@ getDataTable(dispatch);
   // función para dar de baja o alta un elemento
   const handleCancelOrRegister = async (
     id: number | string,
-    data: IArticuloManufacturado
+
   ) => {
     await productoManufacturadoService.changeHabilitado(id);
     console.log(id);
@@ -223,7 +190,7 @@ getDataTable(dispatch);
       {!loading ? (
         <TableGeneric<IArticuloManufacturado>
           handleDelete={handleDelete}
-          columns={ColumnsProductosManufacturados(categorias)}
+          columns={ColumnsProductosManufacturados()}
           setOpenModal={setOpenModal}
           handleCancelOrRegister={handleCancelOrRegister}
         />

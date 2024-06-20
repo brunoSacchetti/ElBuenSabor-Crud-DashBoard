@@ -14,7 +14,7 @@ import IArticuloManufacturado from "../../../types/ArticuloManufacturado";
 import { MenuItem, Select, SelectChangeEvent } from "@mui/material";
 import { CategoriaService } from "../../../services/CategoriaService";
 import { ICategoria } from "../../../types/Categoria";
-import { SucursalService } from "../../../services/SucursalService";
+
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -50,7 +50,7 @@ export const TableGeneric = <T extends { id: any }>({
 
   const sucursalActual = useAppSelector((state) => state.sucursal.sucursalActual);
 
-  const sucursalService = new SucursalService(API_URL + "/sucursal");
+
 
   const handleChangePage = (_: unknown, newPage: number) => {
     setPage(newPage);

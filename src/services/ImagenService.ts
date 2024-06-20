@@ -1,4 +1,4 @@
-import IEmpresa from "../types/Empresa";
+
 import IImagen from "../types/IImagen";
 import { BackendClient } from "./BackendClient";
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { TableGeneric } from "../../ui/TableGeneric/TableGeneric";
+
 import { Button, CircularProgress, MenuItem, Select } from "@mui/material";
 import { useAppDispatch } from "../../../hooks/redux";
 
@@ -8,7 +8,7 @@ import { setDataTable } from "../../../redux/slices/TablaReducer";
 import Swal from "sweetalert2";
 
 import { PedidoService } from "../../../services/PedidoService";
-import IPedido from "../../../types/Pedido";
+
 import PedidoDto from "../../../types/Dtos/Pedido/PedidoDto";
 import { TablePedido } from "../../ui/TablePedido/TablePedido";
 import { useNavigate } from "react-router-dom";
@@ -19,7 +19,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 export const ScreenPedido = () => {
   // Estado para controlar la carga de datos
   const [loading, setLoading] = useState(false);
-  const [openModal, setOpenModal] = useState(false);
+  const [, setOpenModal] = useState(false);
 
   const pedidoService = new PedidoService(API_URL + "/pedido");
   const dispatch = useAppDispatch();

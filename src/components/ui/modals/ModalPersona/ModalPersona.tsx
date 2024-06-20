@@ -88,12 +88,12 @@ export const ModalPersona = ({
             })}
             initialValues={elementActive ? elementActive : initialValues}
             enableReinitialize={true}
-            onSubmit={async (values: IPersona) => {
+            onSubmit={async () => {
               // Enviar los datos al servidor al enviar el formulario
               if (elementActive) {
                 //await apiPersona.put(elementActive?.id, values);
               } else {
-                await apiPersona.post(values);
+                await apiPersona; //.post(values)
               }
               // Obtener las personas actualizadas y cerrar el modal
               getPersonas();

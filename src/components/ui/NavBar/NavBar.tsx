@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { setEmpresaActual } from "../../../redux/slices/EmpresaReducer";
 import { setSucursalActual } from "../../../redux/slices/SucursalReducer";
 import { LogoutButton } from "../../pages/Login/LogoutButton/LogoutButton";
-import { Unstable_Popup as Popup } from '@mui/base/Unstable_Popup';
+
 import { Popover, Typography } from "@mui/material";
 
 // Definición de las páginas y sus rutas
@@ -22,7 +22,7 @@ interface NavBarProps {
   selectedCompanyName?: string;
 }
 
-export const NavBar: React.FC<NavBarProps> = ({ selectedCompanyName }) => {
+export const NavBar: React.FC<NavBarProps> = () => {
   const navigate = useNavigate();
   const location = useLocation();  // Hook para obtener la ruta actual
 
