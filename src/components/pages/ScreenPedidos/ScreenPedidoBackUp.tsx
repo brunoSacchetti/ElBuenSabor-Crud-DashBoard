@@ -1,74 +1,45 @@
 import { useEffect, useState } from "react";
-import { Button, CircularProgress, MenuItem, Select, Typography } from "@mui/material";
+
+
+import { Button, CircularProgress, MenuItem, Select } from "@mui/material";
 import { useAppDispatch } from "../../../hooks/redux";
+
 import { setDataTable } from "../../../redux/slices/TablaReducer";
 import Swal from "sweetalert2";
+
 import { PedidoService } from "../../../services/PedidoService";
+
 import PedidoDto from "../../../types/Dtos/Pedido/PedidoDto";
 import { TablePedido } from "../../ui/TablePedido/TablePedido";
 import { useNavigate } from "react-router-dom";
-import PendingIcon from '@mui/icons-material/AccessTime';
-import OutdoorGrillIcon from '@mui/icons-material/OutdoorGrill';
-import FacturadoIcon from '@mui/icons-material/CheckCircle';
-import ReceiptIcon from '@mui/icons-material/Receipt';
-import RejectedIcon from '@mui/icons-material/Cancel';
-import DeliveryDiningIcon from '@mui/icons-material/DeliveryDining';
 
 // Definición de la URL base de la API
 const API_URL = import.meta.env.VITE_API_URL;
 
 export const ScreenPedido = () => {
+  // Estado para controlar la carga de datos
   const [loading, setLoading] = useState(false);
   const [, setOpenModal] = useState(false);
 
   const pedidoService = new PedidoService(API_URL + "/pedido");
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-
-  const getColorAndIcon = (estado : any) => {
-    switch (estado) {
-      case 'PENDIENTE':
-        return { color: 'orange', icon: <PendingIcon /> };
-      case 'PREPARACION':
-        return { color: '#FFC100', icon: <OutdoorGrillIcon /> };
-      case 'FACTURADO':
-        return { color: '#AD3700', icon: <ReceiptIcon /> };
-      case 'ENTREGADO':
-        return { color: 'green', icon: <FacturadoIcon /> };
-      case 'RECHAZADO':
-        return { color: 'red', icon: <RejectedIcon /> };
-      case 'DELIVERY':
-        return { color: '#00B558', icon: <DeliveryDiningIcon /> };
-      default:
-        return { color: 'default', icon: null };
-    }
-  };
-
+  // Columnas de la tabla de personas
   const ColumnsTablePedido = [
     {
       label: "Nro",
       key: "id",
       render: (pedido: PedidoDto) => (pedido?.id ? pedido.id : 0),
     },
-    { 
-      label: "Estado", 
+    { label: "Estado", 
       key: "estado",
-      render: (pedido: PedidoDto) => {
-        const { color, icon } = getColorAndIcon(pedido.estado);
-        return (
-          <div style={{ display: 'flex', alignItems: 'center', color }}>
-            {icon}
-            <Typography variant="body2" style={{ marginLeft: '0.5rem' }}>{pedido.estado}</Typography>
-          </div>
-        );
-      }
+      render: (pedido: PedidoDto) => (pedido.estado),
     },
     { label: "Hora Finalizacion", key: "horaEstimadaFinalizacion" },
     { label: "Forma Pago", key: "formaPago" },
     { label: "Fecha Pedido", key: "fechaPedido"},
     { label: "Tipo Envio", key: "tipoEnvio"},
-    { 
-      label: "Cliente", 
+    { label: "Cliente", 
       key: "cliente",
       render: (pedido: PedidoDto) => (pedido.cliente.nombre + " " + pedido.cliente.apellido),
     },
@@ -88,10 +59,9 @@ export const ScreenPedido = () => {
             <MenuItem value="PENDIENTE">Pendiente</MenuItem>
             <MenuItem value="PREPARACION">En Preparacion</MenuItem>
             <MenuItem value="FACTURADO">Facturado</MenuItem>
-            <MenuItem value="ENTREGADO">Entregado</MenuItem>
             <MenuItem value="RECHAZADO">Rechazado</MenuItem>
           </Select>
-          {pedido.estado === "FACTURADO" || pedido.estado === "ENTREGADO" || pedido.estado === "DELIVERY" && (
+          {pedido.estado === "FACTURADO" && (
             <Button variant="contained" color="error" onClick={() => handleDescargarFactura(pedido.id)}>
               Descargar Factura
             </Button>
@@ -101,7 +71,9 @@ export const ScreenPedido = () => {
     }
   ];
 
+  // Función para manejar el borrado de una persona
   const handleDelete = async (id: number) => {
+    // Mostrar confirmación antes de eliminar
     Swal.fire({
       title: "¿Estas seguro?",
       text: `¿Seguro que quieres eliminar?`,
@@ -113,6 +85,7 @@ export const ScreenPedido = () => {
       cancelButtonText: "Cancelar",
     }).then((result) => {
       if (result.isConfirmed) {
+        // Eliminar la persona si se confirma
         pedidoService.delete(id).then(() => {
           getPedido();
         });
@@ -132,6 +105,7 @@ export const ScreenPedido = () => {
     }
   };
 
+  // Efecto para cargar los datos al inicio
   useEffect(() => {
     setLoading(true);
     getPedido();
@@ -142,6 +116,10 @@ export const ScreenPedido = () => {
   };
 
   const handleCambiarEstado = async (id: number, newStatus: string) => {
+
+    console.log(id);
+    console.log(newStatus);
+    
     try {
       await pedidoService.cambiarEstado(newStatus, id);
       getPedido();
@@ -162,6 +140,9 @@ export const ScreenPedido = () => {
   };
 
   const handleDescargarFactura = async (pedidoId : any) => {
+
+    console.log(pedidoId);
+    
     try {
       const response = await fetch(`${API_URL}/facturas/download-factura/${pedidoId}`, {
         method: "GET",
@@ -173,6 +154,8 @@ export const ScreenPedido = () => {
       if (response.ok) {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(new Blob([blob]));
+
+        // Crear un enlace y simular el clic para descargar el archivo
         const link = document.createElement("a");
         link.href = url;
         link.setAttribute("download", `Factura_Pedido_${pedidoId}.pdf`);
@@ -213,6 +196,7 @@ export const ScreenPedido = () => {
         Listado de Pedidos
       </h1>
 
+        {/* Mostrar indicador de carga mientras se cargan los datos */}
         {loading ? (
           <div
             style={{
