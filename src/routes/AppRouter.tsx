@@ -19,7 +19,7 @@ import RutaPrivada from "../components/PrivateRoutes/PrivateRoutes";
 
 import { ScreenPedido } from "../components/pages/ScreenPedidos/ScreenPedidos";
 import { ScreenDetallePedido } from "../components/pages/ScreenPedidos/ScreenDetallePedido";
-import Charts from "../components/pages/Charts/Charts";
+
 import Charts2 from "../components/pages/Charts/Charts2";
 
 export const AppRouter = () => {
