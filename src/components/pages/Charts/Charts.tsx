@@ -10,11 +10,9 @@ import CantidadPedidosCliente from '../../../types/Charts/CantidadPedidosCliente
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-const urlIngresos = `${API_URL}/estadisticasDashboard/excel/ingresos`;
-const urlRanking = `${API_URL}/estadisticasDashboard/excel/ranking-productos`;
-const urlPedidosClientes = `${API_URL}/estadisticasDashboard/excel/pedidos-clientes`;
-
-
+const urlIngresos = API_URL + "/estadisticasDashboard/excel/ingresos";
+const urlRanking = API_URL + "/estadisticasDashboard/excel/ranking-productos";
+const urlPedidosClientes = API_URL + "/estadisticasDashboard/excel/pedidos-clientes";
 
 const Charts = () => {
   const [rankingData, setRankingData] = useState<RankingProductosDto[]>([]);
