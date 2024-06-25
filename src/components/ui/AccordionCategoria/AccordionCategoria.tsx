@@ -26,7 +26,7 @@ interface AccordionCategoriaProps {
 }
 
 export const Categoria: React.FC<CategoriaProps> = ({ id, denominacion, subCategorias, onEdit, onAddSubcategoria, onDelete }) => (
-  <Accordion sx={{ width: '80%', margin: '1rem auto', boxSizing: 'border-box' }}>
+  <Accordion sx={{ width: '80%', margin: '1rem auto !important', boxSizing: 'border-box' }}>
     <AccordionSummary
       expandIcon={<ExpandMoreIcon />}
       aria-controls={`panel-${id}-content`}
@@ -61,7 +61,6 @@ export const AccordionCategoria: React.FC<AccordionCategoriaProps> = ({ categori
         {...category} 
         onEdit={() => onEdit(category)} 
         onAddSubcategoria={(parentId) => onAddSubcategoria(parentId)}
-        //onDelete={() => onDelete(category.id)}
         onDelete={(id) => onDelete(id)} 
       />
     ))}
