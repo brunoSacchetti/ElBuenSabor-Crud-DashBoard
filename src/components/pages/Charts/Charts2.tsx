@@ -11,21 +11,22 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 const urlIngresos = API_URL + "/estadisticasDashboard/excel/ingresos";
 const urlRanking = API_URL + "/estadisticasDashboard/excel/ranking-productos";
-const urlPedidosClientes =
-  API_URL + "/estadisticasDashboard/excel/pedidos-clientes";
+const urlPedidosClientes = API_URL + "/estadisticasDashboard/excel/pedidos-clientes";
 const urlGanancia = API_URL + "/estadisticasDashboard/excel/resultado-economico";
 
 const Charts2 = () => {
   const [rankingData, setRankingData] = useState<RankingProductosDto[]>([]);
   const [ingresos, setIngresos] = useState<Ingresos[]>([]);
-  const [cantidadPedidoCliente, setCantidadPedidoCliente] = useState<
-    CantidadPedidosCliente[]
-  >([]);
+  const [cantidadPedidoCliente, setCantidadPedidoCliente] = useState<CantidadPedidosCliente[]>([]);
   const [resultadoEconomico, setResultadoEconomico] = useState<MontoGanancia>();
   const [fechaLimiteMin, setFechaLimiteMin] = useState<string>("");
   const [fechaLimiteMax, setFechaLimiteMax] = useState<string>("");
-  const [fechaDesde, setFechaDesde] = useState("");
-  const [fechaHasta, setFechaHasta] = useState("");
+  const [fechas, setFechas] = useState<any>({
+    ranking: { desde: "", hasta: "" },
+    ingresos: { desde: "", hasta: "" },
+    pedidosClientes: { desde: "", hasta: "" },
+    resultadoEconomico: { desde: "", hasta: "" },
+  });
 
   //#region RANKING PRODUCTOS
   useEffect(() => {
@@ -52,9 +53,7 @@ const Charts2 = () => {
   useEffect(() => {
     const fetchFechasLimites = async () => {
       try {
-        const response = await fetch(
-          `${API_URL}/estadisticasDashboard/limite-fechas`
-        );
+        const response = await fetch(`${API_URL}/estadisticasDashboard/limite-fechas`);
         const data = await response.json();
         const { fechaMinima, fechaMaxima } = data;
         setFechaLimiteMin(fechaMinima);
@@ -122,7 +121,6 @@ const Charts2 = () => {
             `${API_URL}/estadisticasDashboard/resultadoEconomico?fechaDesde=${fechaLimiteMin}&fechaHasta=${fechaLimiteMax}`
           );
           const data = await response.json();
-          //setResultadoEconomico(Array.isArray(data) ? data : []); //Verificamos que sea un array
           setResultadoEconomico(data);
         }
       } catch (error) {
@@ -161,9 +159,7 @@ const Charts2 = () => {
 
   // Configuración de Cantidad pedidos por Cliente
   const dataCantPedidosCliente = {
-    labels: cantidadPedidoCliente.map(
-      (item) => `${item.nombre} ${item.apellido}`
-    ),
+    labels: cantidadPedidoCliente.map((item) => `${item.nombre} ${item.apellido}`),
     datasets: [
       {
         label: "Cantidad de Pedidos",
@@ -200,22 +196,10 @@ const Charts2 = () => {
       {
         label: "Resultado Económico",
         data: resultadoEconomico
-          ? [
-              resultadoEconomico.costos,
-              resultadoEconomico.ganancias,
-              resultadoEconomico.resultado,
-            ]
+          ? [resultadoEconomico.costos, resultadoEconomico.ganancias, resultadoEconomico.resultado]
           : [],
-        backgroundColor: [
-          "rgba(255, 99, 132, 0.2)",
-          "rgba(54, 162, 235, 0.2)",
-          "rgba(75, 192, 192, 0.2)",
-        ],
-        borderColor: [
-          "rgba(255, 99, 132, 1)",
-          "rgba(54, 162, 235, 1)",
-          "rgba(75, 192, 192, 1)",
-        ],
+        backgroundColor: ["rgba(255, 99, 132, 0.2)", "rgba(54, 162, 235, 0.2)", "rgba(75, 192, 192, 0.2)"],
+        borderColor: ["rgba(255, 99, 132, 1)", "rgba(54, 162, 235, 1)", "rgba(75, 192, 192, 1)"],
         borderWidth: 1,
       },
     ],
@@ -243,11 +227,11 @@ const Charts2 = () => {
     borderRadius: "5px",
   };
 
-  const handleGenerateExcel = async (event: React.FormEvent, url: string) => {
+  const handleGenerateExcel = async (event: React.FormEvent, url: string, tipo: string) => {
     event.preventDefault();
     try {
-      const fechaDesdeFiltro = fechaDesde || fechaLimiteMin;
-      const fechaHastaFiltro = fechaHasta || fechaLimiteMax;
+      const fechaDesdeFiltro = fechas[tipo].desde || fechaLimiteMin;
+      const fechaHastaFiltro = fechas[tipo].hasta || fechaLimiteMax;
 
       const response = await fetch(
         `${url}?fechaDesde=${fechaDesdeFiltro}&fechaHasta=${fechaHastaFiltro}`,
@@ -271,14 +255,18 @@ const Charts2 = () => {
     }
   };
 
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>, tipo: string, campo: "desde" | "hasta") => {
+    setFechas({
+      ...fechas,
+      [tipo]: {
+        ...fechas[tipo],
+        [campo]: e.target.value,
+      },
+    });
+  };
+
   return (
-    <div
-      style={{
-        display: "flex",
-        flexWrap: "wrap",
-        justifyContent: "space-around",
-      }}
-    >
+    <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-around" }}>
       <div style={{ marginBottom: "90px" }}>
         <h1>Ranking de Productos</h1>
         <PieChart
@@ -304,22 +292,19 @@ const Charts2 = () => {
             Fecha Desde:
             <input
               type="date"
-              value={fechaDesde}
-              onChange={(e) => setFechaDesde(e.target.value)}
+              value={fechas.ranking.desde}
+              onChange={(e) => handleDateChange(e, "ranking", "desde")}
             />
           </label>
           <label style={inputStyle}>
             Fecha Hasta:
             <input
               type="date"
-              value={fechaHasta}
-              onChange={(e) => setFechaHasta(e.target.value)}
+              value={fechas.ranking.hasta}
+              onChange={(e) => handleDateChange(e, "ranking", "hasta")}
             />
           </label>
-          <button
-            style={buttonStyle}
-            onClick={(event) => handleGenerateExcel(event, urlRanking)}
-          >
+          <button style={buttonStyle} onClick={(event) => handleGenerateExcel(event, urlRanking, "ranking")}>
             Exportar Excel
           </button>
         </div>
@@ -335,22 +320,19 @@ const Charts2 = () => {
                 Fecha Desde:
                 <input
                   type="date"
-                  value={fechaDesde}
-                  onChange={(e) => setFechaDesde(e.target.value)}
+                  value={fechas.ingresos.desde}
+                  onChange={(e) => handleDateChange(e, "ingresos", "desde")}
                 />
               </label>
               <label style={inputStyle}>
                 Fecha Hasta:
                 <input
                   type="date"
-                  value={fechaHasta}
-                  onChange={(e) => setFechaHasta(e.target.value)}
+                  value={fechas.ingresos.hasta}
+                  onChange={(e) => handleDateChange(e, "ingresos", "hasta")}
                 />
               </label>
-              <button
-                style={buttonStyle}
-                onClick={(event) => handleGenerateExcel(event, urlIngresos)}
-              >
+              <button style={buttonStyle} onClick={(event) => handleGenerateExcel(event, urlIngresos, "ingresos")}>
                 Exportar Excel
               </button>
             </form>
@@ -366,47 +348,41 @@ const Charts2 = () => {
             Fecha Desde:
             <input
               type="date"
-              value={fechaDesde}
-              onChange={(e) => setFechaDesde(e.target.value)}
+              value={fechas.pedidosClientes.desde}
+              onChange={(e) => handleDateChange(e, "pedidosClientes", "desde")}
             />
           </label>
           <label style={inputStyle}>
             Fecha Hasta:
             <input
               type="date"
-              value={fechaHasta}
-              onChange={(e) => setFechaHasta(e.target.value)}
+              value={fechas.pedidosClientes.hasta}
+              onChange={(e) => handleDateChange(e, "pedidosClientes", "hasta")}
             />
           </label>
-          <button
-            style={buttonStyle}
-            onClick={(event) => handleGenerateExcel(event, urlPedidosClientes)}
-          >
+          <button style={buttonStyle} onClick={(event) => handleGenerateExcel(event, urlPedidosClientes, "pedidosClientes")}>
             Exportar Excel
           </button>
         </div>
       </div>
 
       <div style={{ width: '700px', height: '300px' }}>
-      <h1>Resultado Económico</h1>
-      <Bar data={dataResultadoEconomico} options={optionsResultadoEconomico} />
-      <div style={{ marginTop: '20px' }}>
-        <label style={inputStyle}>
-          Fecha Desde:
-          <input type="date" value={fechaDesde} onChange={(e) => setFechaDesde(e.target.value)} />
-        </label>
-        <label style={inputStyle}>
-          Fecha Hasta:
-          <input type="date" value={fechaHasta} onChange={(e) => setFechaHasta(e.target.value)} />
-        </label>
-        <button
-            style={buttonStyle}
-            onClick={(event) => handleGenerateExcel(event, urlGanancia)}
-          >
+        <h1>Resultado Económico</h1>
+        <Bar data={dataResultadoEconomico} options={optionsResultadoEconomico} />
+        <div style={{ marginTop: '20px' }}>
+          <label style={inputStyle}>
+            Fecha Desde:
+            <input type="date" value={fechas.resultadoEconomico.desde} onChange={(e) => handleDateChange(e, "resultadoEconomico", "desde")} />
+          </label>
+          <label style={inputStyle}>
+            Fecha Hasta:
+            <input type="date" value={fechas.resultadoEconomico.hasta} onChange={(e) => handleDateChange(e, "resultadoEconomico", "hasta")} />
+          </label>
+          <button style={buttonStyle} onClick={(event) => handleGenerateExcel(event, urlGanancia, "resultadoEconomico")}>
             Exportar Excel
           </button>
+        </div>
       </div>
-    </div>
     </div>
   );
 };
