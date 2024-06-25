@@ -7,12 +7,26 @@ import Ingresos from "../../../types/Charts/Ingresos";
 import CantidadPedidosCliente from "../../../types/Charts/CantidadPedidosCliente";
 import MontoGanancia from "../../../types/Charts/MontoGananciaDto";
 
+import { CategoryScale, Chart as ChartJS, Legend, LineElement, LinearScale, PointElement, Title, Tooltip } from 'chart.js/auto'
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+)
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 const urlIngresos = API_URL + "/estadisticasDashboard/excel/ingresos";
 const urlRanking = API_URL + "/estadisticasDashboard/excel/ranking-productos";
 const urlPedidosClientes = API_URL + "/estadisticasDashboard/excel/pedidos-clientes";
 const urlGanancia = API_URL + "/estadisticasDashboard/excel/resultado-economico";
+
+
 
 const Charts2 = () => {
   const [rankingData, setRankingData] = useState<RankingProductosDto[]>([]);
@@ -27,6 +41,7 @@ const Charts2 = () => {
     pedidosClientes: { desde: "", hasta: "" },
     resultadoEconomico: { desde: "", hasta: "" },
   });
+
 
   //#region RANKING PRODUCTOS
   useEffect(() => {
