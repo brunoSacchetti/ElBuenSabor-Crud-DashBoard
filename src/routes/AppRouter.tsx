@@ -64,11 +64,11 @@ export const AppRouter = () => {
             <div className="Content">
               <Routes>
                 <Route path="/login" element={<Login />} />
-                <Route path="/inicio" element={<RutaPrivada component={InicioDashboard} roles={['EMPLEADO', 'ADMIN']} />} />
-                <Route path="/insumos" element={<RutaPrivada component={ScreenInsumos} roles={['ADMIN']} />} />
+                <Route path="/inicio" element={<RutaPrivada component={InicioDashboard} roles={['EMPLEADO', 'ADMIN', 'COCINERO', 'CAJERO']} />} />
+                <Route path="/insumos" element={<RutaPrivada component={ScreenInsumos} roles={['ADMIN', 'COCINERO']} />} />
                 <Route path="/estadistica" element={<RutaPrivada component={Charts2} roles={['ADMIN']} />} />
         
-                <Route path="/articulosManufacturados" element={<RutaPrivada component={ArticuloManufacturadoScreen} roles={['ADMIN']} />} />
+                <Route path="/articulosManufacturados" element={<RutaPrivada component={ArticuloManufacturadoScreen} roles={['ADMIN', 'COCINERO']} />} />
                 <Route path="/empleados" element={<RutaPrivada component={ScreenEmpleado} roles={['ADMIN']} />} />
                 <Route path="/categorias" element={<RutaPrivada component={ScreenCategorias} roles={['EMPLEADO', 'ADMIN']} />} />
                 <Route path="/promociones" element={<RutaPrivada component={ScreenPromociones} roles={['EMPLEADO', 'ADMIN']} />} />

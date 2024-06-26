@@ -2,7 +2,6 @@ import { Button } from "@mui/material";
 import { useAppDispatch } from "../../../../hooks/redux";
 import { setElementActive } from "../../../../redux/slices/TablaReducer";
 import IArticuloManufacturado from "../../../../types/ArticuloManufacturado";
-import { handleConfirm } from "../../../../helpers/alerts";
 
 // Interfaz para los props del componente
 interface IButtonsTable {
@@ -17,7 +16,7 @@ interface IButtonsTable {
 
 export const ButtonsTable = ({
   el,
-  handleDelete,
+  //handleDelete,
   setOpenModal,
   handleCancelOrRegister,
 }: IButtonsTable) => {
@@ -32,7 +31,7 @@ export const ButtonsTable = ({
   };
 
   // Función para manejar la eliminación de un elemento
-  const handleDeleteItem = () => {
+  /* const handleDeleteItem = () => {
     const handleDeleteElement = () => {
       handleDelete(el.id); // Llamar a la función handleDelete con el ID del elemento
     };
@@ -40,7 +39,7 @@ export const ButtonsTable = ({
       "Seguro quieres eliminar el articulo manufacturado",
       handleDeleteElement
     );
-  };
+  }; */
 
   const handleChangeRegisterOrCancelItem = () => {
     handleCancelOrRegister(el.id, { ...el, alta: !el.alta });
@@ -79,9 +78,9 @@ export const ButtonsTable = ({
         <span className="material-symbols-outlined">edit</span>
       </Button>
       {/* Botón para eliminar el elemento */}
-      <Button variant="contained" color="error" onClick={handleDeleteItem}>
+      {/* <Button variant="contained" color="error" onClick={handleDeleteItem}>
         <span className="material-symbols-outlined">delete_forever</span>
-      </Button>
+      </Button> */}
     </div>
   );
 };

@@ -14,48 +14,58 @@ export const SideBar = () => {
     <CSidebar className={styles.SideBarBig}>
       <CSidebarNav>
         <CNavTitle>Dashboard</CNavTitle>
-    {rol === 'COCINERO' ? <></> : <CNavItem>
+         <CNavItem>
           <Link to="/inicio" className="nav-link">
             <CIcon customClassName="nav-icon" icon={cilSpeedometer} /> Inicio
           </Link>
-        </CNavItem> }
+        </CNavItem>
+        {rol === 'COCINERO' ? <></> :
         <CNavItem>
           <Link to="/estadistica" className="nav-link">
             <CIcon customClassName="nav-icon" icon={cilBarChart} /> Estadisticas
           </Link>
-        </CNavItem>
+        </CNavItem> }
         <CNavItem>
           <Link to="/articulosManufacturados" className="nav-link">
             <CIcon customClassName="nav-icon" icon={cilRestaurant} /> Productos
           </Link>
         </CNavItem>
+
+        {rol === 'COCINERO' ? <></> :
         <CNavItem>
           <Link to="/promociones" className="nav-link">
             <CIcon customClassName="nav-icon" icon={cilGift} /> Promociones
             <CBadge color="primary ms-auto">NEW</CBadge>
           </Link>
-        </CNavItem>
+        </CNavItem> }
+
         {rol === 'COCINERO' ? <></> : <CNavItem>
           <Link to="/empleados" className="nav-link">
             <CIcon customClassName="nav-icon" icon={cilAddressBook} /> Empleados
           </Link>
         </CNavItem> } 
         
+        {rol === 'COCINERO' ? <></> :
         <CNavItem>
           <Link to="/categorias" className="nav-link">
             <CIcon customClassName="nav-icon" icon={cilFeaturedPlaylist} /> Categorias
           </Link>
-        </CNavItem>
+        </CNavItem> }
+        
         <CNavItem>
           <Link to="/insumos" className="nav-link">
             <CIcon customClassName="nav-icon" icon={cilDrink} /> Insumos
           </Link>
         </CNavItem>
+
+        {rol === 'COCINERO' ? <></> :
         <CNavItem>
           <Link to="/unidadMedida" className="nav-link">
             <CIcon customClassName="nav-icon" icon={cilMug} /> Unidad de Medida
           </Link>
-        </CNavItem>
+        </CNavItem> }
+        
+
         <CNavItem>
           <Link to="/pedidos" className="nav-link">
             <CIcon customClassName="nav-icon" icon={cilBasket} /> Pedidos
