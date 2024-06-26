@@ -88,14 +88,15 @@ export const ScreenPedido = () => {
             <MenuItem value="PENDIENTE">Pendiente</MenuItem>
             <MenuItem value="PREPARACION">En Preparacion</MenuItem>
             <MenuItem value="FACTURADO">Facturado</MenuItem>
+            <MenuItem value="DELIVERY">Delivery</MenuItem>
             <MenuItem value="ENTREGADO">Entregado</MenuItem>
             <MenuItem value="RECHAZADO">Rechazado</MenuItem>
           </Select>
-          {pedido.estado === "FACTURADO" || pedido.estado === "ENTREGADO" || pedido.estado === "DELIVERY" && (
-            <Button variant="contained" color="error" onClick={() => handleDescargarFactura(pedido.id)}>
-              Descargar Factura
-            </Button>
-          )}
+          {(pedido.estado === "FACTURADO" || pedido.estado === "ENTREGADO" || pedido.estado === "DELIVERY") && (
+          <Button variant="contained" color="error" onClick={() => handleDescargarFactura(pedido.id)}>
+            Descargar Factura
+          </Button>
+        )}
         </div>
       )
     }
