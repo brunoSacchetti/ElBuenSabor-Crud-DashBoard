@@ -48,10 +48,10 @@ export const CardEmpresa: React.FC<MediaCardProps> = ({ empresa, onDelete, onEdi
         <Typography gutterBottom variant="h5" component="div">
           {empresa.nombre}
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" style={{margin:'8px'}} color="text.secondary">
           <strong>Razón Social:</strong> {empresa.razonSocial}
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" style={{margin:'8px'}} color="text.secondary">
           <strong>CUIL:</strong> {empresa.cuil}
         </Typography>
         {tieneSucursales ? (
@@ -64,16 +64,16 @@ export const CardEmpresa: React.FC<MediaCardProps> = ({ empresa, onDelete, onEdi
           </Button>
         )}
       </CardContent>
-      <CardActions>
+      <CardActions style={{display:'flex',justifyContent:'space-around', padding:'2px'}}>
         <IconButton onClick={() => onEdit(empresa)} aria-label="Editar">
           <Edit />
         </IconButton>
         <IconButton onClick={() => onDelete(empresa.id)} aria-label="Eliminar">
           <Delete />
         </IconButton>
-        <IconButton onClick={() => onSelect(empresa.id, empresa)} aria-label="Seleccionar">
+        <IconButton style={{width:'60%', borderRadius:'50px'}} onClick={() => onSelect(empresa.id, empresa)} aria-label="Seleccionar">
           <ChevronRight />
-          <label style={{fontSize: "18px", fontFamily: 'sans-serif'}}>Ver Sucursales</label>
+          <label style={{fontSize: "18px", fontFamily: 'sans-serif',}}>Ver Sucursales</label>
         </IconButton>
       </CardActions>
     </Card>

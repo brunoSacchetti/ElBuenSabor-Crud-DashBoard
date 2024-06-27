@@ -87,10 +87,10 @@ export const Home = () => {
       <div>
         <div
           style={{
-            padding: ".4rem",
+            padding: "2rem",
             display: "flex",
             justifyContent: "flex-end",
-            width: "90%",
+
           }}
         >
           <h2
@@ -105,8 +105,8 @@ export const Home = () => {
           >
             ¿Que Empresa desea elegir?
           </h2>
-          <Button onClick={() => setOpenModal(true)} variant="contained">
-            Agregar
+          <Button style={{width:'10%'}} onClick={() => setOpenModal(true)} variant="contained">
+            Agregar Empresa
           </Button>
         </div>
         {loading ? (

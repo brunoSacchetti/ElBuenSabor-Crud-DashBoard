@@ -126,6 +126,11 @@ export const ModalEmpresa = ({
                   //await apiEmpresa.put(values.id, values);
                   await apiEmpresa.putSec(values.id, values, token);
                   idEmpresa = values.id;
+                  
+                  if (selectedFiles) {
+                    await uploadImages(selectedFiles, idEmpresa, token);
+                  }
+
                 } else {
                   //const response = await apiEmpresa.post(API_URL + "/empresa", values);
                   const response = await apiEmpresa.postSec(API_URL + "/empresa", values, token);

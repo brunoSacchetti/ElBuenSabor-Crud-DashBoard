@@ -37,29 +37,6 @@ export const ScreenSucursales = () => {
   )
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  // Columnas de la tabla de personas
-  /* const ColumnsTableEmpresa = [
-    {
-      label: "ID",
-      key: "id",
-      render: (sucursal: ISucursales) => (sucursal?.id ? sucursal.id : 0),
-    },
-    { label: "Nombre", key: "nombre" },
-    { label: "Horario de Apertura", key: "horarioApertura" },
-    { label: "Horario de Cierre", key: "horarioCierre" },
-    {
-      label: "Dirección",
-      key: "direccion",
-      render: (sucursal: ISucursales) => (
-        <span>
-          {sucursal.domicilio.calle} {sucursal.domicilio.numero},{" "}
-          {sucursal.domicilio.localidad.nombre},{" "}
-          {sucursal.domicilio.localidad.provincia.nombre}
-        </span>
-      ),
-    },
-    { label: "Acciones", key: "acciones" },
-  ]; */
 
   // Función para manejar el borrado de una persona
   const handleDelete = async (id: number) => {
@@ -118,31 +95,31 @@ export const ScreenSucursales = () => {
     navigate("/inicio", {state: {sucursalId: id}});
   };
 
-  /* const handleSelectEmpresa = (id: number, empresa: IEmpresa) => {
-    dispatch(setEmpresaId(id));
-    dispatch(setEmpresaActual(empresa));
-    navigate("/sucursales", { state: { empresaId: id } });
-  }; */
-
   return (
     <>
       <div>
-        <div
+      <div
           style={{
-            padding: ".4rem",
+            padding: "2rem",
             display: "flex",
             justifyContent: "flex-end",
-            width: "90%",
+
           }}
         >
-          {/* Botón para abrir el modal de agregar persona */}
-          <Button
-            onClick={() => {
-              setOpenModal(true);
+          <h2
+            style={{
+              flexGrow: 1,
+              textAlign: "center",
+              margin: 0,
+              fontSize: "2.rem",
+              color: "#333",
+              fontWeight: "bold",
             }}
-            variant="contained"
           >
-            Agregar
+            ¿Que Sucursal desea elegir?
+          </h2>
+          <Button style={{width:'10%'}} onClick={() => setOpenModal(true)} variant="contained">
+            Agregar Sucursal
           </Button>
         </div>
         {/* Mostrar indicador de carga mientras se cargan los datos */}

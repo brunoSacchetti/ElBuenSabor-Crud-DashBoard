@@ -107,7 +107,7 @@ export const NavBar: React.FC<NavBarProps> = () => {
   }}
   transformOrigin={{
     vertical: 'top',
-    horizontal: 'center',
+    horizontal: 'left',
   }}
 >
   <Typography sx={{ p: 2 }}><LogoutButton/></Typography>
