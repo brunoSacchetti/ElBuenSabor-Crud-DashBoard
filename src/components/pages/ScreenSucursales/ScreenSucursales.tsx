@@ -39,37 +39,38 @@ export const ScreenSucursales = () => {
   const navigate = useNavigate();
 
   // Función para manejar el borrado de una persona
-  const handleDelete = async (id: number) => {
-    // Mostrar confirmación antes de eliminar
-    Swal.fire({
-      title: "¿Estás seguro?",
-      text: `¿Seguro que quieres eliminar?`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Sí, eliminar!",
-      cancelButtonText: "Cancelar",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Eliminar la sucursal de la base de datos
-        sucursalService.delete(id).then(() => {
-          // Eliminar la sucursal del estado de las sucursales
-          const updatedSucursales = sucursales.filter((sucursal) => sucursal.id !== id);
-          dispatch(setDataSucursales(updatedSucursales));
-        }).catch((error) => {
-          console.error("Error eliminando la sucursal:", error);
-          Swal.fire("Error", "No se pudo eliminar la sucursal. Por favor, intenta nuevamente.", "error");
-        });
-      }
-    });
-  };
+ const handleDelete = async (id: number) => {
+  // Mostrar confirmación antes de eliminar
+  Swal.fire({
+    title: "¿Estás seguro?",
+    text: "¿Seguro que quieres habilitar/deshabilitar?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Sí",
+    cancelButtonText: "Cancelar",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Eliminar la sucursal de la base de datos
+      sucursalService.changeEliminado(id).then(() => {
+        // No realizar el filtrado aquí, sino usar el estado sucursales directamente
+        /* const updatedSucursales = sucursales.filter((sucursal) => sucursal.id !== id);
+          dispatch(setDataSucursales(updatedSucursales)); */
+          getSucursalesEmpresa()
+        dispatch(setDataSucursales(sucursales));
+      }).catch((error) => {
+        console.error("Error eliminando la sucursal:", error);
+        Swal.fire("Error", "No se pudo eliminar la sucursal. Por favor, intenta nuevamente.", "error");
+      });
+    }
+  });
+};
   // Función para obtener las personas
   const getSucursalesEmpresa  = async () => {
     await empresaService.getById(empresaId).then((empresaData) => {
       const empresaSeleccionada = empresaData;
       const sucursalesEmpresa = empresaSeleccionada ? empresaSeleccionada.sucursales : [];
-      console.log(sucursalesEmpresa);
       
       //dispatch(setDataTable(sucursalesEmpresa));
       dispatch(setDataSucursales(sucursalesEmpresa))

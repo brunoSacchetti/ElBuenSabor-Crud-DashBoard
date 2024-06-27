@@ -35,6 +35,26 @@ export abstract class BackendClient<T> extends AbstractBackendClient<T> {
     }
   }
 
+  async getAllIncludingDeleted(): Promise<T[]> {
+    try {
+      const response = await fetch(`${this.baseUrl}/incluyendoEliminados`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error al obtener todos los elementos, incluyendo los eliminados: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data as T[];
+    } catch (error) {
+      console.error(`Error al obtener todos los elementos, incluyendo los eliminados:`, error);
+      throw error;
+    }
+  }
 
   async changeHabilitado(id: number | string): Promise<void> {
     const url = `${this.baseUrl}/changeHabilitado/${id}`;

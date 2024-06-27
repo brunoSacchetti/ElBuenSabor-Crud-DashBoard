@@ -28,16 +28,16 @@ export const Home = () => {
   const handleDelete = async (id: number) => {
     Swal.fire({
       title: "¿Estás seguro?",
-      text: "¿Seguro que quieres eliminar?",
+      text: "¿Seguro que quieres habilitar/deshabilitar?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Sí, eliminar",
+      confirmButtonText: "Sí",
       cancelButtonText: "Cancelar",
     }).then((result) => {
       if (result.isConfirmed) {
-        empresaService.delete(id).then(() => {
+        empresaService.changeEliminado(id).then(() => {
           getEmpresas();
         });
       }
@@ -60,7 +60,7 @@ export const Home = () => {
   // Función para obtener las empresas
   const getEmpresas = async () => {
     setLoading(true);
-    const empresas = await empresaService.getAll();
+    const empresas = await empresaService.getAllIncludingDeleted();
   
     // Fetch images for each empresa
     const empresasWithImages = await Promise.all(empresas.map(async (empresa: IEmpresa) => {
@@ -125,7 +125,7 @@ export const Home = () => {
             <h2>Cargando...</h2>
           </div>
         ) : (
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", justifyContent: "center" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "4rem", justifyContent: "center" }}>
             {dataTable.map((empresa: IEmpresa) => (
               <CardEmpresa
                 key={empresa.id}
