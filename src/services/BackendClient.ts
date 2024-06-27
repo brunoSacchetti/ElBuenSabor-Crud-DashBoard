@@ -163,6 +163,28 @@ export abstract class BackendClient<T> extends AbstractBackendClient<T> {
       throw error;
     }
   }
+
+  async changeEliminado(id: number | string): Promise<void> {
+    const url = `${this.baseUrl}/cambiarEliminado/${id}`;
+  
+    try {
+      const response = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Error al cambiar el estado eliminado del recurso con ID ${id}`);
+      }
+      console.log(response.json());
+    } catch (error) {
+      console.error(`Error al cambiar el estado eliminado del recurso con ID ${id}:`, error);
+      throw error;
+    }
+  }
+
   
 
 }
