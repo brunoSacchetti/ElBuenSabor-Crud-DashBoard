@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography';
 import { IconButton } from '@mui/material';
 import { Delete, Edit, ChevronRight } from '@mui/icons-material';
 import ISucursales from '../../../types/Sucursales';
-
+import "./CardSucursal.css"
 interface CardSucursalProps {
   sucursal: ISucursales;
   onDelete: (id: number) => void;
@@ -19,26 +19,26 @@ export const CardSucursal: React.FC<CardSucursalProps> = ({ sucursal, onDelete, 
   return (
     <Card sx={{ maxWidth: 345, borderRadius: "20px", border: "1px solid lightgray"}}>
       <CardContent>
-        <Typography gutterBottom variant="h5" component="div">
+        <Typography style={{marginTop:'4px'}} gutterBottom  variant="h5" component="div">
           {sucursal.nombre}
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography style={{marginTop:'4px'}} variant="body2" color="text.secondary">
           <strong>Horario de Apertura:</strong> {sucursal.horarioApertura}
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography style={{marginTop:'4px'}} variant="body2" color="text.secondary">
           <strong>Horario de Cierre:</strong> {sucursal.horarioCierre}
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography style={{marginTop:'4px'}} variant="body2" color="text.secondary">
           <strong>Dirección:</strong> {sucursal.domicilio.calle} {sucursal.domicilio.numero}, {sucursal.domicilio.localidad.nombre}, {sucursal.domicilio.localidad.provincia.nombre}
         </Typography>
-        <Typography variant="body2" color="text.secondary">
-          <strong>Es Casa Matriz:</strong> 
+        <Typography style={{marginTop:'4px', fontSize:'18px'}} variant="body2" color="text.secondary">
+          <strong >Es Casa Matriz:</strong> 
           <span style={{ color: sucursal.esCasaMatriz ? "green" : "red", fontWeight: "bold", marginLeft: "0.5rem" }}>
             {sucursal.esCasaMatriz ? "Sí" : "No"}
           </span>
         </Typography>
       </CardContent>
-      <CardActions>
+      <CardActions style={{display:'flex',justifyContent:'space-around', padding:'2px'}}>
         <IconButton onClick={() => onEdit(sucursal)} aria-label="Editar">
           <Edit />
         </IconButton>
@@ -46,6 +46,7 @@ export const CardSucursal: React.FC<CardSucursalProps> = ({ sucursal, onDelete, 
           <Delete />
         </IconButton>
         <IconButton onClick={() => onSelect(sucursal.id, sucursal)} aria-label="Seleccionar">
+        <label style={{fontSize: "18px", fontFamily: 'sans-serif',marginRight:'4px'}}>Seleccionar</label>
           <ChevronRight />
         </IconButton>
       </CardActions>
