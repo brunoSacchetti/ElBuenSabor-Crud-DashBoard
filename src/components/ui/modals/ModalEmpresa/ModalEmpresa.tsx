@@ -1,4 +1,3 @@
-// Importación de las dependencias necesarias
 import { Button, Modal } from "react-bootstrap";
 import * as Yup from "yup";
 import TextFieldValue from "../../TextFildValue/TextFildValue";
@@ -9,8 +8,11 @@ import { EmpresaService } from "../../../../services/EmpresaService";
 import { TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import { ImagenService } from "../../../../services/ImagenService";
-import { removeEmpresaActive } from "../../../../redux/slices/EmpresaReducer";
+import { removeEmpresaActive, setLoading } from "../../../../redux/slices/EmpresaReducer";
 import useAuthToken from "../../../../hooks/useAuthToken";
+import { ImageCarrousel } from "../../ImageCarrousel/ImageCarrousel";
+import Swal from "sweetalert2";
+import IImagenes from "../../../../types/Imagenes";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -39,7 +41,7 @@ export const ModalEmpresa = ({
 
   // URL de la API obtenida desde las variables de entorno
   const apiEmpresa = new EmpresaService(API_URL + "/empresa");
-  const imagenService = new ImagenService(API_URL + "/empresa");
+  const imageService = new ImagenService(API_URL + "/empresa");
   const elementActive = useAppSelector((state) => state.empresa.empresaActual);
   const dispatch = useAppDispatch();
 
@@ -54,6 +56,7 @@ export const ModalEmpresa = ({
 
   // State para almacenar los archivos seleccionados
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+  const [images, setImages] = useState<IImagenes[]>([]);
 
   // Función para manejar el cambio en los archivos seleccionados
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -70,7 +73,7 @@ export const ModalEmpresa = ({
       formData.append("id", String(idEmpresa)); // Adjuntar el ID de la empresa
       
       // Enviar las imágenes al backend
-      await imagenService.uploadImagesWithSecurity(`${API_URL}/empresa/uploads?id=${idEmpresa}`,formData, token);
+      await imageService.uploadImagesWithSecurity(`${API_URL}/empresa/uploads?id=${idEmpresa}`,formData, token);
       console.log("Imágenes subidas correctamente.");
     } catch (error) {
       console.error("Error al subir imágenes:", error);
@@ -83,6 +86,48 @@ export const ModalEmpresa = ({
     }
   }, [openModal, dispatch]);
   
+  useEffect(() => {
+    if (elementActive && openModal) {
+
+      getImages(elementActive.id);
+    }
+  }, [elementActive, openModal]);
+  
+  const getImages = async (id: number) => {
+    try {
+      dispatch(setLoading(true));
+      const data = await imageService.getImagesByEmpresaId(id);
+      console.log(data);
+      
+      setImages(data);
+    } catch (error) {
+      Swal.fire("Error", "Error al obtener las imágenes", "error");
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
+
+  const handleDeleteImage = async (publicId: string, id: number) => {
+    try {
+      
+      // Realiza la llamada al servicio para eliminar la imagen
+      await imageService.deleteImageEmpresa(publicId, id);
+      // Actualiza la lista de imágenes en el estado local eliminando la imagen eliminada
+      setImages(images.filter((image) => image.id !== id));
+      // Muestra un mensaje de éxito si la eliminación fue exitosa
+      Swal.fire(
+        "Imagen eliminada",
+        "La imagen se eliminó correctamente",
+        "success"
+      );
+      // Aquí podrías actualizar la lista de imágenes en tu estado o recargar las imágenes del producto
+    } catch (error) {
+      // Muestra un mensaje de error si la eliminación falla
+      Swal.fire("Error", "No se pudo eliminar la imagen", "error");
+      console.error("Error deleting image:", error);
+    }
+  };
+
   return (
     <div>
       {/* Componente Modal de React Bootstrap */}
@@ -116,7 +161,7 @@ export const ModalEmpresa = ({
             initialValues={elementActive ? elementActive : initialValues}
             enableReinitialize={true}
             onSubmit={async (values: IEmpresa) => {
-
+                
               const token = await getToken();
 
               try {
@@ -143,6 +188,7 @@ export const ModalEmpresa = ({
                 // Obtener las empresas actualizadas y cerrar el modal
                 getEmpresa();
                 handleClose();
+                
               } catch (error) {
                 console.error("Error al enviar datos al servidor:", error);
               }
@@ -154,12 +200,24 @@ export const ModalEmpresa = ({
                 <Form autoComplete="off" className="form-obraAlta">
                   <div className="container_Form_Ingredientes">
                     {/* Campos del formulario */}
+                    
+                    {elementActive && (
+                      <div>
+                      <ImageCarrousel
+                        images={images} 
+                        handleDeleteImage={(publicId: string, id: number) =>
+                          handleDeleteImage(publicId, id)
+                        } 
+                      />
+                    </div>
+                    
+                    )}
                     <TextFieldValue
-                      label="Empresa:"
-                      name="nombre"
-                      type="text"
-                      placeholder="Nombre Empresa"
-                    />
+                        label="Empresa:"
+                        name="nombre"
+                        type="text"
+                        placeholder="Nombre Empresa"
+                      />
                     <TextFieldValue
                       label="Razon Social:"
                       name="razonSocial"
@@ -172,7 +230,10 @@ export const ModalEmpresa = ({
                       type="text"
                       placeholder="Cuil"
                     />
+                    <div style={{display:'flex',flexDirection:'column'}}>
+                      <label htmlFor="file">Seleccionar una imagen</label>
                     <TextField
+                    
                       id="outlined-basic"
                       variant="outlined"
                       type="file"
@@ -181,6 +242,7 @@ export const ModalEmpresa = ({
                         multiple: true,
                       }}
                     />
+                    </div>
                   </div>
                   {/* Botón para enviar el formulario */}
                   <div className="d-flex justify-content-end">

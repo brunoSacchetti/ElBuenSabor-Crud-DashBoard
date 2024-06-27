@@ -45,7 +45,7 @@ export const CardSucursal: React.FC<CardSucursalProps> = ({ sucursal, onDelete, 
         <IconButton onClick={() => onDelete(sucursal.id)} aria-label="Eliminar">
           <Delete />
         </IconButton>
-        <IconButton onClick={() => onSelect(sucursal.id, sucursal)} aria-label="Seleccionar">
+        <IconButton style={{width:'60%', borderRadius:'50px'}} onClick={() => onSelect(sucursal.id, sucursal)} aria-label="Seleccionar">
         <label style={{fontSize: "18px", fontFamily: 'sans-serif',marginRight:'4px'}}>Seleccionar</label>
           <ChevronRight />
         </IconButton>
