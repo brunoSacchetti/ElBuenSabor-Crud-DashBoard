@@ -24,7 +24,7 @@ export interface ITableProps<T> {
   setOpenModal: (state: boolean) => void;
 }
 
-export const TableGeneric = <T extends { id: any; eliminado?: boolean }>({
+export const TableGeneric = <T extends { id: any; eliminado?: boolean; habilitado?: boolean }>({
   columns,
   handleDelete,
   setOpenModal,
@@ -108,9 +108,9 @@ export const TableGeneric = <T extends { id: any; eliminado?: boolean }>({
                       tabIndex={-1}
                       key={index}
                       style={{
-                        backgroundColor: row.eliminado ? "grey" : "white",
+                        backgroundColor: row.eliminado || !row.habilitado ? "grey" : "white" ,
                         position: 'relative',
-                        zIndex: row.eliminado ? 3 : 'auto',
+                        zIndex: row.eliminado || !row.habilitado ? 3 : 'auto',
                       }}
                     >
                       {columns.map((column, i: number) => {

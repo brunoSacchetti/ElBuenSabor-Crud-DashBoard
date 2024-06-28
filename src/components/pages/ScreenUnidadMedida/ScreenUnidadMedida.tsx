@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { TableGeneric } from "../../ui/TableGeneric/TableGeneric";
+import { TableGenericUnidadMedida } from "../../ui/TableUnidadMedida/TableGenericUnidadMedida";
 import { Button, CircularProgress } from "@mui/material";
 import { useAppDispatch } from "../../../hooks/redux";
 
@@ -122,7 +122,7 @@ export const ScreenUnidadMedida = () => {
           </div>
         ) : (
           // Mostrar la tabla de personas una vez que los datos se han cargado
-          <TableGeneric<IUnidadMedida>
+          <TableGenericUnidadMedida<IUnidadMedida>
             handleDelete={handleDelete}
             columns={ColumnsTableUnidadMedida}
             setOpenModal={setOpenModal}
