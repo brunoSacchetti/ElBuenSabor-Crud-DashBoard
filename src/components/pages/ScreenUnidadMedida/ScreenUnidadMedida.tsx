@@ -24,45 +24,41 @@ export const ScreenUnidadMedida = () => {
   const dispatch = useAppDispatch();
   // Columnas de la tabla de personas
   const ColumnsTableUnidadMedida = [
-    /* {
-      label: "ID",
-      key: "id",
-      render: (unidadMedida: IUnidadMedida) => (unidadMedida?.id ? unidadMedida.id : 0),
-    }, */
+
     { label: "Denominacion", key: "denominacion" },
+    {
+      label: "Habilitado",
+      key: "habilitado",
+      render: (element: IUnidadMedida) => (element.eliminado  ? "No" : "Si"),
+    },
     { label: "Acciones", key: "acciones" },
+    
   ];
 
   // Función para manejar el borrado de una persona
   const handleDelete = async (id: number) => {
     // Mostrar confirmación antes de eliminar
     Swal.fire({
-      title: "¿Estas seguro?",
-      text: `¿Seguro que quieres eliminar?`,
+      title: "¿Estás seguro?",
+      text: "¿Seguro que quieres habilitar/deshabilitar?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Si, Eliminar!",
+      confirmButtonText: "Sí",
       cancelButtonText: "Cancelar",
     }).then((result) => {
       if (result.isConfirmed) {
         // Eliminar la persona si se confirma
-        unidadMedidaService.delete(id).then(() => {
+        unidadMedidaService.changeEliminado(id).then(() => {
           getUnidadMedida();
         });
       }
     });
   };
-  // Función para obtener las personas
-  /* const getUnidadMedida = async () => {
-    await unidadMedidaService.getAll().then((unidadData) => {
-      dispatch(setDataTable(unidadData));
-      setLoading(false);
-    });
-  }; */
 
-  const getUnidadMedida = async () => {
+
+  /* const getUnidadMedida = async () => {
     await unidadMedidaService.getAll().then((unidadData) => {
       const data = unidadData as IUnidadMedida[];
       // Filter out the units where eliminado is true
@@ -70,7 +66,16 @@ export const ScreenUnidadMedida = () => {
       dispatch(setDataTable(filteredData));
       setLoading(false);
     });
-  };
+  }; */
+  const getUnidadMedida = async () => {
+    await unidadMedidaService.getAllIncludingDeleted().then((unidadData) => {
+      const data = unidadData as IUnidadMedida[];
+      // Filter out the units where eliminado is true
+      /* const filteredData = data.filter((unidad: IUnidadMedida) => !unidad.eliminado); */
+      dispatch(setDataTable(data));
+      setLoading(false);
+    });
+  }; 
   
   // Efecto para cargar los datos al inicio
   useEffect(() => {
@@ -96,7 +101,7 @@ export const ScreenUnidadMedida = () => {
             }}
             variant="contained"
           >
-            Agregar
+            Agregar Unidad de Medida
           </Button>
         </div>
         {/* Mostrar indicador de carga mientras se cargan los datos */}

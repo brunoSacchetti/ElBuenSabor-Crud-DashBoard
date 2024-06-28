@@ -81,7 +81,6 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
   const getToken = useAuthToken();
 
 
-
   const unidadMedidaService = new UnidadMedidaGetService(
     `${API_URL}/UnidadMedida`
   );
@@ -105,15 +104,6 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
       console.error("Error al obtener unidades de medida:", error);
     }
   };
-
-  /* const getCategorias = async () => {
-    try {
-      const data = await categoriaService.getAll();
-      setCategoria(data);
-    } catch (error) {
-      console.error("Error al obtener las categorías:", error);
-    }
-  }; */
 
   const getCategorias = async () => {
     if (!sucursalActual) {
@@ -216,108 +206,6 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
       [name]: value,
     });
   };
-  console.log(itemValue);
-
-  /* const handleConfirmModal = async () => {
-    try {
-      let productoId: number;
-      let detallesIds: number[] = [];
-
-      if (data) {
-        await productoManufacturadoService.put(itemValue.id, itemValue);
-        productoId = itemValue.id;
-      } else {
-        const newProducto = await productoManufacturadoService.postOnlyData(itemValue);
-        productoId = newProducto.id;
-      }
-
-      await categoriaService.addArticuloManufacturado(selectedCategoriaId, productoId);
-
-      await Promise.all(
-        selectedDetalle.map(async (detalle) => {
-          const newDetalle = {
-            id: 0,
-            cantidad: detalle.cantidad,
-            idArticuloInsumo: detalle.id,
-            idArticuloManufacturado: productoId,
-          };
-          const createdDetalle = await productoDetalleService.postOnlyData(newDetalle);
-          detallesIds.push(createdDetalle.id);
-        })
-      );
-
-      await productoManufacturadoService.put(productoId, {
-        ...itemValue,
-        idsArticuloManufacturadoDetalles: detallesIds,
-      });
-
-      handleSuccess("Elemento guardado correctamente");
-      handleClose();
-      resetValues();
-      getData();
-      getUnidadMedida();
-      getInsumos();
-      dispatch(removeElementActive());
-    } catch (error) {
-      console.error("Error al confirmar modal:", error);
-    }
-  }; */
-
-  /* const handleConfirmModal = async () => {
-    try {
-      // Verifica si hay al menos un detalle agregado
-      if (selectedDetalle.length === 0) {
-        // Muestra un mensaje de error con SweetAlert
-        await Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
-          text: 'Debes agregar al menos un detalle antes de confirmar.',
-        });
-        return;
-      }
-
-      let productoId: number;
-      let detallesIds: number[] = [];
-
-      if (data) {
-        await productoManufacturadoService.put(itemValue.id, itemValue);
-        productoId = itemValue.id;
-      } else {
-        const newProducto = await productoManufacturadoService.postOnlyData(itemValue);
-        productoId = newProducto.id;
-      }
-
-      await categoriaService.addArticuloManufacturado(selectedCategoriaId, productoId);
-
-      await Promise.all(
-        selectedDetalle.map(async (detalle) => {
-          const newDetalle = {
-            id: 0,
-            cantidad: detalle.cantidad,
-            idArticuloInsumo: detalle.id,
-            idArticuloManufacturado: productoId,
-          };
-          const createdDetalle = await productoDetalleService.postOnlyData(newDetalle);
-          detallesIds.push(createdDetalle.id);
-        })
-      );
-
-      await productoManufacturadoService.put(productoId, {
-        ...itemValue,
-        idsArticuloManufacturadoDetalles: detallesIds,
-      });
-
-      handleSuccess("Elemento guardado correctamente");
-      handleClose();
-      resetValues();
-      getData();
-      getUnidadMedida();
-      getInsumos();
-      dispatch(removeElementActive());
-    } catch (error) {
-      console.error("Error al confirmar modal:", error);
-    }
-  }; */
 
    //#region  IMAGENES PRODUCTO
    const [images, setImages] = useState<IImagenes[]>([]);
@@ -720,49 +608,6 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
               </div>
             </div>
 
-            {/* <div className={styles.ingredientesTableContainer}>
-              {selectedDetalle.length > 0 ? (
-                <div className={styles.ingredientesTableContainerItem}>
-                  {selectedDetalle.map((detalle) => (
-                    <div key={detalle.id} className={styles.ingredientItem}>
-                      <span className={styles.ingredientName}>
-                        {detalle.denominacion}
-                      </span>
-                      <span className={styles.ingredientQuantity}>
-                        {detalle.cantidad}
-                      </span>
-                      <Button
-                        variant="outlined"
-                        color="secondary"
-                        onClick={() => handleRemoveInsumo(detalle.id)}
-                      >
-                        Quitar
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div>No hay insumos agregados</div>
-              )}
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-around",
-                  width: "100%",
-                }}
-              >
-                <Button variant="contained" color="error" onClick={handleClose}>
-                  Cerrar Modal
-                </Button>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleConfirmModal}
-                >
-                  Confirmar
-                </Button>
-              </div>
-            </div> */}
             <div className={styles.ingredientesTableContainer}>
   {selectedDetalle.length > 0 ? (
     <TableContainer component={Paper} style={{ maxWidth: "80%" }}>
@@ -781,7 +626,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
                 {detalle.denominacion}
               </TableCell>
               <TableCell align="center">
-                {data ? ( // Verifica si hay datos existentes (edición)
+                {data ? ( 
                   <input
                     type="number"
                     value={detalle.cantidad}

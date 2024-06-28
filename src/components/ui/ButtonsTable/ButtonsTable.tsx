@@ -1,11 +1,11 @@
 import { Button } from "@mui/material";
 import { useAppDispatch } from "../../../hooks/redux";
 import { setElementActive } from "../../../redux/slices/TablaReducer";
-import { IPersona } from "../../../types/IPersona";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 // Interfaz para los props del componente
 interface IButtonsTable {
-  el: IPersona; // Elemento de tipo IPersona
+  el: any; // Elemento de tipo IPersona
   handleDelete: (id: number) => void; // Función para manejar la eliminación de un elemento
   setOpenModal: (state: boolean) => void; // Función para manejar la eliminación de un elemento
 }
@@ -39,13 +39,36 @@ export const ButtonsTable = ({
       }}
     >
       {/* Botón para editar el elemento */}
-      <Button variant="contained" /* style={{background: "#f09e2f"}} */ onClick={handleModalSelected}>
+      <Button
+        variant="contained"
+        onClick={handleModalSelected}
+        style={{ pointerEvents: el.eliminado ? "none" : "auto" }}
+      >
         <span className="material-symbols-outlined">edit</span>
       </Button>
-      {/* Botón para eliminar el elemento */}
-      {<Button variant="contained" color="error" onClick={handleDeleteItem}>
-        <span className="material-symbols-outlined">delete_forever</span>
-      </Button>}
+      
+      {/* Botón para habilitar/deshabilitar el elemento */}
+      {el.eliminado || !el.habilitado ? (
+        <Button
+          style={{ borderRadius: '50px' }}
+          variant="contained"
+          onClick={handleDeleteItem}
+          color="success"
+        >
+          Habilitar
+          <Visibility style={{ marginLeft: '6px' }} />
+        </Button>
+      ) : (
+        <Button
+          style={{ borderRadius: '50px' }}
+          color="error"
+          variant="contained"
+          onClick={handleDeleteItem}
+        >
+          Deshabilitar
+          <VisibilityOff style={{ marginLeft: '6px' }} />
+        </Button>
+      )}
     </div>
   );
 };

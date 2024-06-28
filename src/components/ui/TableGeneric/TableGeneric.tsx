@@ -11,7 +11,6 @@ import { ButtonsTable } from "../ButtonsTable/ButtonsTable";
 import { useAppSelector } from "../../../hooks/redux";
 import { TextField, Box } from "@mui/material";
 
-
 // Definimos la interfaz para cada columna de la tabla
 interface ITableColumn<T> {
   label: string; // Etiqueta de la columna
@@ -25,7 +24,7 @@ export interface ITableProps<T> {
   setOpenModal: (state: boolean) => void;
 }
 
-export const TableGeneric = <T extends { id: any }>({
+export const TableGeneric = <T extends { id: any; eliminado?: boolean }>({
   columns,
   handleDelete,
   setOpenModal,
@@ -51,9 +50,7 @@ export const TableGeneric = <T extends { id: any }>({
 
   // Obtener los datos de la tabla del estado global
   const dataTable = useAppSelector((state) => state.tablaReducer.dataTable);
-
-  console.log(dataTable);
-
+  
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredRows, setFilteredRows] = useState<any[]>([]);
 
@@ -105,7 +102,17 @@ export const TableGeneric = <T extends { id: any }>({
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index: number) => {
                   return (
-                    <TableRow hover role="checkbox" tabIndex={-1} key={index}>
+                    <TableRow
+                      hover
+                      role="checkbox"
+                      tabIndex={-1}
+                      key={index}
+                      style={{
+                        backgroundColor: row.eliminado ? "grey" : "white",
+                        position: 'relative',
+                        zIndex: row.eliminado ? 3 : 'auto',
+                      }}
+                    >
                       {columns.map((column, i: number) => {
                         return (
                           <TableCell key={i} align={"center"}>

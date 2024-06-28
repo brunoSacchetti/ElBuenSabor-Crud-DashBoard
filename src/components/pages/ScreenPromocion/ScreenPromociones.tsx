@@ -43,20 +43,7 @@ export const ScreenPromociones = () => {
     { label: "Tipo Promocion", key: "tipoPromocion" },
     { label: "Habilitado", 
       key: "habilitado",
-      render: (element: IPromocion) => (element.habilitado ? "Si" : "No"), 
-    },
-    { 
-      label: "Estado", 
-      key: "estado", 
-      render: (promocion: IPromocion) => (
-        <Button
-          variant="contained"
-          color={promocion.habilitado ? "error" : "success"}
-          onClick={() => handleToggleEnable(promocion)}
-        >
-          {promocion.habilitado ? "Deshabilitar" : "Habilitar"}
-        </Button>
-      )
+      render: (element: IPromocion) => (element.habilitado ? "Si" : "No" ), 
     },
     {
       label: "Acciones",
@@ -79,7 +66,7 @@ export const ScreenPromociones = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         // Eliminar la persona si se confirma
-        promocionService.delete(id).then(() => {
+        promocionService.changeHabilitado(id).then(() => {
           getPromocion();                                     
         });
       }
@@ -120,7 +107,7 @@ export const ScreenPromociones = () => {
   };
 
 
-  const handleToggleEnable = async (promocion: IPromocion) => {
+ /*  const handleToggleEnable = async (promocion: IPromocion) => {
     if (sucursalActual) {
       try {
         await promocionService.changeHabilitado(promocion.id);
@@ -132,7 +119,7 @@ export const ScreenPromociones = () => {
     } else {
       console.error("Sucursal actual es null");
     }
-  };
+  }; */
 
   return (
     <>
