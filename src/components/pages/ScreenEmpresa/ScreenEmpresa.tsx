@@ -57,15 +57,10 @@ export const ScreenEmpresa = () => {
         </>
       ),
     },
-
     {
       label: "Cuil",
       key: "cuil",
     },
-    /* {
-      label: "Sucursal",
-      key: "sucursalEmpresa", //OJITO  ABIERTO O CERRADO 
-    }, */
     { label: "Acciones", key: "acciones" },
   ];
 
@@ -73,13 +68,13 @@ export const ScreenEmpresa = () => {
   const handleDelete = async (id: number) => {
     // Mostrar confirmación antes de eliminar
     Swal.fire({
-      title: "¿Estas seguro?",
-      text: `¿Seguro que quieres eliminar?`,
+      title: "¿Estás seguro?",
+      text: "¿Seguro que quieres habilitar/deshabilitar?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Si, Eliminar!",
+      confirmButtonText: "Sí",
       cancelButtonText: "Cancelar",
     }).then((result) => {
       if (result.isConfirmed) {

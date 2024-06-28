@@ -10,7 +10,7 @@ interface IButtonsTable {
   setOpenModal: (state: boolean) => void; // Función para manejar la eliminación de un elemento
 }
 
-export const ButtonsTable = ({
+export const ButtonsUnidadMedida = ({
   el,
   handleDelete,
   setOpenModal,
@@ -42,13 +42,13 @@ export const ButtonsTable = ({
       <Button
         variant="contained"
         onClick={handleModalSelected}
-        style={{ pointerEvents:  !el.habilitado ? "none" : "auto" }}
+        style={{ pointerEvents: el.eliminado ? "none" : "auto" }}
       >
         <span className="material-symbols-outlined">edit</span>
       </Button>
       
       {/* Botón para habilitar/deshabilitar el elemento */}
-      {!el.habilitado ? (
+      {el.eliminado ? (
         <Button
           style={{ borderRadius: '50px' }}
           variant="contained"

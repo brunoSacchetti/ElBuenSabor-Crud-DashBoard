@@ -7,7 +7,7 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import { useEffect, useState } from "react";
-import { ButtonsTable } from "../ButtonsTable/ButtonsTable";
+import { ButtonsUnidadMedida } from "./ButtonsUnidadMedida";
 import { useAppSelector } from "../../../hooks/redux";
 import { TextField, Box } from "@mui/material";
 
@@ -24,7 +24,7 @@ export interface ITableProps<T> {
   setOpenModal: (state: boolean) => void;
 }
 
-export const TableGeneric = <T extends { id: any; eliminado?: boolean }>({
+export const TableGenericUnidadMedida = <T extends { id: any; eliminado?: boolean }>({
   columns,
   handleDelete,
   setOpenModal,
@@ -108,9 +108,9 @@ export const TableGeneric = <T extends { id: any; eliminado?: boolean }>({
                       tabIndex={-1}
                       key={index}
                       style={{
-                        backgroundColor: row.habilitado ? "white" : "grey" ,
+                        backgroundColor: row.eliminado ? "grey" : "white" ,
                         position: 'relative',
-                        zIndex:  row.habilitado ? 'auto' : 3,
+                        zIndex: row.eliminado ? 3 : 'auto',
                       }}
                     >
                       {columns.map((column, i: number) => {
@@ -119,7 +119,7 @@ export const TableGeneric = <T extends { id: any; eliminado?: boolean }>({
                             {column.render ? (
                               column.render(row)
                             ) : column.label === "Acciones" ? (
-                              <ButtonsTable
+                              <ButtonsUnidadMedida
                                 el={row}
                                 handleDelete={handleDelete}
                                 setOpenModal={setOpenModal}

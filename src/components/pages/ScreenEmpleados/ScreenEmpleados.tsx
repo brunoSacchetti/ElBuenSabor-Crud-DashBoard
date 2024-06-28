@@ -11,6 +11,7 @@ import { EmpleadoService } from "../../../services/EmpleadoService";
 import IEmpleado from "../../../types/Empleado";
 import { TableEmpleadoGeneric } from "../../ui/TableEmpleado/TableEmpleadoGeneric";
 import { ModalEmpleadoPrueba } from "../../ui/modals/ModalEmpleado/ModalEmpleadoPrueba";
+import IEmpleadoPost from "../../../types/Empleado";
 
 // Definición de la URL base de la API
 const API_URL = import.meta.env.VITE_API_URL;
@@ -31,6 +32,9 @@ export const ScreenEmpleado = () => {
     { label : "Apellido" , key: "apellido"},
     { label : "Rol", key:"rol"},
     { label : "Email", key:"email"},
+    {label: "Eliminado",key:"eliminado",
+      /* render: (element: IEmpleado) => (element. ? "Si" : "No" ) */
+    },
     { label: "Acciones", key: "acciones" },
     //render de sucursal <-
   ];
@@ -77,22 +81,6 @@ export const ScreenEmpleado = () => {
       setLoading(false);
     }
   };
-  
-  
-
-  /* const getEmpleados = async () => {
-    try {
-      const empleados = await empleadoService.getAll();
-      const empleadosNoEliminados = empleados.filter((empleado) => !empleado.eliminado);
-      dispatch(setDataTable(empleadosNoEliminados));
-      console.log(empleadosNoEliminados);
-    } catch (error) {
-      console.error('Error fetching empleados:', error);
-    } finally {
-      setLoading(false);
-    }
-  }; */
-  
 
   // Efecto para cargar los datos al inicio
   useEffect(() => {
@@ -147,12 +135,6 @@ export const ScreenEmpleado = () => {
         )}
       </div>
 
-      {/* Modal para agregar o editar una persona */}
-      {/* <ModalEmpleado
-        getEmpleados={getEmpleados}
-        openModal={openModal}
-        setOpenModal={setOpenModal}
-      /> */}
       <ModalEmpleadoPrueba
         getEmpleados={getEmpleados}
         openModal={openModal}

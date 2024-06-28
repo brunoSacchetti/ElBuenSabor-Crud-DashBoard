@@ -15,7 +15,6 @@ import { MenuItem, Select, SelectChangeEvent } from "@mui/material";
 import { CategoriaService } from "../../../services/CategoriaService";
 import { ICategoria } from "../../../types/Categoria";
 
-
 const API_URL = import.meta.env.VITE_API_URL;
 
 interface ITableColumn<T> {
@@ -49,8 +48,6 @@ export const TableGeneric = <T extends { id: any }>({
   const [productosManufacturados, setProductosManufacturados] = useState<IArticuloManufacturado[]>([]);
 
   const sucursalActual = useAppSelector((state) => state.sucursal.sucursalActual);
-
-
 
   const handleChangePage = (_: unknown, newPage: number) => {
     setPage(newPage);
@@ -161,7 +158,15 @@ export const TableGeneric = <T extends { id: any }>({
                 {(selectedCategoriaId === -1 ? filteredRows : productosManufacturados)
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row, index: number) => (
-                    <TableRow role="checkbox" tabIndex={-1} key={index}>
+                    <TableRow
+                      role="checkbox"
+                      tabIndex={-1}
+                      key={index}
+                      style={{
+                        backgroundColor: row.habilitado === false ? "grey" : "inherit",
+                        
+                      }}
+                    >
                       {columns.map((column, i: number) => (
                         <TableCell key={i} align={"center"}>
                           {column.render ? (

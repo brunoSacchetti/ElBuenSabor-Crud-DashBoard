@@ -2,6 +2,7 @@ import { Button } from "@mui/material";
 import { useAppDispatch } from "../../../../hooks/redux";
 import { setElementActive } from "../../../../redux/slices/TablaReducer";
 import IArticuloManufacturado from "../../../../types/ArticuloManufacturado";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 // Interfaz para los props del componente
 interface IButtonsTable {
@@ -53,34 +54,39 @@ export const ButtonsTable = ({
         justifyContent: "space-around",
       }}
     >
-      {/* ALTA Y BAJA */}
+      {/* Botón para editar el elemento */}
+      <Button
+        variant="contained"
+        onClick={handleModalSelected}
+        style={{ pointerEvents: !el.habilitado ? "none" : "auto" }}
+      >
+        <span className="material-symbols-outlined">edit</span>
+      </Button>
+
+      {/* Deshabilitado Y Habilitado */}
       {el.habilitado === true ? (
         <Button
           onClick={handleChangeRegisterOrCancelItem}
+          style={{ borderRadius: '50px' }}
           variant="contained"
           color="error"
         >
           Deshabilitar
-          <span className="material-symbols-outlined">block</span>
+          <VisibilityOff style={{ marginLeft: '6px' }} />
         </Button>
       ) : (
         <Button
           onClick={handleChangeRegisterOrCancelItem}
           variant="contained"
+          style={{ borderRadius: '50px' }}
           color="success"
         >
           Habilitar
-          <span className="material-symbols-outlined">check</span>
+          <Visibility style={{ marginLeft: '6px' }} />
         </Button>
       )}
-      {/* Botón para editar el elemento */}
-      <Button variant="contained" onClick={handleModalSelected}>
-        <span className="material-symbols-outlined">edit</span>
-      </Button>
-      {/* Botón para eliminar el elemento */}
-      {/* <Button variant="contained" color="error" onClick={handleDeleteItem}>
-        <span className="material-symbols-outlined">delete_forever</span>
-      </Button> */}
+
+
     </div>
   );
 };

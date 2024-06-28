@@ -3,7 +3,7 @@ import * as Yup from "yup";
 import TextFieldValue from "../../TextFildValue/TextFildValue";
 import { Form, Formik } from "formik";
 import { useAppDispatch } from "../../../../hooks/redux";
-import { removeEmpresaActive, setLoading } from "../../../../redux/slices/EmpresaReducer";
+import { setLoading } from "../../../../redux/slices/EmpresaReducer";
 import InsumoEditDto from "../../../../types/Dtos/InsumosDto/InsumoEditDto";
 import { InsumoEditService } from "../../../../services/InsumoEditService";
 import { useEffect, useState } from "react";
@@ -20,12 +20,14 @@ interface IModalInsumosEdit {
   openModal: boolean;
   setOpenModal: (state: boolean) => void;
   articuloInsumo?: InsumoEditDto;
+  getInsumosCategoria: () => void;
 }
 
 export const ModalArticuloInsumoEdit = ({
   openModal,
   setOpenModal,
   articuloInsumo,
+  getInsumosCategoria,
 }: IModalInsumosEdit) => {
   const initialValues = articuloInsumo || {
     id: 0,
@@ -45,12 +47,12 @@ export const ModalArticuloInsumoEdit = ({
 
   const handleClose = () => {
     setOpenModal(false);
-    dispatch(removeEmpresaActive());
+    getInsumosCategoria()
   };
 
   useEffect(() => {
     if (!openModal) {
-      dispatch(removeEmpresaActive());
+      
     }
   }, [openModal, dispatch]);
 

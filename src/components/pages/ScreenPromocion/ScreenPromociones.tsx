@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-
-import { TableGeneric } from "../../ui/TableGeneric/TableGeneric";
+import Swal from "sweetalert2";
+import { TableGeneric } from "../../ui/TablePromocionScreen/TableGeneric"
 import { Button, CircularProgress } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
 
 import { removeElementActive, setDataTable } from "../../../redux/slices/TablaReducer";
-import Swal from "sweetalert2";
+
 
 //Importamos IPromocion y Empresa Service                                
 import IPromocion from "../../../types/Promocion";
@@ -55,13 +55,13 @@ export const ScreenPromociones = () => {
   const handleDelete = async (id: number) => {
     // Mostrar confirmación antes de eliminar
     Swal.fire({
-      title: "¿Estas seguro?",
-      text: `¿Seguro que quieres eliminar?`,
+      title: "¿Estás seguro?",
+      text: "¿Seguro que quieres habilitar/deshabilitar?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Si, Eliminar!",
+      confirmButtonText: "Sí",
       cancelButtonText: "Cancelar",
     }).then((result) => {
       if (result.isConfirmed) {

@@ -11,6 +11,7 @@ import { ModalArticuloInsumoEdit } from "../../ui/modals/ModalArticuloInsumo/Mod
 import { SucursalService } from "../../../services/SucursalService";
 import { ICategoria } from "../../../types/Categoria";
 import InsumoEditDto from "../../../types/Dtos/InsumosDto/InsumoEditDto";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 // Definición de la URL base de la API
 const API_URL = import.meta.env.VITE_API_URL;
@@ -42,18 +43,30 @@ export const ScreenInsumos = () => {
       label: "Acciones",
       key: "acciones",
       render: (insumos: IArticuloInsumo) => (
-        <div>
-          <Button onClick={() => handleEdit(insumos)} variant="contained" color="primary">
-            Editar
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around'}}>
+          <Button 
+            onClick={() => handleEdit(insumos)}  
+            style={{ pointerEvents: !insumos.habilitado ? "none" : "auto", marginRight: '10px' }} 
+            variant="contained" 
+            color="primary"
+          >
+            <span className="material-symbols-outlined">edit</span>
           </Button>
-          {/* <Button onClick={() => handleDelete(insumos.id)} variant="contained" color="secondary">
-            Eliminar
-          </Button> */}
-          <Button onClick={() => handleToggleEnable(insumos)} variant="contained" color={insumos.habilitado ? "error" : "success"}>
-            {insumos.habilitado ? "Deshabilitar" : "Habilitar"}
+          
+          <Button 
+            onClick={() => handleToggleEnable(insumos)} 
+            style={{ borderRadius: '50px' }} 
+            variant="contained" 
+            color={insumos.habilitado ? "error" : "success"}
+          >
+            {insumos.habilitado ? (
+              <>Deshabilitar <VisibilityOff style={{ marginLeft: '6px' }} /></>
+            ) : (
+              <>Habilitar <Visibility style={{ marginLeft: '6px' }} /></>
+            )}
           </Button>
         </div>
-      ),
+      )
     },
   ];
   const getCategorias = async () => {
@@ -102,8 +115,9 @@ export const ScreenInsumos = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         insumosService.changeHabilitado(id).then(() => {
-          setInsumoXCategoria((prevInsumos) => prevInsumos.filter((insumo) => insumo.id !== id));
-          dispatch(setDataTable(insumosXCategoria.filter((insumo) => insumo.id !== id)));
+          /* setInsumoXCategoria((prevInsumos) => prevInsumos.filter((insumo) => insumo.id !== id));
+          dispatch(setDataTable(insumosXCategoria.filter((insumo) => insumo.id !== id))); */
+          getInsumosCategoria();
         });
       }
     });
@@ -215,6 +229,7 @@ export const ScreenInsumos = () => {
           openModal={openModal}
           setOpenModal={setOpenModal}
           articuloInsumo={editingArticulo}
+          getInsumosCategoria={getInsumosCategoria}
         />
       ) : (
         <ModalArticuloInsumo
