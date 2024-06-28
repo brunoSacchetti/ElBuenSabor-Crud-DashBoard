@@ -13,6 +13,7 @@ import FacturadoIcon from '@mui/icons-material/CheckCircle';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import RejectedIcon from '@mui/icons-material/Cancel';
 import DeliveryDiningIcon from '@mui/icons-material/DeliveryDining';
+import DoneAllIcon from '@mui/icons-material/DoneAll';
 
 // Definición de la URL base de la API
 const API_URL = import.meta.env.VITE_API_URL;
@@ -39,6 +40,8 @@ export const ScreenPedido = () => {
         return { color: 'red', icon: <RejectedIcon /> };
       case 'DELIVERY':
         return { color: '#00B558', icon: <DeliveryDiningIcon /> };
+      case 'TERMINADO':
+        return { color: '#0067FB', icon: <DoneAllIcon /> };
       default:
         return { color: 'default', icon: null };
     }
@@ -87,9 +90,10 @@ export const ScreenPedido = () => {
             <MenuItem value=""><em>Seleccionar</em></MenuItem>
             <MenuItem value="PENDIENTE">Pendiente</MenuItem>
             <MenuItem value="PREPARACION">En Preparacion</MenuItem>
-            <MenuItem value="FACTURADO">Facturado</MenuItem>
+            <MenuItem value="TERMINADO">Terminado</MenuItem>
             <MenuItem value="DELIVERY">Delivery</MenuItem>
             <MenuItem value="ENTREGADO">Entregado</MenuItem>
+            <MenuItem value="FACTURADO">Facturado</MenuItem>
             <MenuItem value="RECHAZADO">Rechazado</MenuItem>
           </Select>
           {(pedido.estado === "FACTURADO" || pedido.estado === "ENTREGADO" || pedido.estado === "DELIVERY") && (

@@ -83,7 +83,7 @@ export const TablePedido = <T extends { id: any }>({
       }}
     >
       <TextField
-        label="Buscar producto"
+        label="Buscar pedido por estado"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         sx={{ mb: 2, width: "90%" }}
