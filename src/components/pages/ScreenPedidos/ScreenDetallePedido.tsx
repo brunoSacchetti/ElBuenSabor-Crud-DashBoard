@@ -77,6 +77,10 @@ export const ScreenDetallePedido = () => {
                   <TableCell>{pedido.id}</TableCell>
                 </TableRow>
                 <TableRow>
+                  <TableCell>Total</TableCell>
+                  <TableCell>$ {pedido.total}</TableCell>
+                </TableRow>
+                <TableRow>
                   <TableCell>Cliente</TableCell>
                   <TableCell>{pedido.cliente.nombre} {pedido.cliente.apellido} - {pedido.cliente.email}</TableCell>
                 </TableRow>

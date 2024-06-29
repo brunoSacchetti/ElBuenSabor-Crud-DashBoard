@@ -7,16 +7,13 @@ import { PedidoService } from "../../../services/PedidoService";
 import PedidoDto from "../../../types/Dtos/Pedido/PedidoDto";
 import { TablePedido } from "../../ui/TablePedido/TablePedido";
 import { useNavigate } from "react-router-dom";
+import PendingIcon from '@mui/icons-material/AccessTime';
 import OutdoorGrillIcon from '@mui/icons-material/OutdoorGrill';
-import DoneAllIcon from '@mui/icons-material/DoneAll';
-
 import FacturadoIcon from '@mui/icons-material/CheckCircle';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import RejectedIcon from '@mui/icons-material/Cancel';
 import DeliveryDiningIcon from '@mui/icons-material/DeliveryDining';
-import PendingIcon from '@mui/icons-material/AccessTime';
-
-import IPedido from "../../../types/Pedido";
+import DoneAllIcon from '@mui/icons-material/DoneAll';
 
 // Definición de la URL base de la API
 const API_URL = import.meta.env.VITE_API_URL;
@@ -24,21 +21,10 @@ const API_URL = import.meta.env.VITE_API_URL;
 export const ScreenPedido = () => {
   const [loading, setLoading] = useState(false);
   const [, setOpenModal] = useState(false);
-  const [, setPedidos] = useState<PedidoDto[] | IPedido[]>([]); // Estado local para almacenar los pedidos
-  const [, setFilteredPedidos] = useState<PedidoDto[] | IPedido[]>([]); // Estado para almacenar los pedidos filtrados
 
   const pedidoService = new PedidoService(API_URL + "/pedido");
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-
-  // Según el rol que tenga
-  const userDataString = sessionStorage.getItem('usuario');
-  const userData = userDataString ? JSON.parse(userDataString) : null;
-  const rol = userData ? userData["https://my-app.example.com/roles"][0] : null;
-
-  const allowedStatesForCajero = ['PENDIENTE', 'PREPARACION','TERMINADO','RECHAZADO', 'DELIVERY', 'ENTREGADO', 'FACTURADO'];
-  const allowedStatesForCocinero = ['PREPARACION', 'TERMINADO']; // Estados permitidos para el cocinero
-  const allowedStatesForAdmin = ['PENDIENTE', 'PREPARACION', 'TERMINADO', 'DELIVERY', 'ENTREGADO', 'FACTURADO', 'RECHAZADO'];
 
   const getColorAndIcon = (estado: any) => {
     switch (estado) {
@@ -80,10 +66,10 @@ export const ScreenPedido = () => {
         );
       }
     },
-    { label: "Hora Finalización", key: "horaEstimadaFinalizacion" },
+    { label: "Hora Finalizacion", key: "horaEstimadaFinalizacion" },
     { label: "Forma Pago", key: "formaPago" },
     { label: "Fecha Pedido", key: "fechaPedido"},
-    { label: "Tipo Envío", key: "tipoEnvio"},
+    { label: "Tipo Envio", key: "tipoEnvio"},
     { 
       label: "Cliente", 
       key: "cliente",
@@ -97,36 +83,21 @@ export const ScreenPedido = () => {
           <Button variant="contained" color="primary" style={{height: "40px", fontSize: "12px"}} onClick={() => handleViewDetails(pedido.id)}>
             Ver Detalles
           </Button>
-          {rol === 'CAJERO' && (
-            <Select 
-              value={pedido.estado}
-              onChange={(e) => handleCambiarEstado(pedido.id, pedido.estado, e.target.value)}
-              disabled={!canChangeEstado(pedido.estado)}
-            >
-              <MenuItem value=""><em>Seleccionar</em></MenuItem>
-              {allowedStatesForCajero.map((state) => (
-                <MenuItem key={state} value={state}>{state}</MenuItem>
-              ))}
-            </Select>
-          )}
-          {rol === 'COCINERO' && pedido.estado === "PREPARACION" && (
-            <Button variant="contained" color="primary" style={{height: "40px", fontSize: "12px"}} onClick={() => handleCambiarEstado(pedido.id, pedido.estado, 'TERMINADO')}>
-              Marcar como Terminado
-            </Button>
-          )}
-          {rol === 'ADMIN' && (
-            <Select 
-              value={pedido.estado}
-              onChange={(e) => handleCambiarEstado(pedido.id, pedido.estado, e.target.value)}
-              disabled={!canChangeEstado(pedido.estado)}
-            >
-              <MenuItem value=""><em>Seleccionar</em></MenuItem>
-              {allowedStatesForAdmin.map((state) => (
-                <MenuItem key={state} value={state}>{state}</MenuItem>
-              ))}
-            </Select>
-          )}
-        {pedido.estado === "FACTURADO" && (
+          <Select 
+            value={pedido.estado}
+            onChange={(e) => handleCambiarEstado(pedido.id, pedido.estado, e.target.value)}
+            disabled={pedido.estado === 'RECHAZADO' || pedido.estado === 'FACTURADO'}
+          >
+            <MenuItem value=""><em>Seleccionar</em></MenuItem>
+            <MenuItem value="PENDIENTE">Pendiente</MenuItem>
+            <MenuItem value="PREPARACION">En Preparacion</MenuItem>
+            <MenuItem value="TERMINADO">Terminado</MenuItem>
+            <MenuItem value="DELIVERY">Delivery</MenuItem>
+            <MenuItem value="ENTREGADO">Entregado</MenuItem>
+            <MenuItem value="FACTURADO">Facturado</MenuItem>
+            <MenuItem value="RECHAZADO">Rechazado</MenuItem>
+          </Select>
+          {pedido.estado === "FACTURADO" && (
           <Button variant="contained" color="error" onClick={() => handleDescargarFactura(pedido.id)}>
             Descargar Factura
           </Button>
@@ -136,25 +107,9 @@ export const ScreenPedido = () => {
     }
   ];
 
-  const canChangeEstado = (currentStatus: string) => {
-    switch (currentStatus) {
-      case 'PENDIENTE':
-        return true; // El cajero puede cambiar de PENDIENTE a otros estados permitidos
-      case 'PREPARACION':
-        return rol === 'COCINERO' || rol === 'ADMIN'; // El cajero, cocinero o admin pueden cambiar de PREPARACION
-      case 'TERMINADO':
-        return rol === 'CAJERO' || rol === 'ADMIN'; // Solo el cajero o admin pueden cambiar de TERMINADO a DELIVERY o ENTREGADO
-      case 'DELIVERY':
-      case 'ENTREGADO':
-        return rol === 'CAJERO' || rol === 'ADMIN'; // Solo el cajero o admin pueden cambiar de DELIVERY o ENTREGADO a FACTURADO
-      default:
-        return false;
-    }
-  };
-
   const handleDelete = async (id: number) => {
     Swal.fire({
-      title: "¿Estás seguro?",
+      title: "¿Estas seguro?",
       text: `¿Seguro que quieres eliminar?`,
       icon: "warning",
       showCancelButton: true,
@@ -175,27 +130,11 @@ export const ScreenPedido = () => {
     setLoading(true);
     try {
       const pedidoData = await pedidoService.getAll();
-      setPedidos(pedidoData); // Guardar todos los pedidos
-      const filtered = filterPedidosByRole(pedidoData); // Filtrar los pedidos según el rol
-      setFilteredPedidos(filtered); // Guardar los pedidos filtrados
-      dispatch(setDataTable(filtered)); // Actualizar el estado global con los pedidos filtrados
+      dispatch(setDataTable(pedidoData));
     } catch (error) {
       console.error("Failed to fetch pedidos", error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const filterPedidosByRole = (pedidos: PedidoDto[] | IPedido[]) => {
-    switch (rol) {
-      case 'CAJERO':
-        return pedidos.filter(pedido => allowedStatesForCajero.includes(pedido.estado));
-      case 'COCINERO':
-        return pedidos.filter(pedido => allowedStatesForCocinero.includes(pedido.estado));
-      case 'ADMIN':
-        return pedidos; // Admin puede ver todos los pedidos sin filtro
-      default:
-        return [];
     }
   };
 
@@ -302,6 +241,8 @@ export const ScreenPedido = () => {
       });
     }
   };
+  
+  
 
   const handleDescargarFactura = async (pedidoId: any) => {
     try {
@@ -341,21 +282,21 @@ export const ScreenPedido = () => {
       });
     }
   };
-  
+
   return (
     <>
       <div>
-        <h1 style={{
-          fontSize: "2.5rem",
-          color: "#333",
-          textAlign: "center",
-          marginBottom: "1rem",
-          marginTop: "1rem",
-          fontFamily: "'Arial', sans-serif",
-          letterSpacing: "0.1rem",
-        }}>
-          Listado de Pedidos
-        </h1>
+      <h1 style={{
+        fontSize: "2.5rem",
+        color: "#333",
+        textAlign: "center",
+        marginBottom: "1rem",
+        marginTop: "1rem",
+        fontFamily: "'Arial', sans-serif",
+        letterSpacing: "0.1rem",
+      }}>
+        Listado de Pedidos
+      </h1>
 
         {loading ? (
           <div
@@ -373,6 +314,7 @@ export const ScreenPedido = () => {
             <h2>Cargando...</h2>
           </div>
         ) : (
+          
           <TablePedido<PedidoDto>
             handleDelete={handleDelete}
             columns={ColumnsTablePedido}

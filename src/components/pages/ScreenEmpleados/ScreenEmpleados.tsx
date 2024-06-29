@@ -11,7 +11,6 @@ import { EmpleadoService } from "../../../services/EmpleadoService";
 import IEmpleado from "../../../types/Empleado";
 import { TableEmpleadoGeneric } from "../../ui/TableEmpleado/TableEmpleadoGeneric";
 import { ModalEmpleadoPrueba } from "../../ui/modals/ModalEmpleado/ModalEmpleadoPrueba";
-import IEmpleadoPost from "../../../types/Empleado";
 
 // Definición de la URL base de la API
 const API_URL = import.meta.env.VITE_API_URL;

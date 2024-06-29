@@ -74,8 +74,8 @@ export const AppRouter = () => {
                 <Route path="/promociones" element={<RutaPrivada component={ScreenPromociones} roles={['EMPLEADO', 'ADMIN']} />} />
                 <Route path="/sucursales" element={<RutaPrivada component={ScreenSucursales} roles={['ADMIN']} />} />
                 <Route path="/unidadMedida" element={<RutaPrivada component={ScreenUnidadMedida} roles={['EMPLEADO', 'ADMIN']} />} />
-                <Route path="/pedidos" element={<RutaPrivada component={ScreenPedido} roles={['EMPLEADO', 'ADMIN','COCINERO']} />} />
-                <Route path="/pedido/:id" element={<RutaPrivada component={ScreenDetallePedido} roles={['EMPLEADO', 'COCINERO', 'ADMIN']} />} />
+                <Route path="/pedidos" element={<RutaPrivada component={ScreenPedido} roles={['EMPLEADO', 'ADMIN','COCINERO', 'CAJERO']} />} />
+                <Route path="/pedido/:id" element={<RutaPrivada component={ScreenDetallePedido} roles={['EMPLEADO', 'COCINERO', 'ADMIN', 'CAJERO']} />} />
                 <Route path="/" element={<RutaPrivada component={Home} roles={['ADMIN']} />} />
                 {/* <Route path="*" element={<Navigate to="/login" />} /> */}
               </Routes>
