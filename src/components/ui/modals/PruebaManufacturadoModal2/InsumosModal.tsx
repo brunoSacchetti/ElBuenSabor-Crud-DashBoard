@@ -76,24 +76,14 @@ export const InsumosModal: React.FC<InsumosModalProps> = ({
     <Modal open={open} onClose={handleClose}>
       <div style={{ width: "80%", margin: "auto", marginTop: "50px", backgroundColor: "white", padding: "20px", borderRadius: "5px" }}>
         <h2 style={{ marginBottom: "20px", textAlign: "center" }}>Seleccionar Insumos</h2>
+        
         {/* <TextField
           label="Buscar ingrediente"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           style={{ marginBottom: 20, width: "100%" }}
         /> */}
-        <Select
-          label="Categorias"
-          variant="filled"
-          style={{ marginBottom: 20, width: "100%" }}
-        >
-          {/* Aquí debes mapear las categorías */}
-          {categoria.map((cat) => (
-            <MenuItem key={cat.id} value={cat.id}>
-              {cat.denominacion}
-            </MenuItem>
-          ))}
-        </Select>
+
         <TableModal2
           dataIngredients={insumos}
           onSelect={(selectedData) => setSelectedInsumos(selectedData)}

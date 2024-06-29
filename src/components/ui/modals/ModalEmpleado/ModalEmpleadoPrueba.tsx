@@ -21,6 +21,7 @@ export const ModalEmpleadoPrueba = ({
 }: IModalEmpleado) => {
   const initialValues: IEmpleadoPost = {
     id: 0,
+    eliminado: false,
     nombre: "",
     apellido: "",
     telefono: "",

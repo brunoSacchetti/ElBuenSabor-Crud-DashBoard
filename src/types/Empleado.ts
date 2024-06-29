@@ -1,7 +1,7 @@
 
 interface IEmpleadoPost {
   id:number;
-  //eliminado: boolean;
+  eliminado: boolean;
   nombre:string;
   apellido:string;
   telefono:string;

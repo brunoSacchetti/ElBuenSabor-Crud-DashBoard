@@ -32,8 +32,8 @@ export const ScreenEmpleado = () => {
     { label : "Apellido" , key: "apellido"},
     { label : "Rol", key:"rol"},
     { label : "Email", key:"email"},
-    {label: "Eliminado",key:"eliminado",
-      /* render: (element: IEmpleado) => (element. ? "Si" : "No" ) */
+    {label: "Habilitado",key:"eliminado",
+    render: (element: IEmpleado) => (element.eliminado ? "No" : "Si" )
     },
     { label: "Acciones", key: "acciones" },
     //render de sucursal <-
@@ -53,7 +53,7 @@ export const ScreenEmpleado = () => {
       cancelButtonText: "Cancelar",
     }).then((result) => {
       if (result.isConfirmed) {
-        empleadoService.delete(id).then(() => {
+        empleadoService.changeEliminado(id).then(() => {
           getEmpleados();
         });
       }

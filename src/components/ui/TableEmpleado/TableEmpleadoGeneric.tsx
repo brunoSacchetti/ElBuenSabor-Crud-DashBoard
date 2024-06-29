@@ -7,10 +7,9 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import { useEffect, useState } from "react";
-import { ButtonsTable } from "../ButtonsTable/ButtonsTable";
 import { useAppSelector } from "../../../hooks/redux";
 import { TextField, Box } from "@mui/material";
-
+import { ButtonsUnidadMedida } from "../TableUnidadMedida/ButtonsUnidadMedida";
 
 // Definimos la interfaz para cada columna de la tabla
 interface ITableColumn<T> {
@@ -25,7 +24,7 @@ export interface ITableProps<T> {
   setOpenModal: (state: boolean) => void;
 }
 
-export const TableEmpleadoGeneric = <T extends { id: any }>({
+export const TableEmpleadoGeneric = <T extends { id: any; eliminado?: boolean }>({
   columns,
   handleDelete,
   setOpenModal,
@@ -51,8 +50,6 @@ export const TableEmpleadoGeneric = <T extends { id: any }>({
 
   // Obtener los datos de la tabla del estado global
   const dataTable = useAppSelector((state) => state.tablaReducer.dataTable);
-
-  
 
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredRows, setFilteredRows] = useState<any[]>([]);
@@ -106,14 +103,24 @@ export const TableEmpleadoGeneric = <T extends { id: any }>({
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index: number) => {
                   return (
-                    <TableRow hover role="checkbox" tabIndex={-1} key={index}>
+                    <TableRow
+                      role="checkbox"
+                      tabIndex={-1}
+                      key={index}
+                      sx={{
+                        backgroundColor: row.eliminado ? "gray" : "inherit",
+                        "&:hover": {
+                          backgroundColor: row.eliminado ? "gray" : "inherit",
+                        },
+                      }}
+                    >
                       {columns.map((column, i: number) => {
                         return (
                           <TableCell key={i} align={"center"}>
                             {column.render ? (
                               column.render(row)
                             ) : column.label === "Acciones" ? (
-                              <ButtonsTable
+                              <ButtonsUnidadMedida
                                 el={row}
                                 handleDelete={handleDelete}
                                 setOpenModal={setOpenModal}
