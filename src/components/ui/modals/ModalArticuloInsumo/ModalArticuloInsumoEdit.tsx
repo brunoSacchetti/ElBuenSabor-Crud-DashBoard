@@ -12,6 +12,7 @@ import { ImagenService } from "../../../../services/ImagenService";
 import IImagenes from "../../../../types/Imagenes";
 import Swal from "sweetalert2";
 import useAuthToken from "../../../../hooks/useAuthToken";
+import { TextField } from "@mui/material";
 
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -92,6 +93,27 @@ export const ModalArticuloInsumoEdit = ({
     }
   };
 
+
+  const uploadImages = async (files: FileList, idInsumo: number, token: string) => {
+    try {
+      const formData = new FormData();
+      for (let i = 0; i < files.length; i++) {
+        formData.append("uploads", files[i]);
+      }
+      formData.append("id", String(idInsumo));
+      
+      // Enviar las imágenes al backend
+      await imageService.uploadImagesWithSecurity(`${API_URL}/ArticuloInsumo/uploads?id=${idInsumo}`,formData, token);
+      console.log("Imágenes subidas correctamente.");
+    } catch (error) {
+      console.error("Error al subir imágenes:", error);
+    }
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedFiles(event.target.files);
+  };
+
   return (
     <div>
       <Modal
@@ -122,31 +144,9 @@ export const ModalArticuloInsumoEdit = ({
               await insumoEditService.putSec(values.id, values, token);
 
               if (selectedFiles) {
-                try {
-                  Swal.fire({
-                    title: "Subiendo imágenes...",
-                    text: "Espere mientras se suben los archivos.",
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                      Swal.showLoading();
-                    },
-                  });
-
-                  const formData = new FormData();
-                  Array.from(selectedFiles).forEach((file) => {
-                    formData.append("uploads", file);
-                  });
-
-                  await imageService.uploadImages(`${API_URL}/ArticuloInsumo/uploads?id=${values.id}`, formData);
-                  Swal.fire("Éxito", "Imágenes subidas correctamente", "success");
-                  fetchImages(values.id);
-                } catch (error) {
-                  Swal.fire("Error", "Algo falló al subir las imágenes, inténtalo de nuevo.", "error");
-                } finally {
-                  setSelectedFiles(null);
-                  Swal.close();
-                }
+                await uploadImages(selectedFiles, values.id, token);
               }
+
 
               handleClose();
             }}
@@ -190,7 +190,20 @@ export const ModalArticuloInsumoEdit = ({
                     type="number"
                     placeholder="Stock Mínimo"
                   />
-                </div>
+                  <div style={{display:'flex',flexDirection:'column'}}>
+                      <label htmlFor="file">Seleccionar una imagen</label>
+                    <TextField
+                    
+                      id="outlined-basic"
+                      variant="outlined"
+                      type="file"
+                      onChange={handleFileChange}
+                      inputProps={{
+                        multiple: true,
+                      }}
+                    />
+                    </div>
+                  </div>
                 <div className="d-flex justify-content-end">
                   <Button variant="success" type="submit">
                     Enviar
