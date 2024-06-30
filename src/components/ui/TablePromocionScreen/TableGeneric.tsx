@@ -80,7 +80,7 @@ export const TableGeneric = <T extends { id: any; eliminado?: boolean }>({
       }}
     >
       <TextField
-        label="Buscar producto"
+        label="Buscar Promocion"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         sx={{ mb: 2, width: "90%" }}

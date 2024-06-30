@@ -234,7 +234,8 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
         itemValue.precioPromocional === 0 ||
         itemValue.descripcionDescuento.trim() === "" ||
         itemValue.tipoPromocion.trim() === "" ||
-        selectedSucursales.length === 0
+        selectedSucursales.length === 0 || 
+        selectedDetalle.length === 0 
       ) {
         // Muestra un mensaje de error con SweetAlert
         await Swal.fire({
@@ -481,7 +482,7 @@ export const ModalPromocion: FC<IMasterDetailModal> = ({
   const handleDeleteImage = async (publicId: string, id: number) => {
     try {
       // Realiza la llamada al servicio para eliminar la imagen
-      await imageService.deleteImage(publicId, id);
+      await imageService.deleteImagePromocion(publicId, id);
       // Actualiza la lista de imágenes en el estado local eliminando la imagen eliminada
       setImages(images.filter((image) => image.id !== id));
       // Muestra un mensaje de éxito si la eliminación fue exitosa

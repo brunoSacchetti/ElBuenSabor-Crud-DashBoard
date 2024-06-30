@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Button, Select, MenuItem } from "@mui/material";
+import { Modal, Button} from "@mui/material";
 import { SucursalService } from "../../../../services/SucursalService";
 import { useAppSelector } from "../../../../hooks/redux";
 import { TableArticulo } from "../../TablePromocionScreen/TableArticulos/TableArticulos";
@@ -120,7 +120,7 @@ export const ArticulosPromoModal: React.FC<InsumosModalProps> = ({
           <div style={{ textAlign: "center" }}>Cargando...</div>
         ) : (
           <>
-            <Select
+            {/* <Select
               label="Categorias"
               variant="filled"
               style={{ marginBottom: 20, width: "100%" }}
@@ -133,7 +133,7 @@ export const ArticulosPromoModal: React.FC<InsumosModalProps> = ({
                   {cat.denominacion}
                 </MenuItem>
               ))}
-            </Select>
+            </Select> */}
             <TableArticulo
               dataIngredients={articuloGenerico}
               onSelect={(selectedData) => setSelectedInsumos(selectedData)}

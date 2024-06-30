@@ -131,7 +131,7 @@ export const TableArticulo: React.FC<ITableIngredientsProps> = ({
         onChange={(e) => setSearchTerm(e.target.value)}
         style={{ marginBottom: 20, width: "30%" }}
       />
-      <Select
+      {/* <Select
         style={{ marginLeft: 40 }}
         label="Categorías"
         variant="filled"
@@ -144,7 +144,7 @@ export const TableArticulo: React.FC<ITableIngredientsProps> = ({
             {cat.denominacion}
           </MenuItem>
         ))}
-      </Select>
+      </Select> */}
       <TableContainer
         component={Paper}
         sx={{ maxHeight: "55vh", height: "600px" }}
@@ -152,17 +152,17 @@ export const TableArticulo: React.FC<ITableIngredientsProps> = ({
         <Table sx={{ minWidth: 650 }} stickyHeader aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell align="center">Id</TableCell>
+              {/* <TableCell align="center">Id</TableCell> */}
               <TableCell align="center">Artículo</TableCell>
-              <TableCell align="center">Unidad de medida</TableCell>
               <TableCell align="center">Cantidad</TableCell>
               <TableCell align="center">Seleccionar</TableCell>
+              {/* <TableCell align="center">Seleccionar</TableCell> */}
             </TableRow>
           </TableHead>
           <TableBody>
             {displayedRows.map((row) => (
               <TableRow key={row.id}>
-                <TableCell align="center">{row.id}</TableCell>
+                {/* <TableCell align="center">{row.id}</TableCell> */}
                 <TableCell align="center">{row.denominacion}</TableCell>
                 <TableCell align="center">
                   <TextField

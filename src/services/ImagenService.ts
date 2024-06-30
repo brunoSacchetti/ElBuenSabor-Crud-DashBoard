@@ -89,6 +89,7 @@ export class ImagenService extends BackendClient<IImagen> {
       }
       return response.json(); // Podrías devolver algún tipo de mensaje de confirmación si lo deseas
     }
+
     async deleteImageEmpresa(publicId: string, id: number): Promise<Response> {
       try {
         const url = new URL(`${this.baseUrl}/deleteImg`);
@@ -108,6 +109,27 @@ export class ImagenService extends BackendClient<IImagen> {
         throw new Error(`Error al eliminar la imagen: ${error}`);
       }
     }
+
+    async deleteImagePromocion(publicId: string, id: number): Promise<Response> {
+      try {
+        const url = new URL(`${this.baseUrl}/deleteImg`);
+        url.searchParams.append('publicId', publicId);
+        url.searchParams.append('id', id.toString());
+  
+        const response = await fetch(url.toString(), {
+          method: 'POST',
+        });
+  
+        if (!response.ok) {
+          throw new Error(`Error al eliminar la imagen: ${response.statusText}`);
+        }
+  
+        return response;
+      } catch (error) {
+        throw new Error(`Error al eliminar la imagen: ${error}`);
+      }
+    }
+
 
     async deleteImageWithSecurity(url: string, publicId: string, id: number, token: string): Promise<any> {
       try {
