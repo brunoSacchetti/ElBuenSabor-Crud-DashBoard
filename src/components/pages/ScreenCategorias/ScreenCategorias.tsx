@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { Button, CircularProgress, Typography } from "@mui/material";
+import { Button, CircularProgress, TextField, Typography } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
 
 
@@ -30,6 +30,8 @@ export const ScreenCategorias = () => {
   const [categoriaEdit, setCategoriaEdit] = useState<ICategoria | null>(null);
   const [openEditModal, setOpenEditModal] = useState(false);
    
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredCategorias, setFilteredCategorias] = useState<ICategoria[]>([]);
 
   const categoriaService = new CategoriaService(API_URL + "/categoria");
   const sucursalService = new SucursalService(API_URL + "/sucursal");
@@ -53,7 +55,6 @@ export const ScreenCategorias = () => {
       cancelButtonText: "Cancelar",
     }).then((result) => {
       if (result.isConfirmed) {
-        // Eliminar la persona si se confirma
         categoriaService.delete(id).then(() => {
           getCategorias();
         });
@@ -72,6 +73,7 @@ export const ScreenCategorias = () => {
       const categoriaData = await sucursalService.getCategoriasPorSucursal(sucursalActual.id);
       dispatch(setCategoriaData(categoriaData));
       setCategorias(categoriaData);
+      setFilteredCategorias(categoriaData); // Actualiza el estado inicial de filteredCategorias
     } catch (error) {
       console.error("Error al obtener categorias:", error);
     } finally {
@@ -104,6 +106,12 @@ export const ScreenCategorias = () => {
     setOpenEditModal(true);
   };
 
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const term = event.target.value.toLowerCase();
+    setSearchTerm(term);
+    setFilteredCategorias(categorias.filter(categoria => categoria.denominacion.toLowerCase().includes(term)));
+  };
+
 
   return (
     <>
@@ -117,14 +125,20 @@ export const ScreenCategorias = () => {
           }}
         >
           <Typography
-          variant="h4"
-          component="h1"
-          gutterBottom
-          style={{ textAlign: "center", alignContent: "center", alignItems: "center", justifyContent: "center", display: "flex", paddingRight: "40%"}}
-        >
-          Categorías
-        </Typography>
-
+            variant="h4"
+            component="h1"
+            gutterBottom
+            style={{ textAlign: "center", alignContent: "center", alignItems: "center", justifyContent: "center", display: "flex", paddingRight: "40%" }}
+          >
+            Categorías
+          </Typography>
+          <TextField
+            label="Buscar Categoría"
+            variant="outlined"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            style={{ marginRight: "1rem" }}
+          />
           <Button
             onClick={() => {
               setOpenModal(true);
@@ -134,31 +148,31 @@ export const ScreenCategorias = () => {
             Agregar
           </Button>
         </div>
-      {loading ? (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'column',
-            width: '100%',
-            gap: '2vh',
-            height: '100%',
-          }}
-        >
-          <CircularProgress color="secondary" />
-          <h2>Cargando...</h2>
-        </div>
-      ) : (
-        <AccordionCategoria 
-          categories={categorias}
-          onEdit={handleEditCategoria} 
-          onAddSubcategoria={(parentId) => handleAddSubcategoria(parentId)} 
-          onDelete={handleDelete} 
-/>
-      )}
+        {loading ? (
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              flexDirection: 'column',
+              width: '100%',
+              gap: '2vh',
+              height: '100%',
+            }}
+          >
+            <CircularProgress color="secondary" />
+            <h2>Cargando...</h2>
+          </div>
+        ) : (
+          <AccordionCategoria 
+            categories={filteredCategorias} // Utiliza filteredCategorias aquí
+            onEdit={handleEditCategoria} 
+            onAddSubcategoria={(parentId) => handleAddSubcategoria(parentId)} 
+            onDelete={handleDelete} 
+          />
+        )}
       </div>
-
+  
       {/* Modal para agregar o editar una categoría */}
       <ModalCategoria
         getCategorias={getCategorias}
@@ -175,5 +189,5 @@ export const ScreenCategorias = () => {
         setOpenEditModal={setOpenEditModal}
       />
     </>
-  );
+  );  
 };

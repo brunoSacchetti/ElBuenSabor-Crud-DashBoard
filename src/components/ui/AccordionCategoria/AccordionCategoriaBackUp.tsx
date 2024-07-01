@@ -40,11 +40,9 @@ export const Categoria: React.FC<CategoriaProps> = ({ id, denominacion, subCateg
       )}
     </AccordionDetails>
     <AccordionActions>
-      {subCategorias && (  // Mostrar el botón solo si no hay subcategorías definidas
-        <Button variant="contained" color="primary" onClick={() => onAddSubcategoria(id)}>
-          Agregar Subcategoría
-        </Button>
-      )}
+      <Button variant="contained" color="primary" onClick={() => onAddSubcategoria(id)}>
+        Agregar Subcategoría
+      </Button>
       <Button variant="contained" color="secondary" onClick={() => onDelete(id)}>
         Eliminar
       </Button>
@@ -54,7 +52,6 @@ export const Categoria: React.FC<CategoriaProps> = ({ id, denominacion, subCateg
     </AccordionActions>
   </Accordion>
 );
-
 
 export const AccordionCategoria: React.FC<AccordionCategoriaProps> = ({ categories, onEdit, onAddSubcategoria, onDelete }) => (
   <>

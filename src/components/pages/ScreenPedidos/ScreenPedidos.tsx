@@ -16,6 +16,8 @@ import RejectedIcon from '@mui/icons-material/Cancel';
 import DeliveryDiningIcon from '@mui/icons-material/DeliveryDining';
 import PendingIcon from '@mui/icons-material/AccessTime';
 
+import { saveAs } from "file-saver";
+
 import IPedido from "../../../types/Pedido";
 
 // Definición de la URL base de la API
@@ -27,6 +29,12 @@ export const ScreenPedido = () => {
   const [, setPedidos] = useState<PedidoDto[] | IPedido[]>([]); // Estado local para almacenar los pedidos
   const [, setFilteredPedidos] = useState<PedidoDto[] | IPedido[]>([]); // Estado para almacenar los pedidos filtrados
 
+  //Reporte de pedidos
+  const [fechaLimiteMin, setFechaLimiteMin] = useState<string>("");
+  const [fechaLimiteMax, setFechaLimiteMax] = useState<string>("");
+  const [fechaDesde, setFechaDesde] = useState<string>("");
+  const [fechaHasta, setFechaHasta] = useState<string>("");
+
   const pedidoService = new PedidoService(API_URL + "/pedido");
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -36,7 +44,7 @@ export const ScreenPedido = () => {
   const userData = userDataString ? JSON.parse(userDataString) : null;
   const rol = userData ? userData["https://my-app.example.com/roles"][0] : null;
 
-  const allowedStatesForCajero = ['PENDIENTE', 'PREPARACION','TERMINADO','RECHAZADO', 'DELIVERY', 'ENTREGADO', 'FACTURADO'];
+  const allowedStatesForCajero = ['PENDIENTE', 'PREPARACION', 'TERMINADO', 'RECHAZADO', 'DELIVERY', 'ENTREGADO', 'FACTURADO'];
   const allowedStatesForCocinero = ['PREPARACION', 'TERMINADO']; // Estados permitidos para el cocinero
   const allowedStatesForAdmin = ['PENDIENTE', 'PREPARACION', 'TERMINADO', 'DELIVERY', 'ENTREGADO', 'FACTURADO', 'RECHAZADO'];
 
@@ -67,8 +75,8 @@ export const ScreenPedido = () => {
       key: "id",
       render: (pedido: PedidoDto) => (pedido?.id ? pedido.id : 0),
     },
-    { 
-      label: "Estado", 
+    {
+      label: "Estado",
       key: "estado",
       render: (pedido: PedidoDto) => {
         const { color, icon } = getColorAndIcon(pedido.estado);
@@ -82,23 +90,23 @@ export const ScreenPedido = () => {
     },
     { label: "Hora Finalización", key: "horaEstimadaFinalizacion" },
     { label: "Forma Pago", key: "formaPago" },
-    { label: "Fecha Pedido", key: "fechaPedido"},
-    { label: "Tipo Envío", key: "tipoEnvio"},
-    { 
-      label: "Cliente", 
+    { label: "Fecha Pedido", key: "fechaPedido" },
+    { label: "Tipo Envío", key: "tipoEnvio" },
+    {
+      label: "Cliente",
       key: "cliente",
       render: (pedido: PedidoDto) => (pedido.cliente.nombre + " " + pedido.cliente.apellido),
     },
-    { 
-      label: "Acciones", 
+    {
+      label: "Acciones",
       key: "acciones",
       render: (pedido: PedidoDto) => (
         <div style={{ display: 'flex', gap: '1rem' }}>
-          <Button variant="contained" color="primary" style={{height: "40px", fontSize: "12px"}} onClick={() => handleViewDetails(pedido.id)}>
+          <Button variant="contained" color="primary" style={{ height: "40px", fontSize: "12px" }} onClick={() => handleViewDetails(pedido.id)}>
             Ver Detalles
           </Button>
           {rol === 'CAJERO' && (
-            <Select 
+            <Select
               value={pedido.estado}
               onChange={(e) => handleCambiarEstado(pedido.id, pedido.estado, e.target.value)}
               disabled={!canChangeEstado(pedido.estado)}
@@ -110,12 +118,12 @@ export const ScreenPedido = () => {
             </Select>
           )}
           {rol === 'COCINERO' && pedido.estado === "PREPARACION" && (
-            <Button variant="contained" color="primary" style={{height: "40px", fontSize: "12px"}} onClick={() => handleCambiarEstado(pedido.id, pedido.estado, 'TERMINADO')}>
+            <Button variant="contained" color="primary" style={{ height: "40px", fontSize: "12px" }} onClick={() => handleCambiarEstado(pedido.id, pedido.estado, 'TERMINADO')}>
               Marcar como Terminado
             </Button>
           )}
           {rol === 'ADMIN' && (
-            <Select 
+            <Select
               value={pedido.estado}
               onChange={(e) => handleCambiarEstado(pedido.id, pedido.estado, e.target.value)}
               disabled={!canChangeEstado(pedido.estado)}
@@ -126,11 +134,11 @@ export const ScreenPedido = () => {
               ))}
             </Select>
           )}
-        {pedido.estado === "FACTURADO" && (
-          <Button variant="contained" color="error" onClick={() => handleDescargarFactura(pedido.id)}>
-            Descargar Factura
-          </Button>
-        )}
+          {pedido.estado === "FACTURADO" && (
+            <Button variant="contained" color="error" onClick={() => handleDescargarFactura(pedido.id)}>
+              Descargar Factura
+            </Button>
+          )}
         </div>
       )
     }
@@ -185,6 +193,7 @@ export const ScreenPedido = () => {
       setLoading(false);
     }
   };
+  
 
   const filterPedidosByRole = (pedidos: PedidoDto[] | IPedido[]) => {
     switch (rol) {
@@ -204,6 +213,22 @@ export const ScreenPedido = () => {
     getPedido();
   }, []);
 
+  useEffect(() => {
+    const fetchFechasLimites = async () => {
+      try {
+        const response = await fetch(`${API_URL}/estadisticasDashboard/limite-fechas`);
+        const data = await response.json();
+        const { fechaMinima, fechaMaxima } = data;
+        setFechaLimiteMin(fechaMinima);
+        setFechaLimiteMax(fechaMaxima);
+      } catch (error) {
+        console.error("Error al obtener las fechas límites:", error);
+      }
+    };
+
+    fetchFechasLimites();
+  }, []);
+
   const handleViewDetails = (id: number) => {
     navigate(`/pedido/${id}`);
   };
@@ -218,7 +243,7 @@ export const ScreenPedido = () => {
       });
       return;
     }
-  
+
     if (currentStatus === 'PREPARACION' && newStatus !== 'TERMINADO') {
       Swal.fire({
         title: "Transición no válida",
@@ -228,7 +253,7 @@ export const ScreenPedido = () => {
       });
       return;
     }
-  
+
     if (currentStatus === 'TERMINADO' && (newStatus !== 'DELIVERY' && newStatus !== 'ENTREGADO')) {
       Swal.fire({
         title: "Transición no válida",
@@ -238,7 +263,7 @@ export const ScreenPedido = () => {
       });
       return;
     }
-  
+
     if (currentStatus === 'DELIVERY' && newStatus !== 'ENTREGADO') {
       Swal.fire({
         title: "Transición no válida",
@@ -248,7 +273,7 @@ export const ScreenPedido = () => {
       });
       return;
     }
-  
+
     if (currentStatus === 'ENTREGADO' && newStatus !== 'FACTURADO') {
       Swal.fire({
         title: "Transición no válida",
@@ -258,7 +283,7 @@ export const ScreenPedido = () => {
       });
       return;
     }
-  
+
     if (newStatus === 'DELIVERY') {
       // Verificar si el tipo de envío es DELIVERY
       try {
@@ -283,7 +308,7 @@ export const ScreenPedido = () => {
         return;
       }
     }
-  
+
     try {
       await pedidoService.cambiarEstado(newStatus, id);
       getPedido();
@@ -341,7 +366,73 @@ export const ScreenPedido = () => {
       });
     }
   };
-  
+
+  //Pedidos Excel
+  const urlPedidos = API_URL + "/estadisticasDashboard/excel/pedidos";
+  const handleGenerateExcel = async (event: React.FormEvent, url: string) => {
+    event.preventDefault();
+    try {
+      const fechaDesdeFiltro = fechaDesde || fechaLimiteMin;
+      const fechaHastaFiltro = fechaHasta || fechaLimiteMax;
+
+      const response = await fetch(
+        `${url}?fechaDesde=${fechaDesdeFiltro}&fechaHasta=${fechaHastaFiltro}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const getFileNameFromUrl = (url: string) => {
+          const segments = url.split("/");
+          return segments[segments.length - 1];
+        };
+        saveAs(blob, `${getFileNameFromUrl(url)}.xls`);
+      } else {
+        Swal.fire({
+          title: "Error",
+          text: "Hubo un problema al generar el reporte en formato .xls",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      }
+    } catch (error) {
+      console.error("Error al generar el reporte en formato .xls:", error);
+      Swal.fire({
+        title: "Error",
+        text: "Hubo un problema al generar el reporte en formato .xls",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    }
+  };
+
+  const buttonStyle = {
+    padding: "5px 10px",
+    backgroundColor: "#4CAF50",
+    color: "white",
+    border: "none",
+    cursor: "pointer",
+    borderRadius: "5px",
+  };
+
+  const inputStyle = {
+    margin: "0 10px",
+  };
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>, campo: "desde" | "hasta") => {
+    const value = e.target.value;
+    if (campo === "desde") {
+      setFechaDesde(value);
+    } else if (campo === "hasta") {
+      setFechaHasta(value);
+    }
+  };
+
   return (
     <>
       <div>
@@ -356,7 +447,27 @@ export const ScreenPedido = () => {
         }}>
           Listado de Pedidos
         </h1>
-
+        <div style={{ marginTop: "20px", display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <label style={inputStyle}>
+            Fecha Desde:
+            <input
+              type="date"
+              value={fechaDesde}
+              onChange={(e) => handleDateChange(e, "desde")}
+            />
+          </label>
+          <label style={inputStyle}>
+            Fecha Hasta:
+            <input
+              type="date"
+              value={fechaHasta}
+              onChange={(e) => handleDateChange(e, "hasta")}
+            />
+          </label>
+          <button style={buttonStyle} onClick={(event) => handleGenerateExcel(event, urlPedidos)}>
+            Exportar Excel
+          </button>
+        </div>
         {loading ? (
           <div
             style={{
