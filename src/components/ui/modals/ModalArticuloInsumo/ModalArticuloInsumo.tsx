@@ -49,7 +49,7 @@ const initialValues: InsumoPost & { idCategoria: number } = {
   stockMaximo: 0,
   stockMinimo: 0,
   esParaElaborar: false,
-  idCategoria: 0, 
+  idCategoria: 0,
 };
 
 
@@ -67,8 +67,8 @@ export const ModalArticuloInsumo = ({
   );
   const [unidadMedida, setUnidadMedida] = useState<IUnidadMedidaPost[]>([]);
 
-   //Obtenemos el token para mandarlo
-   const getToken = useAuthToken();
+  //Obtenemos el token para mandarlo
+  const getToken = useAuthToken();
 
   const unidadMedidaService = new UnidadMedidaService(
     `${API_URL}/UnidadMedida`
@@ -110,7 +110,7 @@ export const ModalArticuloInsumo = ({
     stockMaximo: Yup.number()
       .required("Campo requerido")
       .min(0, "El stock debe ser mayor o igual a 0"),
-      stockMinimo: Yup.number()
+    stockMinimo: Yup.number()
       .required("Campo requerido")
       .min(0, "El stock debe ser mayor o igual a 0"),
     idUnidadMedida: Yup.number().required("Campo requerido"),
@@ -123,15 +123,15 @@ export const ModalArticuloInsumo = ({
     setSelectedCategoriaId(idCategoria);
   };
 
-   //#region  IMAGENES PRODUCTO
-   const [images, setImages] = useState<IImagenes[]>([]);
-   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
-   const imageService = new ImagenService(API_URL + "/ArticuloInsumo");
+  //#region  IMAGENES PRODUCTO
+  const [images, setImages] = useState<IImagenes[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+  const imageService = new ImagenService(API_URL + "/ArticuloInsumo");
 
-   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedFiles(event.target.files);
     console.log(event.target.files);
-    
+
   };
 
   const getImages = async (id: number) => {
@@ -167,7 +167,7 @@ export const ModalArticuloInsumo = ({
       getUnidadMedida();
       getImages(elementActive.id); // Load images when editing
       console.log(elementActive);
-      
+
     }
   }, [openModal, elementActive]);
 
@@ -191,22 +191,22 @@ export const ModalArticuloInsumo = ({
           maxHeight: "900px"
         }}
       >
-        <h2 style={{fontSize: "30px", marginBottom: "25px"}}>{elementActive ? "Editar" : "Añadir"} un Insumo</h2>
+        <h2 style={{ fontSize: "30px", marginBottom: "25px" }}>{elementActive ? "Editar" : "Añadir"} un Insumo</h2>
         <Formik
           initialValues={elementActive ? elementActive : initialValues}
           validationSchema={validationSchema}
           enableReinitialize={true}
           onSubmit={async (values: InsumoPost) => {
             const token = await getToken();
-            
+
             try {
               let insumo;
 
               if (elementActive) {
-                try{
-                  const {id, precioVenta, precioCompra, stockActual, stockMaximo, stockMinimo } = values;
+                try {
+                  const { id, precioVenta, precioCompra, stockActual, stockMaximo, stockMinimo } = values;
 
-                  const editedData : InsumoEditDto = {
+                  const editedData: InsumoEditDto = {
                     id,
                     precioVenta,
                     precioCompra,
@@ -224,7 +224,7 @@ export const ModalArticuloInsumo = ({
                 }
               } else {
                 const newItemValue = { ...values, idCategoria: selectedCategoriaId };
-                
+
                 /* const response = await insumoService.post(
                   `${API_URL}/ArticuloInsumo`,
                   newItemValue
@@ -235,42 +235,42 @@ export const ModalArticuloInsumo = ({
                   newItemValue, token
                 );
                 insumo = response;
-                
+
                 if (!selectedFiles || selectedFiles.length === 0) {
                   Swal.fire("No hay imágenes seleccionadas", "Selecciona al menos una imagen", "warning");
                   return; // Detener el envío del formulario si no hay imágenes seleccionadas
                 }
-              
-              try {
-                Swal.fire({
-                  title: "Subiendo imágenes...",
-                  text: "Espere mientras se suben los archivos.",
-                  allowOutsideClick: false,
-                  showConfirmButton: false, // Oculta el botón de confirmar para evitar que el usuario cierre la alerta manualmente
-                  didOpen: () => {
-                    Swal.showLoading();
-                  },
-                });
-                
-                const formData = new FormData();
+
+                try {
+                  Swal.fire({
+                    title: "Subiendo imágenes...",
+                    text: "Espere mientras se suben los archivos.",
+                    allowOutsideClick: false,
+                    showConfirmButton: false, // Oculta el botón de confirmar para evitar que el usuario cierre la alerta manualmente
+                    didOpen: () => {
+                      Swal.showLoading();
+                    },
+                  });
+
+                  const formData = new FormData();
                   Array.from(selectedFiles).forEach((file) => {
-                formData.append("uploads", file);
-               });
-          
-               //await imageService.uploadImages(`${API_URL}/ArticuloInsumo/uploads?id=${insumo.id}`,formData);
-               await imageService.uploadImagesWithSecurity(`${API_URL}/ArticuloInsumo/uploads?id=${insumo.id}`,formData, token);
-               Swal.fire("Éxito", "Imágenes subidas correctamente", "success");
-                //fetchImages();
-              } catch (error) {
-                Swal.fire("Error", "Algo falló al subir las imágenes, inténtalo de nuevo.", "error");
-              } finally {
-                setSelectedFiles(null);
-                Swal.close();
-              }
+                    formData.append("uploads", file);
+                  });
+
+                  //await imageService.uploadImages(`${API_URL}/ArticuloInsumo/uploads?id=${insumo.id}`,formData);
+                  await imageService.uploadImagesWithSecurity(`${API_URL}/ArticuloInsumo/uploads?id=${insumo.id}`, formData, token);
+                  Swal.fire("Éxito", "Imágenes subidas correctamente", "success");
+                  //fetchImages();
+                } catch (error) {
+                  Swal.fire("Error", "Algo falló al subir las imágenes, inténtalo de nuevo.", "error");
+                } finally {
+                  setSelectedFiles(null);
+                  Swal.close();
+                }
 
 
               }
-        
+
 
               handleClose();
             } catch (error) {
@@ -293,7 +293,7 @@ export const ModalArticuloInsumo = ({
                     name="denominacion"
                     value={values.denominacion}
                     onChange={handleChange}
-                    style={{ display: !elementActive ? "block" : "none" , width: "90%" }}
+                    style={{ display: !elementActive ? "block" : "none", width: "90%" }}
                   />
                   <ErrorMessage
                     name="denominacion"
@@ -311,8 +311,8 @@ export const ModalArticuloInsumo = ({
                   <ErrorMessage name="precioVenta" component={FormHelperText} />
                 </FormControl>
                 <FormControl>
-                  <InputLabel id="categoria-label" style={{ display: !elementActive ? "block" : "none" , width: "90%" }}>Categoría</InputLabel>
-                  <Select
+                  <InputLabel id="categoria-label" style={{ display: !elementActive ? "block" : "none", width: "90%" }}>Categoría</InputLabel>
+                  {/* <Select
                     labelId="categoria-label"
                     label="Categoría"
                     name="id"
@@ -325,11 +325,29 @@ export const ModalArticuloInsumo = ({
                         {categoria.denominacion}
                       </MenuItem>
                     ))}
+                  </Select> */}
+
+                  <Select
+                    labelId="categoria-label"
+                    label="Categoría"
+                    name="id"
+                    value={selectedCategoriaId ?? ""}
+                    onChange={handleChangeCategoriaValues}
+                    style={{ display: !elementActive ? "block" : "none", width: "90%" }}
+                  >
+                    {categorias
+                      .filter((categoria) => !categoria.eliminado && categoria.esInsumo)
+                      .map((categoria) => (
+                        <MenuItem key={categoria.id} value={categoria.id}>
+                          {categoria.denominacion}
+                        </MenuItem>
+                      ))}
                   </Select>
+
                   <ErrorMessage name="idCategoria" component={FormHelperText} />
                 </FormControl>
                 <FormControl>
-                  <InputLabel id="unidad-medida-label" style={{ display: !elementActive ? "block" : "none" , width: "90%" }}>
+                  <InputLabel id="unidad-medida-label" style={{ display: !elementActive ? "block" : "none", width: "90%" }}>
                     Unidad de Medida
                   </InputLabel>
                   <Select
@@ -338,7 +356,7 @@ export const ModalArticuloInsumo = ({
                     name="idUnidadMedida"
                     value={values.idUnidadMedida}
                     onChange={handleChange}
-                    style={{ display: !elementActive ? "block" : "none" , width: "90%" }}
+                    style={{ display: !elementActive ? "block" : "none", width: "90%" }}
                   >
                     {unidadMedida.map((unidad) => (
                       <MenuItem key={unidad.id} value={unidad.id}>
@@ -395,12 +413,12 @@ export const ModalArticuloInsumo = ({
                   <ErrorMessage name="stockMinimo" component={FormHelperText} />
                 </FormControl>
                 <FormControl>
-                  <label style={{ display: !elementActive ? "block" : "none" , width: "90%" }}>
+                  <label style={{ display: !elementActive ? "block" : "none", width: "90%" }}>
                     <Field
                       type="checkbox"
                       name="esParaElaborar"
                       as={Checkbox}
-                      style={{ display: !elementActive ? "block" : "none" , width: "90%" }}
+                      style={{ display: !elementActive ? "block" : "none", width: "90%" }}
                     />
                     Es Para Elaborar?
                   </label>
