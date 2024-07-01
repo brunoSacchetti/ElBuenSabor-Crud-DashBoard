@@ -123,7 +123,7 @@ const parentId =useAppSelector((state) => state.categoria.categoriaPadreId)
                   idCategoria = values.id;
                 } else {
                   if (isAddingSubcategoria) {
-                    // Solo agregamos como subcategoría si es una subcategoría
+                    values.idSucursales = sucursales.map(s => s.id);
                     await apiCategoria.addSubCategoria(parentId, values);
                   } else {
                     // Resto del código para agregar una categoría principal

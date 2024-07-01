@@ -1,15 +1,13 @@
-import { useEffect, useState } from "react";
-
-import { Button, CircularProgress, TextField, Typography } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import {
+  Button,
+  CircularProgress,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
-
-
 import Swal from "sweetalert2";
-
-//Importamos IEmpresa y Empresa Service
-
 import { ModalCategoria } from "../../ui/modals/ModalCategoria/ModalCategoria";
-
 import { CategoriaService } from "../../../services/CategoriaService";
 import { setCategoriaData, setCategoriaPadreId } from "../../../redux/slices/CategoriaReducer";
 import { ICategoria } from "../../../types/Categoria";
@@ -17,19 +15,14 @@ import { AccordionCategoria } from "../../ui/AccordionCategoria/AccordionCategor
 import { SucursalService } from "../../../services/SucursalService";
 import { ModalEditCategoria } from "../../ui/modals/ModalCategoria/ModalEditCategoria";
 
-
-// Definición de la URL base de la API
 const API_URL = import.meta.env.VITE_API_URL;
 
 export const ScreenCategorias = () => {
-  // Estado para controlar la carga de datos
   const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [categorias, setCategorias] = useState<ICategoria[]>([]);
-  const [,setSubcategoria] = useState<ICategoria>({ id: 0, eliminado: false, denominacion: '', esInsumo: false, subCategoria:[]});
   const [categoriaEdit, setCategoriaEdit] = useState<ICategoria | null>(null);
   const [openEditModal, setOpenEditModal] = useState(false);
-   
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredCategorias, setFilteredCategorias] = useState<ICategoria[]>([]);
 
@@ -37,13 +30,9 @@ export const ScreenCategorias = () => {
   const sucursalService = new SucursalService(API_URL + "/sucursal");
 
   const dispatch = useAppDispatch();
-
-  //obtenemos la sucursal actual
   const sucursalActual = useAppSelector((state) => state.sucursal.sucursalActual);
 
-  // Función para manejar el borrado de una persona
   const handleDelete = async (id: number) => {
-    // Mostrar confirmación antes de eliminar
     Swal.fire({
       title: "¿Estas seguro?",
       text: `¿Seguro que quieres eliminar?`,
@@ -71,14 +60,25 @@ export const ScreenCategorias = () => {
     setLoading(true);
     try {
       const categoriaData = await sucursalService.getCategoriasPorSucursal(sucursalActual.id);
-      dispatch(setCategoriaData(categoriaData));
-      setCategorias(categoriaData);
-      setFilteredCategorias(categoriaData); // Actualiza el estado inicial de filteredCategorias
+      const processedData = processCategorias(categoriaData);
+      dispatch(setCategoriaData(processedData));
+      setCategorias(processedData);
+      setFilteredCategorias(processedData); // Actualiza el estado inicial de filteredCategorias
     } catch (error) {
       console.error("Error al obtener categorias:", error);
     } finally {
       setLoading(false);
     }
+  };
+
+  // Método para procesar las categorías e insumos y asegurar la estructura correcta
+  const processCategorias = (data: ICategoria[]): ICategoria[] => {
+    // Obtener solo las categorías principales (categorías que no son subcategorías de otras)
+    const categoriaIds = new Set(data.flatMap(categoria => categoria.subCategorias?.map((subcategoria:any) => subcategoria.id) || []));
+  
+    const filteredData = data.filter(categoria => !categoriaIds.has(categoria.id));
+  
+    return filteredData;
   };
 
   useEffect(() => {
@@ -90,13 +90,9 @@ export const ScreenCategorias = () => {
 
   const [isAddingSubcategoria, setIsAddingSubcategoria] = useState(false);
   const handleAddSubcategoria = (parentId: number | null) => {
-    console.log(parentId);
-    
     if (parentId !== null) {
-      // Solo realiza el dispatch si parentId no es null (es una subcategoría)
       dispatch(setCategoriaPadreId(parentId));
     }
-    setSubcategoria({ id: 0, eliminado: false, denominacion: '', esInsumo: false, subCategoria:[], parentId: parentId });
     setIsAddingSubcategoria(true);
     setOpenModal(true);
   };
@@ -111,7 +107,6 @@ export const ScreenCategorias = () => {
     setSearchTerm(term);
     setFilteredCategorias(categorias.filter(categoria => categoria.denominacion.toLowerCase().includes(term)));
   };
-
 
   return (
     <>
@@ -165,7 +160,7 @@ export const ScreenCategorias = () => {
           </div>
         ) : (
           <AccordionCategoria 
-            categories={filteredCategorias} // Utiliza filteredCategorias aquí
+            categories={filteredCategorias} 
             onEdit={handleEditCategoria} 
             onAddSubcategoria={(parentId) => handleAddSubcategoria(parentId)} 
             onDelete={handleDelete} 
@@ -173,15 +168,13 @@ export const ScreenCategorias = () => {
         )}
       </div>
   
-      {/* Modal para agregar o editar una categoría */}
       <ModalCategoria
         getCategorias={getCategorias}
         openModal={openModal}
         setOpenModal={setOpenModal}
-        isAddingSubcategoria={isAddingSubcategoria} // pasa el nuevo estado como prop
+        isAddingSubcategoria={isAddingSubcategoria}
         setIsAddingSubcategoria={setIsAddingSubcategoria}
       />
-      {/* Modal de edición de categoría */}
       <ModalEditCategoria
         getCategorias={getCategorias}
         categoriaEdit={categoriaEdit}
