@@ -26,7 +26,7 @@ export const ModalEmpleado = ({
   // Valores iniciales para el formulario
   const initialValues: IEmpleadoPost = {
     id: 0,
-    //eliminado: false,
+    eliminado: false,
     nombre: "",
     apellido: "",
     telefono: "",

@@ -218,18 +218,22 @@ export const ModalEmpresa = ({
                         type="text"
                         placeholder="Nombre Empresa"
                       />
-                    <TextFieldValue
-                      label="Razon Social:"
-                      name="razonSocial"
-                      type="text"
-                      placeholder="Razon Social"
-                    />
-                    <TextFieldValue
-                      label="CUIL:"
-                      name="cuil"
-                      type="text"
-                      placeholder="Cuil"
-                    />
+                     {!elementActive && (
+              <>
+                <TextFieldValue
+                  label="Razon Social:"
+                  name="razonSocial"
+                  type="text"
+                  placeholder="Razon Social"
+                />
+                <TextFieldValue
+                  label="CUIL:"
+                  name="cuil"
+                  type="text"
+                  placeholder="Cuil"
+                />
+              </>
+            )}
                     <div style={{display:'flex',flexDirection:'column'}}>
                       <label htmlFor="file">Seleccionar una imagen</label>
                     <TextField
