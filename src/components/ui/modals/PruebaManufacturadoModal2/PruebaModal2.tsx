@@ -90,7 +90,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
   const sucursalService = new SucursalService(`${API_URL}/sucursal`);
 
   //obtenemos la sucursal actual
- 
+
 
   const dispatch = useAppDispatch();
   const data = useAppSelector((state) => state.tablaReducer.elementActive);
@@ -118,7 +118,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
       console.error("Error al obtener categorias:", error);
     }
   };
-  
+
 
   const getInsumos = async () => {
     try {
@@ -175,7 +175,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
         idCategoria: productoData.idCategoria,
       });
       setSelectedUnidadMedidaId(productoData.idUnidadMedida);
-      setSelectedCategoriaId(productoData.idCategoria); 
+      setSelectedCategoriaId(productoData.idCategoria);
 
       // Fetch and set the insumos related to the product
       getProductoDetalles(productoData.id); // Esta función se encargará de realizar la llamada a la API y actualizar los detalles de los insumos
@@ -207,11 +207,11 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
     });
   };
 
-   //#region  IMAGENES PRODUCTO
-   const [images, setImages] = useState<IImagenes[]>([]);
-   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
-   const imageService = new ImagenService(API_URL + "/ArticuloManufacturado");
-   
+  //#region  IMAGENES PRODUCTO
+  const [images, setImages] = useState<IImagenes[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+  const imageService = new ImagenService(API_URL + "/ArticuloManufacturado");
+
   const handleConfirmModal = async () => {
 
     const token = await getToken();
@@ -250,7 +250,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
       }
       if (data) {
         // Si hay datos, se trata de una edición, entonces realizamos la solicitud PUT
-  
+
         const productoEditado = {
           id: itemValue.id,
           descripcion: itemValue.descripcion,
@@ -264,7 +264,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
         }
 
         const productoPutService = new ProductoPostService(`${API_URL}/ArticuloManufacturado`);
-  
+
         // Realizar el put del producto con los detalles asignados
         //await productoPutService.put(itemValue.id, productoEditado as ProductoPost);
         await productoPutService.putSec(itemValue.id, productoEditado as ProductoPost, token);
@@ -279,14 +279,14 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
                 Swal.showLoading();
               },
             });
-            
+
             const formData = new FormData();
             Array.from(selectedFiles).forEach((file) => {
               formData.append("uploads", file);
             });
-      
+
             // Subimos las imágenes solo si están seleccionadas
-            await imageService.uploadImages(`${API_URL}/ArticuloManufacturado/uploads?id=${itemValue.id}`,formData);
+            await imageService.uploadImages(`${API_URL}/ArticuloManufacturado/uploads?id=${itemValue.id}`, formData);
             Swal.fire("Éxito", "Imágenes subidas correctamente", "success");
             //fetchImages();
           } catch (error) {
@@ -296,27 +296,27 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
             Swal.close();
           }
         }
-      
+
       } else {
-        
+
         const updatedItemValue = {
           ...itemValue,
           articuloManufacturadoDetalles: selectedDetalle.map((detalle) => ({
             cantidad: detalle.cantidad,
-            idArticuloInsumo: detalle.id 
+            idArticuloInsumo: detalle.id
           }))
         };
-        
+
         const productoPostService = new ProductoPostService(`${API_URL}/ArticuloManufacturado`);
-      
+
         // Realiza el post del producto con los detalles asignados
         //const newProducto = await productoPostService.postOnlyData(updatedItemValue);
         const newProducto = await productoPostService.postOnlyDataSeguridad(updatedItemValue, token);
-        
+
         productoId = newProducto.id;
-      
+
         console.log(productoId);
-        
+
         if (selectedFiles) {
           try {
             Swal.fire({
@@ -327,12 +327,12 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
                 Swal.showLoading();
               },
             });
-            
+
             const formData = new FormData();
             Array.from(selectedFiles).forEach((file) => {
               formData.append("uploads", file);
             });
-      
+
             // Subimos las imágenes solo si están seleccionadas
             await imageService.uploadImages(`${API_URL}/ArticuloManufacturado/uploads?id=${productoId}`, formData);
             Swal.fire("Éxito", "Imágenes subidas correctamente", "success");
@@ -345,7 +345,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
           }
         }
       }
-      
+
       handleSuccess("Elemento guardado correctamente");
       handleClose();
       resetValues();
@@ -361,10 +361,10 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
   const handleChangeCantidad = (detalleId: number, cantidad: string) => {
     // Convierte la cantidad a un número entero
     const nuevaCantidad = parseInt(cantidad);
-    
+
     // Verifica si el detalle ya existe en los detalles seleccionados
     const detalleExistenteIndex = selectedDetalle.findIndex(detalle => detalle.id === detalleId);
-  
+
     if (detalleExistenteIndex !== -1) {
       // Si el detalle existe, actualiza la cantidad
       const updatedDetalles = [...selectedDetalle]; // Crea una copia del arreglo de detalles
@@ -376,17 +376,17 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
         id: detalleId,
         cantidad: nuevaCantidad
       };
-  
+
       // Agrega el nuevo detalle a los detalles seleccionados
       const updatedDetalles = [...selectedDetalle, nuevoDetalle];
-  
+
       // Actualiza el estado con los nuevos detalles
       setSelectedDetalle(updatedDetalles);
     }
     console.log(selectedDetalle);
   };
-  
-  
+
+
 
 
   const handleChangeUnidadMedidaValues = async (
@@ -427,7 +427,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
     setSelectedDetalle([...selectedDetalle, ...selectedInsumos]);
     handleCloseInsumosModal();
   };
-  
+
 
   const handleRemoveInsumo = (id: number) => {
     const updatedDetalle = selectedDetalle.filter(
@@ -440,7 +440,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedFiles(event.target.files);
     console.log(event.target.files);
-    
+
   };
 
   const getImages = async (id: number) => {
@@ -482,14 +482,14 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
       >
         <div className={styles.modalContainer}>
           <div className={styles.modalContainerContent}>
-          {data && (
+            {data && (
               <div>
                 <ImageCarrousel
                   images={images} // Pass the images array as prop
                   handleDeleteImage={(publicId: string, id: number) => handleDeleteImage(publicId, id)} // Pass the handleDeleteImage function as prop
                 />
               </div>
-          )}
+            )}
             <div style={{ textAlign: "center" }}>
               <h1>{data ? "Editar" : "Crear"} un producto manufacturado</h1>
             </div>
@@ -548,7 +548,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
                 ))}
               </Select>
               <h1>Categoria</h1>
-              <Select
+              {/* <Select
                 label="Categoria"
                 value={selectedCategoriaId ?? ""}
                 onChange={handleChangeCategoriaValues}
@@ -560,7 +560,24 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
                     {cat.denominacion}
                   </MenuItem>
                 ))}
+              </Select> */}
+
+              <Select
+                label="Categoría"
+                value={selectedCategoriaId ?? ""}
+                onChange={handleChangeCategoriaValues}
+                variant="filled"
+                disabled={data ? true : false}
+              >
+                {categoria
+                  .filter((cat) => !cat.eliminado && !cat.esInsumo)
+                  .map((cat) => (
+                    <MenuItem key={cat.id} value={cat.id}>
+                      {cat.denominacion}
+                    </MenuItem>
+                  ))}
               </Select>
+              
             </div>
             <div>
               <div style={{ textAlign: "center" }}>
@@ -594,7 +611,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
                   onChange={handleFileChange}
                   inputProps={{ multiple: true }}
                 />
-                
+
               </div>
               <div style={{ textAlign: "center" }}>
                 <h1>Insumos</h1>
@@ -609,51 +626,51 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
             </div>
 
             <div className={styles.ingredientesTableContainer}>
-  {selectedDetalle.length > 0 ? (
-    <TableContainer component={Paper} style={{ maxWidth: "80%" }}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell align="center">Nombre</TableCell>
-            <TableCell align="center">Cantidad</TableCell>
-            <TableCell align="center">Acciones</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {selectedDetalle.map((detalle) => (
-            <TableRow key={detalle.id}>
-              <TableCell align="center">
-                {detalle.denominacion}
-              </TableCell>
-              <TableCell align="center">
-                {data ? ( 
-                  <input
-                    type="number"
-                    value={detalle.cantidad}
-                    onChange={(e) => handleChangeCantidad(detalle.id, e.target.value)}
-                  />
-                ) : (
-                  detalle.cantidad // Si no hay datos, solo muestra la cantidad
-                )}
-              </TableCell>
-              <TableCell align="center">
-                <Button
-                  variant="outlined"
-                  color="info"
-                  onClick={() => handleRemoveInsumo(detalle.id)}
-                  startIcon={<DeleteIcon />}
-                >
-                  Quitar
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  ) : (
-    <div>No hay insumos agregados</div>
-  )}
+              {selectedDetalle.length > 0 ? (
+                <TableContainer component={Paper} style={{ maxWidth: "80%" }}>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell align="center">Nombre</TableCell>
+                        <TableCell align="center">Cantidad</TableCell>
+                        <TableCell align="center">Acciones</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {selectedDetalle.map((detalle) => (
+                        <TableRow key={detalle.id}>
+                          <TableCell align="center">
+                            {detalle.denominacion}
+                          </TableCell>
+                          <TableCell align="center">
+                            {data ? (
+                              <input
+                                type="number"
+                                value={detalle.cantidad}
+                                onChange={(e) => handleChangeCantidad(detalle.id, e.target.value)}
+                              />
+                            ) : (
+                              detalle.cantidad // Si no hay datos, solo muestra la cantidad
+                            )}
+                          </TableCell>
+                          <TableCell align="center">
+                            <Button
+                              variant="outlined"
+                              color="info"
+                              onClick={() => handleRemoveInsumo(detalle.id)}
+                              startIcon={<DeleteIcon />}
+                            >
+                              Quitar
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              ) : (
+                <div>No hay insumos agregados</div>
+              )}
               <div style={{ textAlign: "center", marginTop: "1rem" }}>
                 <Button
                   variant="contained"
@@ -681,7 +698,7 @@ export const PruebaModal2: FC<IMasterDetailModal> = ({
         handleAddInsumos={handleAddInsumos} // Cambiar 'onConfirm' a 'handleAddInsumos'
       />
       <div>
-    </div>
+      </div>
     </div>
   );
 };
