@@ -8,11 +8,13 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { ICategoria } from '../../../types/Categoria';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 interface CategoriaProps {
   id: number;
   denominacion: string;
   subCategorias?: ICategoria[];
+  eliminado:boolean;
   onEdit: (id: number) => void;
   onAddSubcategoria: (parentId: number | null) => void;
   onDelete: (id:number) => void;
@@ -26,8 +28,8 @@ interface AccordionCategoriaProps {
   onDelete: (id: number) => void;
 }
 
-export const Categoria: React.FC<CategoriaProps> = ({ id, denominacion, subCategorias, onEdit, onAddSubcategoria, onDelete }) => (
-  <Accordion sx={{ width: '80%', margin: '1rem auto !important', boxSizing: 'border-box' }}>
+export const Categoria: React.FC<CategoriaProps> = ({ id, denominacion,eliminado, subCategorias, onEdit, onAddSubcategoria, onDelete }) => (
+  <Accordion sx={{ width: '80%', margin: '1rem auto !important', boxSizing: 'border-box',backgroundColor: eliminado ? 'grey' : 'inherit' }}>
     <AccordionSummary
       expandIcon={<ExpandMoreIcon />}
       aria-controls={`panel-${id}-content`}
@@ -42,16 +44,26 @@ export const Categoria: React.FC<CategoriaProps> = ({ id, denominacion, subCateg
     </AccordionDetails>
     <AccordionActions>
       {subCategorias && (  // Mostrar el botón solo si no hay subcategorías definidas
-        <Button variant="contained" color="primary" onClick={() => onAddSubcategoria(id)}>
+        <Button variant="contained" style={{ pointerEvents: eliminado ? "none" : "auto" }} color="primary" onClick={() => onAddSubcategoria(id)}>
           Agregar Subcategoría
         </Button>
       )}
-      <Button variant="contained" color="secondary" onClick={() => onDelete(id)}>
-        Eliminar
+      {eliminado ? (
+      <Button  style={{ borderRadius: '50px' }} variant="contained" color="success" onClick={() => onDelete(id)}>
+      Habilitar
+      <Visibility style={{ marginLeft: '6px' }} />
       </Button>
-      <Button variant="contained" onClick={() => onEdit(id)}>
+      ) : (
+        <Button  style={{ borderRadius: '50px' }} variant="contained" color="error" onClick={() => onDelete(id)}>
+        Deshabilitar
+        <VisibilityOff style={{ marginLeft: '6px' }} />
+        </Button> )}
+
+        
+      <Button variant="contained"  style={{ pointerEvents: eliminado ? "none" : "auto" }} onClick={() => onEdit(id)}>
         Editar
       </Button>
+
     </AccordionActions>
   </Accordion>
 );

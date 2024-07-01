@@ -44,7 +44,7 @@ export const ScreenCategorias = () => {
       cancelButtonText: "Cancelar",
     }).then((result) => {
       if (result.isConfirmed) {
-        categoriaService.delete(id).then(() => {
+        categoriaService.changeEliminado(id).then(() => {
           getCategorias();
         });
       }
