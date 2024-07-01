@@ -13,14 +13,15 @@ interface CategoriaProps {
   id: number;
   denominacion: string;
   subCategorias?: ICategoria[];
-  onEdit: () => void;
+  onEdit: (id: number) => void;
   onAddSubcategoria: (parentId: number | null) => void;
   onDelete: (id:number) => void;
 }
 
+
 interface AccordionCategoriaProps {
   categories: ICategoria[];
-  onEdit: (category: ICategoria) => void;
+  onEdit: (id: number) => void;
   onAddSubcategoria: (id:number | null) => void;
   onDelete: (id: number) => void;
 }
@@ -36,7 +37,7 @@ export const Categoria: React.FC<CategoriaProps> = ({ id, denominacion, subCateg
     </AccordionSummary>
     <AccordionDetails sx={{ width: '100%', padding: '0 1rem' }}>
       {subCategorias && subCategorias.length > 0 && (
-        <AccordionCategoria categories={subCategorias} onEdit={onEdit} onAddSubcategoria={onAddSubcategoria} onDelete={onDelete} />
+         <AccordionCategoria categories={subCategorias} onEdit={onEdit} onAddSubcategoria={onAddSubcategoria} onDelete={onDelete} />
       )}
     </AccordionDetails>
     <AccordionActions>
@@ -48,7 +49,7 @@ export const Categoria: React.FC<CategoriaProps> = ({ id, denominacion, subCateg
       <Button variant="contained" color="secondary" onClick={() => onDelete(id)}>
         Eliminar
       </Button>
-      <Button variant="contained" onClick={onEdit}>
+      <Button variant="contained" onClick={() => onEdit(id)}>
         Editar
       </Button>
     </AccordionActions>
@@ -58,14 +59,14 @@ export const Categoria: React.FC<CategoriaProps> = ({ id, denominacion, subCateg
 
 export const AccordionCategoria: React.FC<AccordionCategoriaProps> = ({ categories, onEdit, onAddSubcategoria, onDelete }) => (
   <>
-    {categories.map((category) => (
-      <Categoria 
-        key={category.id} 
-        {...category} 
-        onEdit={() => onEdit(category)} 
-        onAddSubcategoria={(parentId) => onAddSubcategoria(parentId)}
-        onDelete={(id) => onDelete(id)} 
-      />
-    ))}
-  </>
+  {categories.map((category) => (
+    <Categoria 
+      key={category.id} 
+      {...category} 
+      onEdit={onEdit} // Pasamos el handler de onEdit
+      onAddSubcategoria={onAddSubcategoria}
+      onDelete={onDelete} 
+    />
+  ))}
+</>
 );

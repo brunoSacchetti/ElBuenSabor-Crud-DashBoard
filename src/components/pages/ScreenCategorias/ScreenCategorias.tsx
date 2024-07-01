@@ -97,9 +97,23 @@ export const ScreenCategorias = () => {
     setOpenModal(true);
   };
 
-  const handleEditCategoria = (categoria: ICategoria) => {
-    setCategoriaEdit(categoria);
-    setOpenEditModal(true);
+  const  handleEditCategoria = async (id: number)  => {
+    if (!sucursalActual) {
+      console.error("Error al obtener categorias: sucursalActual es null");
+      setLoading(false);
+      return;
+    }
+    const categoriaData = await sucursalService.getCategoriasPorSucursal(sucursalActual.id);
+  
+    const categoria = categoriaData.find(c => c.id === id);
+ 
+    
+    if (categoria) {
+      setCategoriaEdit(categoria);
+      setOpenEditModal(true);
+    } else {
+      console.error(`No se encontró la categoría con ID ${id}`);
+    }
   };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -160,11 +174,11 @@ export const ScreenCategorias = () => {
           </div>
         ) : (
           <AccordionCategoria 
-            categories={filteredCategorias} 
-            onEdit={handleEditCategoria} 
-            onAddSubcategoria={(parentId) => handleAddSubcategoria(parentId)} 
-            onDelete={handleDelete} 
-          />
+          categories={filteredCategorias} // Utiliza filteredCategorias aquí
+          onEdit={handleEditCategoria} 
+          onAddSubcategoria={handleAddSubcategoria} 
+          onDelete={handleDelete} 
+        />
         )}
       </div>
   

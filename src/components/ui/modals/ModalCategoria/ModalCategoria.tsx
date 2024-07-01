@@ -83,7 +83,9 @@ export const ModalCategoria = ({
   };
   
   /* console.log(selectedSucursales); */
-const parentId =useAppSelector((state) => state.categoria.categoriaPadreId)
+const parentId = useAppSelector((state) => state.categoria.categoriaPadreId)
+console.log(parentId);
+
 
    
   return (
@@ -113,8 +115,10 @@ const parentId =useAppSelector((state) => state.categoria.categoriaPadreId)
             enableReinitialize={true}
             onSubmit={async (values: CategoriaPost) => {
               try {
+                console.log(values);
                 let idCategoria;
-              console.log(idCategoria);
+              
+                
               
                 values.idSucursales = selectedSucursales;
               

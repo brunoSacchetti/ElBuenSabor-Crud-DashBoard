@@ -13,23 +13,24 @@ import { CategoriaEdit } from "../../../../types/Dtos/CategoriaDto/CategoriaEdit
 const API_URL = import.meta.env.VITE_API_URL;
 
 interface IModalEditCategoria {
-    getCategorias: Function;
-    openEditModal: boolean;
-    setOpenEditModal: (state: boolean) => void;
-    categoriaEdit: ICategoria | null; // La categoría que se está editando
+  getCategorias: Function;
+  openEditModal: boolean;
+  setOpenEditModal: (state: boolean) => void;
+  categoriaEdit: ICategoria | null; // La categoría que se está editando
 }
 
 export const ModalEditCategoria = ({
-    getCategorias,
-    openEditModal,
-    setOpenEditModal,
-    categoriaEdit,
-  }: IModalEditCategoria) => {
-    const initialValues: CategoriaEdit = {
-      id: categoriaEdit ? categoriaEdit.id : 0,
-      eliminado: false,
-      denominacion: categoriaEdit ? categoriaEdit.denominacion : ""
-    };
+  getCategorias,
+  openEditModal,
+  setOpenEditModal,
+  categoriaEdit,
+}: IModalEditCategoria) => {
+  const initialValues: CategoriaEdit = {
+    id: categoriaEdit ? categoriaEdit.id : 0,
+    eliminado: false,
+    denominacion: categoriaEdit ? categoriaEdit.denominacion : ""
+  };
+
   
     const apiCategoria = new CategoriaPostService(
       API_URL + "/categoria"
